@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('My Account') }}{% endblock %}
+{% block page_title %}{{ _('My Account') }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+
+    <!-- ── Profile photo ─────────────────────────────────────────────────── -->
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-person-badge me-2 text-primary"></i>{{ _('Profile Photo') }}</div>
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          {% if user.avatar_filename %}
+          <img src="{{ url_for('account_avatar', user_id=user.id) }}?t={{ range(1,99999)|random }}"
+               alt="{{ _('Current photo') }}"
+               style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:1px solid #e2e8f0">
+          {% else %}
+          <div class="d-flex align-items-center justify-content-center text-muted"
+               style="width:64px;height:64px;border-radius:50%;border:1px dashed #cbd5e1;font-size:1.5rem">
+            <i class="bi bi-person"></i>
+          </div>
+          {% endif %}
+          <div class="small text-muted">{{ _('PNG, JPG, or WEBP.') }}</div>
+        </div>
+        <form method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+          <input type="hidden" name="action" value="upload_avatar">
+          <input type="file" name="avatar" accept=".png,.jpg,.jpeg,.webp" class="form-control form-control-sm" required>
+          <button type="submit" class="btn btn-primary btn-sm text-nowrap">{{ _('Upload') }}</button>
+        </form>
+        {% if user.avatar_filename %}
+        <form method="POST" class="mt-2" onsubmit="return confirm({{ _('Remove your photo?') | tojson | forceescape }})">
+          <input type="hidden" name="action" value="remove_avatar">
+          <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash me-1"></i>{{ _('Remove Photo') }}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ── Basic info ────────────────────────────────────────────────────── -->
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-person-lines-fill me-2 text-success"></i>{{ _('Basic Information') }}</div>
+      <div class="card-body">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small">{{ _('Username') }}</label>
+            <input type="text" class="form-control form-control-sm" value="{{ user.username }}" disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small">{{ _('Email') }}</label>
+            <input type="text" class="form-control form-control-sm" value="{{ user.email or '' }}" disabled>
+          </div>
+        </div>
+        <form method="POST">
+          <input type="hidden" name="action" value="save_profile">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">{{ _('First Name') }}</label>
+              <input type="text" name="first_name" class="form-control form-control-sm" value="{{ user.first_name or '' }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">{{ _('Last Name') }}</label>
+              <input type="text" name="last_name" class="form-control form-control-sm" value="{{ user.last_name or '' }}">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label fw-semibold small">{{ _('Position') }}</label>
+              <input type="text" name="position" class="form-control form-control-sm"
+                     placeholder="{{ _('e.g. Workforce Planner') }}" value="{{ user.position or '' }}">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">{{ _('I work for') }}</label>
+              <select name="work_context_type" id="work_context_type" class="form-select form-select-sm">
+                <option value="">{{ _('— Not set —') }}</option>
+                <option value="project" {% if user.work_context_type == 'project' %}selected{% endif %}>{{ _('A Project') }}</option>
+                <option value="department" {% if user.work_context_type == 'department' %}selected{% endif %}>{{ _('A Department') }}</option>
+              </select>
+            </div>
+            <div class="col-md-8" id="work_project_wrap" style="display:none">
+              <label class="form-label fw-semibold small">{{ _('Project') }}</label>
+              <select name="work_project" class="form-select form-select-sm">
+                {% for p in all_projects %}
+                <option value="{{ p.key }}" {% if user.work_context_value == p.key %}selected{% endif %}>{{ p.display_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-8" id="work_department_wrap" style="display:none">
+              <label class="form-label fw-semibold small">{{ _('Department') }}</label>
+              <select name="work_department" class="form-select form-select-sm">
+                {% for d in departments %}
+                <option value="{{ d }}" {% if user.work_context_value == d %}selected{% endif %}>{{ _(d) }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm mt-3">
+            <i class="bi bi-check me-1"></i>{{ _('Save') }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Appearance & language ─────────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header"><i class="bi bi-palette me-2 text-warning"></i>{{ _('Appearance & Language') }}</div>
+      <div class="card-body">
+        <label class="form-label fw-semibold small d-block">{{ _('Theme') }}</label>
+        {% set active_theme = user.ui_theme if user.ui_theme else 'light' %}
+        <div class="appearance-switcher mb-3" role="group" aria-label="Appearance">
+          {% for value, icon, label in [('light', 'bi-sun', _('Light')), ('navy-canvas', 'bi-square-fill', _('Hybrid')), ('dark', 'bi-moon-stars', _('Dark'))] %}
+          <form action="{{ url_for('set_ui_theme') }}" method="POST" class="d-inline">
+            <input type="hidden" name="theme" value="{{ value }}">
+            <input type="hidden" name="next" value="{{ url_for('account') }}">
+            <button type="submit" class="appearance-btn {% if active_theme == value %}active{% endif %}" title="{{ label }}">
+              <i class="bi {{ icon }}"></i> {{ label }}
+            </button>
+          </form>
+          {% endfor %}
+        </div>
+        <label class="form-label fw-semibold small d-block">{{ _('Language') }}</label>
+        {% include '_locale_switcher.html' %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Access (read-only, derived from role grants) ────────────────────── -->
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-shield-check me-2 text-danger"></i>{{ _('Access') }}</div>
+      <div class="card-body">
+        {% if user.global_role %}
+        <div class="alert alert-light border small mb-3">
+          <i class="bi bi-info-circle me-1"></i>
+          {{ _('Global %(role)s — access to every project, present and future.', role=_(user.global_role|capitalize)) }}
+        </div>
+        {% endif %}
+        {% if access %}
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr><th>{{ _('Project') }}</th><th>{{ _('Role') }}</th></tr>
+          </thead>
+          <tbody>
+            {% for a in access %}
+            <tr>
+              <td>{{ a.project }}</td>
+              <td><span class="badge bg-light text-dark border">{{ _(a.role|capitalize) }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="text-muted small">{{ _('No project access.') }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ── Security ─────────────────────────────────────────────────────── -->
+    <div class="card mt-4">
+      <div class="card-header"><i class="bi bi-lock me-2 text-primary"></i>{{ _('Security') }}</div>
+      <div class="card-body">
+        <form method="POST">
+          <input type="hidden" name="action" value="change_password">
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">{{ _('Current Password') }}</label>
+            <input type="password" name="current_password" class="form-control form-control-sm" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">{{ _('New Password') }}</label>
+            <input type="password" name="new_password" class="form-control form-control-sm" required minlength="6">
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">{{ _('Confirm New Password') }}</label>
+            <input type="password" name="confirm_password" class="form-control form-control-sm" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm w-100">
+            <i class="bi bi-check me-1"></i>{{ _('Change Password') }}
+          </button>
+        </form>
+        <hr>
+        <div class="small text-muted mb-2">
+          {{ _("Don't know your current password?") }}
+        </div>
+        <form method="POST" onsubmit="return confirm({{ _('Send a password reset link to your email?') | tojson | forceescape }})">
+          <input type="hidden" name="action" value="send_reset_email">
+          <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+            <i class="bi bi-envelope me-1"></i>{{ _('Email Me a Reset Link') }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleWorkContext() {
+  const type = document.getElementById('work_context_type').value;
+  document.getElementById('work_project_wrap').style.display = (type === 'project') ? '' : 'none';
+  document.getElementById('work_department_wrap').style.display = (type === 'department') ? '' : 'none';
+}
+document.getElementById('work_context_type').addEventListener('change', toggleWorkContext);
+toggleWorkContext();
+</script>
+{% endblock %}

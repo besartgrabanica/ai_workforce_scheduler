@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Employees') }}{% endblock %}
+{% block page_title %}{{ _('Employees') }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('employees_import') }}" class="btn btn-outline-primary btn-sm me-1">
+  <i class="bi bi-upload me-1"></i>{{ _('Import') }}
+</a>
+<a href="{{ url_for('employee_groups') }}" class="btn btn-outline-primary btn-sm me-1">
+  <i class="bi bi-people me-1"></i>{{ _('Schedule Groups') }}
+</a>
+<button type="button" id="editModeBtn" class="btn btn-outline-secondary btn-sm me-1" onclick="toggleEditMode()">
+  <i class="bi bi-pencil-square me-1"></i>{{ _('Edit Mode') }}
+</button>
+<a href="{{ url_for('employee_new') }}" class="btn btn-primary btn-sm">
+  <i class="bi bi-plus-lg me-1"></i>{{ _('Add Employee') }}
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- ── Filters ───────────────────────────────────────────────────────────── -->
+<form method="GET" class="row g-2 mb-3">
+  <div class="col-auto">
+    <div class="input-group input-group-sm">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="search" name="q" class="form-control form-control-sm" style="min-width:220px"
+             placeholder="{{ _('Search by name…') }}" value="{{ search }}">
+    </div>
+  </div>
+  <div class="col-auto">
+    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+      <option value=""      {% if not status_filter %}selected{% endif %}>{{ _('All statuses') }}</option>
+      <option value="active"   {% if status_filter=='active'   %}selected{% endif %}>{{ _('Active') }}</option>
+      <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>{{ _('Inactive') }}</option>
+      <option value="trainee"  {% if status_filter=='trainee'  %}selected{% endif %}>{{ _('Trainee') }}</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <select name="team" class="form-select form-select-sm" onchange="this.form.submit()">
+      <option value="">{{ _('All teams') }}</option>
+      {% for t in teams %}
+      <option value="{{ t }}" {% if team_filter == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-sm btn-outline-secondary">{{ _('Search') }}</button>
+    {% if search %}
+    <a href="{{ url_for('employees_list', status=status_filter, team=team_filter) }}" class="btn btn-sm btn-outline-secondary">{{ _('Clear') }}</a>
+    {% endif %}
+  </div>
+  <div class="col-auto">
+    <span class="text-muted small pt-1">{{ _('%(n)s employees', n=employees|length) }}</span>
+  </div>
+</form>
+
+<form method="POST" action="{{ url_for('employees_bulk_update') }}" id="bulkEditForm">
+  <input type="hidden" name="status_filter" value="{{ status_filter }}">
+  <input type="hidden" name="team_filter" value="{{ team_filter }}">
+  <input type="hidden" name="search_filter" value="{{ search }}">
+
+<!-- ── Per-team accordion ────────────────────────────────────────────────── -->
+{% set teams_grouped = employees | groupby('team') %}
+<div class="accordion accordion-flush" id="employeesAccordion">
+  {% for team_name, members in teams_grouped %}
+  {% set tid = 'emp_team_' ~ loop.index %}
+  <div class="accordion-item mb-2 border rounded overflow-hidden">
+    <h2 class="accordion-header">
+      <button class="accordion-button team-accordion-btn" type="button"
+              data-bs-toggle="collapse" data-bs-target="#{{ tid }}" aria-expanded="true">
+        <span class="fw-bold text-uppercase flex-grow-1" style="font-size:.8rem; letter-spacing:.04em">
+          {{ team_name or _('No Team') }}
+        </span>
+        <span class="badge bg-primary rounded-pill me-2">{{ members|length }}</span>
+      </button>
+    </h2>
+    <div id="{{ tid }}" class="accordion-collapse collapse show">
+      <div class="accordion-body p-0">
+        <div class="table-responsive">
+        <table class="table table-hover mb-0 employee-table">
+          <thead>
+            <tr>
+              <th>{{ _('Name') }}</th>
+              <th>{{ _('Team') }}</th>
+              <th>{{ _('FTE') }}</th>
+              <th>{{ _('Mode') }}</th>
+              <th>{{ _('Shift') }}</th>
+              <th>{{ _('Sat') }}</th>
+              <th>{{ _('Sun') }}</th>
+              <th>{{ _('Holidays') }}</th>
+              <th>{{ _('Status') }}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for emp in members %}
+            <tr>
+              <input type="hidden" name="emp_ids" value="{{ emp.id }}">
+              <td class="fw-medium">
+                <a href="{{ url_for('employee_detail', emp_id=emp.id) }}" class="text-decoration-none text-dark">
+                  {{ emp.name }}
+                </a>
+                {% if emp.schedule_group %}
+                <i class="bi bi-link-45deg text-muted ms-1" title="{{ _('Scheduled together: %(name)s', name=emp.schedule_group.name) }}"></i>
+                {% endif %}
+              </td>
+              <td>
+                <select name="team_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  <option value="">{{ _('— No team —') }}</option>
+                  {% for t in teams %}
+                  <option value="{{ t }}" {% if emp.team == t %}selected{% endif %}>{{ t }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="fte_percent_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  {% for pct in range(5, 105, 5) %}
+                  <option value="{{ pct }}" {% if emp.fte_percent == pct %}selected{% endif %}>{{ pct }}%</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="fte_mode_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  {% for m in ['days','hours','combined'] %}
+                  <option value="{{ m }}" {% if emp.fte_mode == m %}selected{% endif %}>{{ _(m|capitalize) }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td class="small">
+                <span class="view-only">
+                  {% if emp.custom_start and emp.custom_end %}
+                    <span class="text-primary">{{ emp.custom_start }}–{{ emp.custom_end }}</span>
+                  {% elif emp.effective_shift_template %}
+                    <span class="shift-dot" style="background:{{ emp.effective_shift_template.color }}"></span>
+                    {{ emp.effective_shift_template.name }} <span class="text-muted">({{ emp.effective_shift_template.start_time }}–{{ emp.effective_shift_template.end_time }})</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </span>
+                <div class="shift-picker edit-only d-none">
+                  <button type="button" class="shift-picker-toggle form-select form-select-sm cell-input" disabled>
+                    <span class="shift-picker-label">
+                      {% if emp.shift_template_id and emp.shift_template %}
+                        <span class="shift-dot" style="background:{{ emp.shift_template.color }}"></span>{{ emp.shift_template.name }} <span class="text-muted">({{ emp.shift_template.start_time }}–{{ emp.shift_template.end_time }})</span>
+                      {% else %}
+                        {{ _('— Custom hours —') }}
+                      {% endif %}
+                    </span>
+                    <i class="bi bi-chevron-down shift-picker-caret"></i>
+                  </button>
+                  <input type="hidden" name="shift_template_id_{{ emp.id }}" value="{{ emp.shift_template_id or '' }}">
+                  <div class="shift-picker-menu d-none">
+                    <div class="shift-picker-option" data-value="">{{ _('— Custom hours —') }}</div>
+                    {% for t in shift_templates %}
+                    <div class="shift-picker-option" data-value="{{ t.id }}">
+                      <span class="shift-dot" style="background:{{ t.color }}"></span>{{ t.name }} <span class="text-muted">({{ t.start_time }}–{{ t.end_time }})</span>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <select name="works_saturday_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  {% for v, lbl in [('no', _('No')),('yes', _('Yes'))] %}
+                  <option value="{{ v }}" {% if emp.works_saturday == v %}selected{% endif %}>{{ lbl }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="works_sunday_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  {% for v, lbl in [('no', _('No')),('yes', _('Yes'))] %}
+                  <option value="{{ v }}" {% if emp.works_sunday == v %}selected{% endif %}>{{ lbl }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="works_holidays_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  {% for v, lbl in [('0', _('No')),('1', _('Yes'))] %}
+                  <option value="{{ v }}"
+                    {% if (emp.works_holidays and v == '1') or (not emp.works_holidays and v == '0') %}selected{% endif %}>
+                    {{ lbl }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="status_{{ emp.id }}" class="form-select form-select-sm cell-input plainable plain" disabled>
+                  {% for s in ['active','inactive','trainee'] %}
+                  <option value="{{ s }}" {% if emp.status == s %}selected{% endif %}>{{ _(s|capitalize) }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td class="text-end">
+                <a href="{{ url_for('employee_detail', emp_id=emp.id) }}"
+                   class="btn btn-xs btn-outline-primary">{{ _('Edit') }}</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="card-body text-center text-muted py-5">
+      {{ _('No employees found.') }}
+      <a href="{{ url_for('employees_import') }}">{{ _('Import from Excel') }}</a> {{ _('or') }}
+      <a href="{{ url_for('employee_new') }}">{{ _('add manually') }}</a>.
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ── Bulk save bar (edit mode only) ──────────────────────────────────────── -->
+<div id="bulkEditToolbar" class="employees-edit-toolbar d-none py-3 px-1 mt-3 d-flex justify-content-end gap-2">
+  <span class="text-muted small me-auto align-self-center">
+    <i class="bi bi-info-circle me-1"></i>{{ _('Editing %(n)s employees shown above.', n=employees|length) }}
+  </span>
+  <button type="button" class="btn btn-outline-secondary" onclick="toggleEditMode(false)">{{ _('Cancel') }}</button>
+  <button type="submit" class="btn btn-primary">
+    <i class="bi bi-check-lg me-1"></i>{{ _('Save All Changes') }}
+  </button>
+</div>
+
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let editMode = false;
+const EDIT_MODE_LABEL = {{ _('Edit Mode') | tojson }};
+const EXIT_EDIT_MODE_LABEL = {{ _('Exit Edit Mode') | tojson }};
+
+function toggleEditMode(force) {
+  editMode = (force === undefined) ? !editMode : force;
+
+  document.querySelectorAll('.cell-input').forEach(el => {
+    el.disabled = !editMode;
+  });
+  document.querySelectorAll('.plainable').forEach(el => {
+    el.classList.toggle('plain', !editMode);
+  });
+  document.querySelectorAll('.view-only').forEach(el => el.classList.toggle('d-none', editMode));
+  document.querySelectorAll('.edit-only').forEach(el => el.classList.toggle('d-none', !editMode));
+
+  document.getElementById('bulkEditToolbar').classList.toggle('d-none', !editMode);
+  const btn = document.getElementById('editModeBtn');
+  btn.innerHTML = editMode
+    ? '<i class="bi bi-x-lg me-1"></i>' + EXIT_EDIT_MODE_LABEL
+    : '<i class="bi bi-pencil-square me-1"></i>' + EDIT_MODE_LABEL;
+  btn.classList.toggle('btn-outline-secondary', !editMode);
+  btn.classList.toggle('btn-warning', editMode);
+}
+</script>
+{% endblock %}

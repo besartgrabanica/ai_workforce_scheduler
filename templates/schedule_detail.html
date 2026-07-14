@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}{{ schedule.name }}{% endblock %}
+{% block page_title %}{{ schedule.name }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('schedule_export', schedule_id=schedule.id) }}"
+   class="btn btn-sm btn-success me-1">
+  <i class="bi bi-download me-1"></i>{{ _('Export Excel') }}
+</a>
+<form action="{{ url_for('schedule_delete', schedule_id=schedule.id) }}" method="POST"
+      class="d-inline" onsubmit="return confirm({{ _('Delete this schedule?') | tojson | forceescape }})">
+  <button class="btn btn-sm btn-outline-danger">
+    <i class="bi bi-trash me-1"></i>{{ _('Delete') }}
+  </button>
+</form>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Coverage bar ─────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-bar-chart me-2 text-primary"></i>{{ _('Daily Coverage — %(month)s %(year)s', month=month_name, year=schedule.year) }}</span>
+    <div class="legend d-flex gap-3 small">
+      <span><span class="legend-dot" style="background:#22c55e"></span>≥100%</span>
+      <span><span class="legend-dot" style="background:#fbbf24"></span>80–99%</span>
+      <span><span class="legend-dot" style="background:#f87171"></span>&lt;80%</span>
+    </div>
+  </div>
+  <div class="card-body pb-2">
+    <canvas id="coverageChart" height="60"></canvas>
+  </div>
+</div>
+
+<!-- ── Schedule legend ───────────────────────────────────────────────────── -->
+<div class="d-flex gap-2 flex-wrap mb-3 small">
+  <span class="shift-legend-item" style="background:#22c55e">{{ _('Full') }} (08–16)</span>
+  <span class="shift-legend-item" style="background:#3b82f6">{{ _('Morning') }} (08–14)</span>
+  <span class="shift-legend-item" style="background:#f59e0b">{{ _('Afternoon') }} (14–20)</span>
+  <span class="shift-legend-item" style="background:#8b5cf6">{{ _('Saturday') }}</span>
+  <span class="shift-legend-item" style="background:#94a3b8">{{ _('Day Off') }}</span>
+  <span class="shift-legend-item" style="background:#cbd5e1">{{ _('Weekend Off') }}</span>
+  <span class="shift-legend-item" style="background:#fca5a5;color:#7f1d1d">{{ _('Holiday') }}</span>
+</div>
+
+<!-- ── Schedule grid ─────────────────────────────────────────────────────── -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="schedule-grid-wrapper">
+      <table class="schedule-grid">
+        <thead>
+          <tr>
+            <th class="sg-name-col">{{ _('Name') }}</th>
+            <th class="sg-team-col">{{ _('Team') }}</th>
+            <th class="sg-fte-col">{{ _('FTE') }}</th>
+            {% for day in all_days %}
+            {% set dow = day.weekday() %}
+            {% set day_labels = [_('Mo'), _('Tu'), _('We'), _('Th'), _('Fr'), _('Sa'), _('Su')] %}
+            <th class="sg-day-col {{ 'sg-weekend' if dow >= 5 else '' }}">
+              <div class="sg-day-num">{{ day.day }}</div>
+              <div class="sg-day-name">{{ day_labels[dow] }}</div>
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            {% if row.type == 'team' %}
+            <tr class="sg-team-row">
+              <td colspan="{{ all_days|length + 3 }}">{{ row.team }}</td>
+            </tr>
+            {% else %}
+            {% set emp = row.employee %}
+            <tr class="sg-emp-row" data-emp-id="{{ emp.id }}">
+              <td class="sg-name-col">
+                <a href="{{ url_for('employee_detail', emp_id=emp.id) }}"
+                   class="text-decoration-none text-dark small fw-medium">{{ emp.name }}</a>
+              </td>
+              <td class="sg-team-col text-muted small">{{ emp.team }}</td>
+              <td class="sg-fte-col text-muted small">{{ emp.fte_percent }}%</td>
+              {% for cell in row.cells %}
+              <td class="sg-cell"
+                  style="background:{{ cell.color }}"
+                  data-date="{{ cell.day.strftime('%Y-%m-%d') }}"
+                  data-emp="{{ emp.id }}"
+                  title="{{ emp.name }} — {{ cell.day.strftime('%d.%m.%Y') }}: {{ cell.status }}"
+                  onclick="openOverride({{ emp.id }}, '{{ cell.day.strftime('%Y-%m-%d') }}', '{{ cell.status }}', '{{ cell.assignment.shift_start if cell.assignment and cell.assignment.shift_start else '' }}', '{{ cell.assignment.shift_end if cell.assignment and cell.assignment.shift_end else '' }}')">
+                <span class="sg-cell-text">{{ cell.code }}</span>
+              </td>
+              {% endfor %}
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── Override modal ────────────────────────────────────────────────────── -->
+<div class="modal fade" id="overrideModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">{{ _('Override Assignment') }}</h6>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="overrideForm">
+          <input type="hidden" id="ov_emp_id" name="employee_id">
+          <input type="hidden" id="ov_date"   name="date">
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">{{ _('Status') }}</label>
+            <select name="status" id="ov_status" class="form-select form-select-sm"
+                    onchange="toggleOverrideTime()">
+              <option value="work">{{ _('Work') }}</option>
+              <option value="day_off">{{ _('Day Off') }}</option>
+              <option value="holiday_off">{{ _('Holiday') }}</option>
+              <option value="constraint_off">{{ _('Unavailable') }}</option>
+            </select>
+          </div>
+          <div id="ov_time_wrap">
+            <div class="row g-1">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">{{ _('Start') }}</label>
+                <input type="time" name="shift_start" id="ov_start" class="form-control form-control-sm">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">{{ _('End') }}</label>
+                <input type="time" name="shift_end" id="ov_end" class="form-control form-control-sm">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="saveOverride()">{{ _('Save') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Coverage chart ────────────────────────────────────────────────────────
+const coverageCtx = document.getElementById('coverageChart');
+const coverageData = {{ daily_stats | tojson }};
+const DAY_LETTERS = {{ [_('Su'), _('Mo'), _('Tu'), _('We'), _('Th'), _('Fr'), _('Sa')] | tojson }};
+new Chart(coverageCtx, {
+  type: 'bar',
+  data: {
+    labels: coverageData.map(d => {
+      const dt = new Date(d.date + 'T00:00:00');
+      return DAY_LETTERS[dt.getDay()] + '\n' + dt.getDate();
+    }),
+    datasets: [
+      {
+        label: {{ _('Scheduled') | tojson }},
+        data: coverageData.map(d => d.scheduled),
+        backgroundColor: coverageData.map(d =>
+          d.pct >= 100 ? 'rgba(34,197,94,0.7)' :
+          d.pct >= 80  ? 'rgba(251,191,36,0.7)' : 'rgba(248,113,113,0.7)'
+        ),
+      },
+      {
+        label: {{ _('Required') | tojson }},
+        data: coverageData.map(d => d.required),
+        type: 'line',
+        borderColor: '#1e3a5f',
+        backgroundColor: 'transparent',
+        pointRadius: 2,
+        borderWidth: 1.5,
+        borderDash: [4,2],
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { ticks: { font: { size: 9 }, maxRotation: 0 } },
+      y: { beginAtZero: true, title: { display: true, text: {{ _('Agents') | tojson }} } },
+    },
+    plugins: { legend: { position: 'top' } },
+  },
+});
+
+// ── Override modal ────────────────────────────────────────────────────────
+const ovModal = new bootstrap.Modal(document.getElementById('overrideModal'));
+
+function openOverride(empId, dateStr, status, start, end) {
+  document.getElementById('ov_emp_id').value = empId;
+  document.getElementById('ov_date').value = dateStr;
+  document.getElementById('ov_status').value = status;
+  document.getElementById('ov_start').value = start;
+  document.getElementById('ov_end').value = end;
+  toggleOverrideTime();
+  ovModal.show();
+}
+
+function toggleOverrideTime() {
+  const status = document.getElementById('ov_status').value;
+  document.getElementById('ov_time_wrap').style.display = status === 'work' ? '' : 'none';
+}
+
+function saveOverride() {
+  const form = document.getElementById('overrideForm');
+  const data = new FormData(form);
+  fetch('{{ url_for("assignment_override", schedule_id=schedule.id) }}', {
+    method: 'POST', body: data,
+  })
+  .then(r => r.json())
+  .then(result => {
+    if (result.ok) {
+      const empId  = document.getElementById('ov_emp_id').value;
+      const date   = document.getElementById('ov_date').value;
+      const cell   = document.querySelector(`td[data-emp="${empId}"][data-date="${date}"]`);
+      if (cell) {
+        cell.style.background = result.color;
+        cell.querySelector('.sg-cell-text').textContent = result.code;
+      }
+      ovModal.hide();
+    }
+  });
+}
+</script>
+{% endblock %}

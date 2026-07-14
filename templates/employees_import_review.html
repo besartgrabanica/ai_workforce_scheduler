@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Review Import') }}{% endblock %}
+{% block page_title %}{{ _('Review Parsed Employees') }}{% endblock %}
+
+{% block content %}
+<div class="alert alert-success">
+  <i class="bi bi-check-circle me-2"></i>
+  <strong>{{ _('%(n)s employees parsed.', n=preview|length) }}</strong>
+  {{ _('Review and adjust the values below before saving to the database.') }}
+</div>
+
+<form action="{{ url_for('employees_import_confirm') }}" method="POST">
+  {% for i, emp in enumerate(preview) %}
+  <div class="card mb-3 import-card" id="emp_card_{{ i }}">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <span class="fw-bold">{{ emp.name }}</span>
+        <span class="badge bg-secondary ms-2">{{ emp.team }}</span>
+      </div>
+      <button type="button" class="btn btn-xs btn-link text-muted"
+              onclick="toggleCard({{ i }})">
+        <i class="bi bi-chevron-down" id="chevron_{{ i }}"></i>
+      </button>
+    </div>
+
+    <div class="card-body import-card-body" id="body_{{ i }}">
+      <input type="hidden" name="name_{{ i }}" value="{{ emp.name }}">
+
+      <div class="row g-2">
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">{{ _('Team') }}</label>
+          <select name="team_{{ i }}" class="form-select form-select-sm">
+            {% for t in ['Team Agon','Team Blerona','Team Drini','Team Flamur',
+                         'Team Jetmir','Team Kastriot','Team Valbona','NEWBIE',''] %}
+            <option value="{{ t }}" {% if emp.team == t %}selected{% endif %}>{{ t or _('— None —') }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">{{ _('FTE %%') }}</label>
+          <select name="fte_percent_{{ i }}" class="form-select form-select-sm">
+            {% for pct in range(5, 105, 5) %}
+            <option value="{{ pct }}" {% if emp.fte_percent == pct %}selected{% endif %}>{{ pct }}%</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">{{ _('FTE Mode') }}</label>
+          <select name="fte_mode_{{ i }}" class="form-select form-select-sm">
+            <option value="days">{{ _('Days') }}</option>
+            <option value="hours">{{ _('Hours') }}</option>
+            <option value="combined">{{ _('Combined') }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">{{ _('Shift') }}</label>
+          <select name="shift_type_{{ i }}" class="form-select form-select-sm"
+                  onchange="toggleCustom({{ i }}, this.value)">
+            {% for t in shift_templates %}
+            <option value="{{ t.name.lower() }}"
+              {% if emp.shift_type == t.name.lower() %}selected{% endif %}>
+              {{ t.name }} ({{ t.start_time }}–{{ t.end_time }})
+            </option>
+            {% endfor %}
+            <option value="custom" {% if emp.shift_type == 'custom' %}selected{% endif %}>{{ _('Custom') }}</option>
+          </select>
+        </div>
+        <div class="col-md-1">
+          <label class="form-label small fw-semibold">{{ _('Start') }}</label>
+          <input type="time" name="custom_start_{{ i }}" class="form-control form-control-sm"
+                 value="{{ emp.custom_start }}"
+                 id="cstart_{{ i }}" {% if emp.shift_type != 'custom' %}disabled{% endif %}>
+        </div>
+        <div class="col-md-1">
+          <label class="form-label small fw-semibold">{{ _('End') }}</label>
+          <input type="time" name="custom_end_{{ i }}" class="form-control form-control-sm"
+                 value="{{ emp.custom_end }}"
+                 id="cend_{{ i }}" {% if emp.shift_type != 'custom' %}disabled{% endif %}>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">{{ _('Saturday') }}</label>
+          <select name="works_saturday_{{ i }}" class="form-select form-select-sm">
+            {% for v, lbl in [('no', _('No')),('yes', _('Yes'))] %}
+            <option value="{{ v }}" {% if emp.works_saturday == v %}selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">{{ _('Sunday') }}</label>
+          <select name="works_sunday_{{ i }}" class="form-select form-select-sm">
+            {% for v, lbl in [('no', _('No')),('yes', _('Yes'))] %}
+            <option value="{{ v }}" {% if emp.works_sunday == v %}selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">{{ _('Holidays') }}</label>
+          <select name="works_holidays_{{ i }}" class="form-select form-select-sm">
+            {% for v, lbl in [('0', _('No')),('1', _('Yes'))] %}
+            <option value="{{ v }}"
+              {% if (emp.works_holidays and v == '1') or (not emp.works_holidays and v == '0') %}selected{% endif %}>
+              {{ lbl }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">{{ _('Excluded Dates') }}</label>
+          <input type="text" name="excluded_dates_{{ i }}" class="form-control form-control-sm"
+                 value="{{ emp.excluded_dates | join(', ') }}"
+                 placeholder="2026-06-06, 2026-06-15, ...">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">{{ _('Scheduled Together With') }}</label>
+          <input type="text" name="same_schedule_as_{{ i }}" class="form-control form-control-sm"
+                 value="{{ emp.same_schedule_as }}" placeholder="{{ _('Full name of another employee') }}">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label small fw-semibold">{{ _('AI-Parsed Day Restrictions') }}</label>
+          <div class="day-restriction-grid">
+            {% for dow, dayname in enumerate([_('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('Sat'), _('Sun')]) %}
+            {% set existing = none %}
+            {% for r in emp.day_restrictions %}
+              {% if r.day_of_week == dow %}{% set existing = r %}{% endif %}
+            {% endfor %}
+            <div class="day-restriction-item">
+              <div class="day-label">{{ dayname }}</div>
+              <select name="restriction_{{ i }}_{{ dow }}" class="form-select form-select-sm">
+                <option value="">{{ _('Any') }}</option>
+                <option value="off" {% if existing and existing.shift_type == 'off' %}selected{% endif %}>{{ _('Off') }}</option>
+                {% for t in shift_templates %}
+                <option value="{{ t.name.lower() }}"
+                  {% if existing and existing.shift_type == t.name.lower() %}selected{% endif %}>
+                  {{ t.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label small fw-semibold">{{ _('AI-Parsed Notes') }}</label>
+          <textarea name="notes_{{ i }}" class="form-control form-control-sm"
+                    rows="1">{{ emp.notes }}</textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label small fw-semibold text-muted">{{ _('Original Notes') }}</label>
+          <input type="hidden" name="raw_notes_{{ i }}" value="{{ emp.raw_notes }}">
+          <div class="font-monospace text-muted" style="font-size:.75rem">{{ emp.raw_notes }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="d-flex justify-content-end gap-2 sticky-bottom bg-white border-top py-3 px-1">
+    <a href="{{ url_for('employees_import') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>{{ _('Back') }}
+    </a>
+    <button type="submit" class="btn btn-primary btn-lg">
+      <i class="bi bi-check-lg me-1"></i>{{ _('Save %(n)s Employees', n=preview|length) }}
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleCard(i) {
+  const body = document.getElementById('body_' + i);
+  const ch   = document.getElementById('chevron_' + i);
+  body.classList.toggle('d-none');
+  ch.classList.toggle('bi-chevron-down');
+  ch.classList.toggle('bi-chevron-up');
+}
+function toggleCustom(i, val) {
+  const isCustom = val === 'custom';
+  ['cstart_','cend_'].forEach(prefix => {
+    const el = document.getElementById(prefix + i);
+    el.disabled = !isCustom;
+  });
+}
+</script>
+{% endblock %}

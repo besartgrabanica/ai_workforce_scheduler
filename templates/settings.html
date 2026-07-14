@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Settings') }}{% endblock %}
+{% block page_title %}{{ _('Settings') }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <div class="col-lg-6">
+    <!-- ── Branding ──────────────────────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header"><i class="bi bi-image me-2 text-primary"></i>{{ _('Project Logo') }}</div>
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          {% if has_logo %}
+          <img src="{{ url_for('project_logo') }}?t={{ range(1,99999)|random }}" alt="{{ _('Current logo') }}"
+               style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid #e2e8f0">
+          {% else %}
+          <div class="d-flex align-items-center justify-content-center text-muted"
+               style="width:64px;height:64px;border-radius:12px;border:1px dashed #cbd5e1;font-size:1.5rem">
+            <i class="bi bi-image"></i>
+          </div>
+          {% endif %}
+          <div class="small text-muted">
+            {{ _('Shown in the sidebar and project switcher for %(project)s.', project=PROJECT.display_name) }}
+            {{ _('PNG, JPG, SVG, or WEBP.') }}
+          </div>
+        </div>
+        <form method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+          <input type="hidden" name="action" value="upload_logo">
+          <input type="file" name="logo" accept=".png,.jpg,.jpeg,.svg,.webp" class="form-control form-control-sm" required>
+          <button type="submit" class="btn btn-primary btn-sm text-nowrap">{{ _('Upload') }}</button>
+        </form>
+        {% if has_logo %}
+        <form method="POST" class="mt-2" onsubmit="return confirm({{ _('Remove the current logo?') | tojson | forceescape }})">
+          <input type="hidden" name="action" value="remove_logo">
+          <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash me-1"></i>{{ _('Remove Logo') }}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Documents') }}{% endblock %}
+{% block page_title %}{{ _('Documents') }}{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
+  <i class="bi bi-upload me-1"></i>{{ _('Upload Document') }}
+</button>
+{% endblock %}
+
+{% block content %}
+
+{% if not docs %}
+<div class="card">
+  <div class="card-body text-center py-5">
+    <i class="bi bi-folder2-open text-muted" style="font-size:3rem"></i>
+    <h5 class="mt-3 text-muted">{{ _('No documents yet') }}</h5>
+    <p class="text-muted">{{ _('Upload forecasts, schedule exports, HR documents, and more.') }}</p>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+      <i class="bi bi-upload me-1"></i>{{ _('Upload First Document') }}
+    </button>
+  </div>
+</div>
+{% else %}
+
+<!-- Category filter pills -->
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <button class="btn btn-sm btn-primary cat-filter active" data-cat="all">{{ _('All (%(n)s)', n=docs|length) }}</button>
+  {% for cat in categories %}
+  {% set cnt = docs | selectattr('category','eq',cat) | list | length %}
+  {% if cnt %}
+  <button class="btn btn-sm btn-outline-secondary cat-filter" data-cat="{{ cat }}">
+    {{ _(cat) }} ({{ cnt }})
+  </button>
+  {% endif %}
+  {% endfor %}
+</div>
+
+<div class="row g-3" id="doc-grid">
+  {% for doc in docs %}
+  <div class="col-md-6 col-xl-4 doc-card" data-cat="{{ doc.category }}">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-start gap-3">
+          <div class="doc-icon doc-icon--{{ doc.file_type }}">
+            {% if doc.file_type in ('xlsx','xls') %}<i class="bi bi-file-earmark-spreadsheet"></i>
+            {% elif doc.file_type == 'pdf' %}<i class="bi bi-file-earmark-pdf"></i>
+            {% elif doc.file_type in ('doc','docx') %}<i class="bi bi-file-earmark-word"></i>
+            {% else %}<i class="bi bi-file-earmark"></i>{% endif %}
+          </div>
+          <div class="flex-grow-1 overflow-hidden">
+            <div class="fw-semibold text-truncate" title="{{ doc.original_name }}">
+              {{ doc.original_name }}
+            </div>
+            <div class="text-muted small mt-1">
+              <span class="badge bg-secondary-subtle text-secondary me-1">{{ _(doc.category) }}</span>
+              {{ (doc.file_size / 1024)|round(1) }} KB &bull;
+              {{ doc.uploaded_at.strftime('%d %b %Y') }}
+            </div>
+            {% if doc.description %}
+            <div class="text-muted small mt-1">{{ doc.description }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer d-flex justify-content-between py-2">
+        <a href="{{ url_for('documents_download', doc_id=doc.id) }}"
+           class="btn btn-xs btn-outline-primary">
+          <i class="bi bi-download me-1"></i>{{ _('Download') }}
+        </a>
+        <form action="{{ url_for('documents_delete', doc_id=doc.id) }}" method="POST"
+              class="d-inline" onsubmit="return confirm({{ _('Delete %(name)s?', name=doc.original_name) | tojson | forceescape }})">
+          <button type="submit" class="btn btn-xs btn-outline-danger">
+            <i class="bi bi-trash"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Upload modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-upload me-2"></i>{{ _('Upload Document') }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ url_for('documents_upload') }}" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="mb-3">
+            <div class="upload-zone" onclick="document.getElementById('doc_file').click()">
+              <i class="bi bi-file-earmark-arrow-up text-primary" style="font-size:2rem"></i>
+              <div class="fw-semibold mt-2">{{ _('Click to select a file') }}</div>
+              <div class="text-muted small">{{ _('Excel, PDF, Word, or any format') }}</div>
+              <div class="text-success small mt-1" id="doc_filename"></div>
+            </div>
+            <input type="file" id="doc_file" name="file" class="d-none" required
+                   onchange="document.getElementById('doc_filename').textContent=this.files[0].name">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ _('Category') }}</label>
+            <select name="category" class="form-select">
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ _(cat) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ _('Description') }} <span class="text-muted small">({{ _('optional') }})</span></label>
+            <input type="text" name="description" class="form-control"
+                   placeholder="{{ _('e.g. E.ON TFC forecast June–August 2026') }}">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-upload me-1"></i>{{ _('Upload') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.cat-filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-filter').forEach(b => b.classList.remove('active','btn-primary'));
+    document.querySelectorAll('.cat-filter').forEach(b => { if(!b.classList.contains('active')) b.classList.add('btn-outline-secondary'); });
+    btn.classList.add('active','btn-primary');
+    btn.classList.remove('btn-outline-secondary');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('.doc-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+});
+</script>
+{% endblock %}

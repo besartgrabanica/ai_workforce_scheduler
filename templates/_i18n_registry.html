@@ -1,0 +1,42 @@
+{#
+  Never rendered (wrapped in {% if false %}) — exists purely so
+  `pybabel extract` can find literal _('...') calls and register them as
+  translatable msgids for values that are looked up DYNAMICALLY elsewhere
+  (e.g. {{ _(role|capitalize) }} where role is a Python variable holding
+  "admin" at runtime — pybabel can't see through that, it only extracts
+  literal string arguments). Any code path that does `_(some_variable)`
+  needs its possible values registered here once, or that specific value
+  silently falls back to raw English at runtime with no error.
+
+  Convention: register the CAPITALIZED display form (msgid 'Admin', not
+  'admin') since call sites do `_(value|capitalize)` — the underlying
+  stored/logic value stays lowercase (role-badge--admin CSS classes, DB
+  values, etc.), only the rendered text is translated.
+
+  Grouped by where the underlying value comes from. Extend this as more
+  dynamic-lookup cases turn up while translating the rest of the app.
+#}
+{% if false %}
+  {# scheduler/models.py IdentityUser.ROLES / ProjectRole.role #}
+  {{ _('Viewer') }}{{ _('Editor') }}{{ _('Admin') }}{{ _('Superadmin') }}
+
+  {# Invitation.status #}
+  {{ _('Pending') }}{{ _('Accepted') }}{{ _('Expired') }}{{ _('Revoked') }}
+
+  {# Employee.status #}
+  {{ _('Active') }}{{ _('Inactive') }}{{ _('Trainee') }}
+
+  {# Employee.fte_mode #}
+  {{ _('Days') }}{{ _('Hours') }}{{ _('Combined') }}
+
+  {# app.py MONTH_NAMES — see _month_name_translations() there for why
+     the underlying list itself can't be translated directly #}
+  {{ _('January') }}{{ _('February') }}{{ _('March') }}{{ _('April') }}
+  {{ _('May') }}{{ _('June') }}{{ _('July') }}{{ _('August') }}
+  {{ _('September') }}{{ _('October') }}{{ _('November') }}{{ _('December') }}
+
+  {# app.py day_names literal (employee_detail view) — full day names,
+     template does _(dayname)[:3] to get a translated 3-letter abbreviation #}
+  {{ _('Monday') }}{{ _('Tuesday') }}{{ _('Wednesday') }}{{ _('Thursday') }}
+  {{ _('Friday') }}{{ _('Saturday') }}{{ _('Sunday') }}
+{% endif %}

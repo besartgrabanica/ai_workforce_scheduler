@@ -1,0 +1,15 @@
+{# Language switcher — three buttons, POSTs to /account/locale.
+   Works both logged-in (persists to the account) and logged-out
+   (session-only) — see the set_locale route in app.py.
+   Include with: {% include '_locale_switcher.html' %} #}
+<div class="appearance-switcher locale-switcher" role="group" aria-label="Language">
+  {% for value, label in [('en', 'EN'), ('de', 'DE'), ('sq', 'SQ')] %}
+  <form action="{{ url_for('set_locale') }}" method="POST" class="d-inline">
+    <input type="hidden" name="locale" value="{{ value }}">
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <button type="submit" class="appearance-btn locale-btn {% if get_locale().language == value %}active{% endif %}" title="{{ label }}">
+      {{ label }}
+    </button>
+  </form>
+  {% endfor %}
+</div>

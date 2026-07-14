@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Business Parameters') }}{% endblock %}
+{% block page_title %}{{ _('Business Parameters') }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-sliders me-2 text-warning"></i>{{ _('Business Parameters') }}</div>
+      <div class="card-body">
+        <form method="POST">
+          {% set categories = params | map(attribute='category') | list | unique | list %}
+          {% for cat in categories %}
+          <h6 class="text-muted text-uppercase small fw-bold mt-2 mb-2">{{ cat }}</h6>
+          {% for p in params if p.category == cat %}
+          <div class="mb-2 row g-1 align-items-center">
+            <label class="col-8 form-label small mb-0">{{ p.label }}</label>
+            <div class="col-4">
+              <input type="text" name="param_{{ p.key }}" class="form-control form-control-sm text-end"
+                     value="{{ p.value }}">
+            </div>
+          </div>
+          {% endfor %}
+          {% endfor %}
+          <button type="submit" class="btn btn-primary btn-sm w-100 mt-3">
+            <i class="bi bi-check me-1"></i>{{ _('Save Parameters') }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

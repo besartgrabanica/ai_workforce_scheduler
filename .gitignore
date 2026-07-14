@@ -1,0 +1,22 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Databases / instance data
+instance/
+
+# User data & generated content
+backups/
+uploads/
+*.xlsx
+.~lock.*
+
+# Editor/OS
+.DS_Store
+
+# Claude Code local settings
+.claude/

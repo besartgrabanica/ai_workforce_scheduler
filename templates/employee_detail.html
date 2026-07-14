@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% set is_new = employee is none %}
+{% block title %}{{ _('New Employee') if is_new else employee.name }}{% endblock %}
+{% block page_title %}{{ _('New Employee') if is_new else employee.name }}{% endblock %}
+
+{% block topbar_actions %}
+{% if not is_new %}
+<form action="{{ url_for('employee_delete', emp_id=employee.id) }}" method="POST"
+      class="d-inline" onsubmit="return confirm({{ _('Delete %(name)s?', name=employee.name) | tojson | forceescape }})">
+  <button type="submit" class="btn btn-sm btn-outline-danger">
+    <i class="bi bi-trash me-1"></i>{{ _('Delete') }}
+  </button>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('employee_new') if is_new else url_for('employee_detail', emp_id=employee.id) }}">
+
+<div class="row g-4">
+  <div class="col-lg-12">
+
+    <!-- Basic Info -->
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-person me-2 text-primary"></i>{{ _('Basic Information') }}</div>
+      <div class="card-body">
+        <div class="row g-3">
+          {% set name_parts = employee.name.split(' ', 1) if not is_new and employee.name else ['', ''] %}
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">{{ _('First Name') }} <span class="text-danger">*</span></label>
+            <input type="text" name="first_name" class="form-control"
+                   value="{{ name_parts[0] }}" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">{{ _('Last Name') }} <span class="text-danger">*</span></label>
+            <input type="text" name="last_name" class="form-control"
+                   value="{{ name_parts[1] if name_parts|length > 1 else '' }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ _('Team') }} <span class="text-danger">*</span></label>
+            <select name="team" class="form-select" required>
+              <option value="" disabled {% if is_new or not employee.team %}selected{% endif %}>{{ _('— Choose a team —') }}</option>
+              {% for t in teams %}
+              <option value="{{ t }}"
+                {% if not is_new and employee.team == t %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ _('Status') }}</label>
+            <select name="status" class="form-select">
+              {% for s in ['active','inactive','trainee'] %}
+              <option value="{{ s }}"
+                {% if not is_new and employee.status == s %}selected{% endif %}>
+                {{ _(s|capitalize) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ _('Scheduled Together With') }}</label>
+            <select name="schedule_group_id" class="form-select">
+              <option value="">{{ _('— none —') }}</option>
+              {% for g in schedule_groups %}
+              <option value="{{ g.id }}"
+                {% if not is_new and employee.schedule_group_id == g.id %}selected{% endif %}>
+                {{ g.name }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">{{ _('Everyone in a group works the exact same days/shifts.') }}
+              <a href="{{ url_for('employee_groups') }}">{{ _('Manage groups') }}</a>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contract & Hours -->
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-briefcase me-2 text-success"></i>{{ _('Contract & Hours') }}</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <!-- FTE % -->
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">{{ _('FTE %%') }}</label>
+            <select name="fte_percent" class="form-select" id="fte_percent">
+              {% for pct in range(5, 105, 5) %}
+              <option value="{{ pct }}"
+                {% if not is_new and employee.fte_percent == pct %}selected
+                {% elif is_new and pct == 100 %}selected{% endif %}>{{ pct }}%</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- FTE Mode -->
+          <div class="col-md-9">
+            <label class="form-label fw-semibold">{{ _('FTE Mode') }}</label>
+            <div class="btn-group w-100" role="group">
+              {% for mode, desc in [('days', _('Days — works N%% of eligible days, full shift each day')),
+                                     ('hours', _('Hours — works every day, but N%% of standard daily hours')),
+                                     ('combined', _('Combined — reduces both days and hours proportionally'))] %}
+              <input type="radio" class="btn-check" name="fte_mode" id="mode_{{ mode }}" value="{{ mode }}"
+                {% if not is_new and employee.fte_mode == mode %}checked
+                {% elif is_new and mode == 'days' %}checked{% endif %}>
+              <label class="btn btn-outline-secondary" for="mode_{{ mode }}" title="{{ desc }}">
+                {{ _(mode|capitalize) }}
+              </label>
+              {% endfor %}
+            </div>
+            <div class="form-text text-muted mt-1" id="mode_desc">
+              {{ _('Select a mode to see description.') }}
+            </div>
+          </div>
+
+          <!-- Shift Template -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ _('Shift Template') }}</label>
+            {% set default_tpl = shift_templates | selectattr('is_default') | list | first %}
+            {% set selected_tpl = employee.shift_template if (not is_new and employee.shift_template_id) else (default_tpl if is_new else none) %}
+            {% set selected_id = employee.shift_template_id if not is_new else (default_tpl.id if default_tpl else '') %}
+            <div class="shift-picker">
+              <button type="button" class="shift-picker-toggle form-select">
+                <span class="shift-picker-label">
+                  {% if selected_tpl %}
+                    <span class="shift-dot" style="background:{{ selected_tpl.color }}"></span>{{ selected_tpl.name }} <span class="text-muted">({{ selected_tpl.start_time }}–{{ selected_tpl.end_time }}, {{ selected_tpl.hours }}h)</span>
+                  {% else %}
+                    {{ _('— Custom hours —') }}
+                  {% endif %}
+                </span>
+                <i class="bi bi-chevron-down shift-picker-caret"></i>
+              </button>
+              <input type="hidden" name="shift_template_id" id="shift_template" value="{{ selected_id }}">
+              <div class="shift-picker-menu d-none">
+                <div class="shift-picker-option" data-value="">{{ _('— Custom hours —') }}</div>
+                {% for t in shift_templates %}
+                <div class="shift-picker-option" data-value="{{ t.id }}">
+                  <span class="shift-dot" style="background:{{ t.color }}"></span>{{ t.name }} <span class="text-muted">({{ t.start_time }}–{{ t.end_time }}, {{ t.hours }}h)</span>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom hours -->
+          <div class="col-md-2" id="custom_start_wrap">
+            <label class="form-label fw-semibold">{{ _('Custom Start') }}</label>
+            <input type="time" name="custom_start" id="custom_start" class="form-control"
+                   value="{{ employee.custom_start if not is_new and employee.custom_start else '' }}">
+          </div>
+          <div class="col-md-2" id="custom_end_wrap">
+            <label class="form-label fw-semibold">{{ _('Custom End') }}</label>
+            <input type="time" name="custom_end" id="custom_end" class="form-control"
+                   value="{{ employee.custom_end if not is_new and employee.custom_end else '' }}">
+          </div>
+          <div class="col-md-2" id="custom_hours_wrap">
+            <label class="form-label fw-semibold">{{ _('Actual Duration') }}</label>
+            <input type="number" step="0.25" min="0" name="custom_hours" id="custom_hours" class="form-control"
+                   value="{{ employee.custom_hours if not is_new and employee.custom_hours is not none else '' }}">
+            <div class="form-text">{{ _('Net hours worked (e.g. accounting for a break).') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Availability -->
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-calendar-check me-2 text-warning"></i>{{ _('Availability') }}</div>
+      <div class="card-body">
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ _('Works Saturday') }}</label>
+            <select name="works_saturday" class="form-select">
+              {% for v, lbl in [('no', _('No')),('yes', _('Yes'))] %}
+              <option value="{{ v }}"
+                {% if not is_new and employee.works_saturday == v %}selected
+                {% elif is_new and v == 'no' %}selected{% endif %}>{{ lbl }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ _('Works Sunday') }}</label>
+            <select name="works_sunday" class="form-select">
+              {% for v, lbl in [('no', _('No')),('yes', _('Yes'))] %}
+              <option value="{{ v }}"
+                {% if not is_new and employee.works_sunday == v %}selected
+                {% elif is_new and v == 'no' %}selected{% endif %}>{{ lbl }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ _('Works Holidays') }}</label>
+            <select name="works_holidays" class="form-select">
+              {% for v, lbl in [('0', _('No')),('1', _('Yes'))] %}
+              <option value="{{ v }}"
+                {% if not is_new and (employee.works_holidays and v == '1' or not employee.works_holidays and v == '0') %}selected
+                {% elif is_new and v == '0' %}selected{% endif %}>{{ lbl }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Day-of-week restrictions -->
+        <label class="form-label fw-semibold">{{ _('Day-specific Restrictions') }}</label>
+        <div class="day-restriction-grid">
+          {% for dow, dayname in enumerate(day_names) %}
+          {% set existing = none %}
+          {% if not is_new %}
+            {% for r in employee.day_restrictions %}
+              {% if r.day_of_week == dow %}{% set existing = r %}{% endif %}
+            {% endfor %}
+          {% endif %}
+          <div class="day-restriction-item">
+            <div class="day-label">{{ _(dayname)[:3] }}</div>
+            <select name="restriction_{{ dow }}" class="form-select form-select-sm">
+              <option value="">{{ _('Any') }}</option>
+              <option value="off" {% if existing and existing.is_off %}selected{% endif %}>{{ _('Off (not scheduled)') }}</option>
+              {% for t in shift_templates %}
+              <option value="{{ t.name.lower() }}"
+                {% if existing and not existing.is_off and existing.shift_type == t.name.lower() %}selected{% endif %}>
+                {{ t.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Excluded dates -->
+        <div class="mt-3">
+          <label class="form-label fw-semibold">{{ _('Excluded Dates') }}</label>
+          <input type="text" name="excluded_dates" class="form-control mb-2" id="excluded_dates_input"
+                 placeholder="2026-06-06, 2026-06-15, ..."
+                 value="{% if not is_new %}{{ employee.excluded_dates | map(attribute='date') | map('string') | join(', ') }}{% endif %}">
+          <div class="form-text mb-2">{{ _('Comma-separated dates (YYYY-MM-DD), or click them on the calendar below.') }}</div>
+          <div class="excluded-dates-calendar" data-input="excluded_dates_input"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes & Contract -->
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-sticky me-2 text-secondary"></i>{{ _('Notes & Contract') }}</div>
+      <div class="card-body">
+        {% if not is_new %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ _('Original Notes (from Excel)') }}</label>
+          <textarea name="raw_notes" class="form-control font-monospace"
+                    rows="5" style="font-size:.8rem">{{ employee.raw_notes }}</textarea>
+          <div class="form-text">{{ _('Preserved for reference — original Albanian/German text.') }}</div>
+        </div>
+        {% endif %}
+        <div>
+          <label class="form-label fw-semibold">{{ _('Contract / Scheduling Notes') }}</label>
+          <textarea name="contract_notes" class="form-control"
+                    rows="5">{{ employee.contract_notes if not is_new else '' }}</textarea>
+          <div class="form-text">{{ _('Internal scheduling notes, written by whoever manages this employee.') }}</div>
+        </div>
+      </div>
+      <div class="card-footer d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1">
+          <i class="bi bi-check-lg me-1"></i>{{ _('Create') if is_new else _('Save Changes') }}
+        </button>
+        <a href="{{ url_for('employees_list') }}" class="btn btn-outline-secondary">{{ _('Cancel') }}</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const modeDescs = {
+  days:     {{ _('Works <strong>N%% of eligible days</strong> each month, with a full shift on each working day.') | tojson }},
+  hours:    {{ _('Works <strong>every eligible day</strong> but only N%% of standard daily hours (shorter shifts).') | tojson }},
+  combined: {{ _('Reduces <strong>both</strong> working days and shift length proportionally (√FTE%% each).') | tojson }},
+};
+
+document.querySelectorAll('[name=fte_mode]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('mode_desc').innerHTML = modeDescs[r.value] || '';
+  });
+});
+// Trigger on load
+const checked = document.querySelector('[name=fte_mode]:checked');
+if (checked) document.getElementById('mode_desc').innerHTML = modeDescs[checked.value] || '';
+
+function toggleCustomShift() {
+  const isCustom = document.getElementById('shift_template').value === '';
+  ['custom_start_wrap','custom_end_wrap','custom_hours_wrap'].forEach(id => {
+    document.getElementById(id).style.opacity = isCustom ? '1' : '0.4';
+    document.getElementById(id).querySelector('input').disabled = !isCustom;
+  });
+}
+document.getElementById('shift_template').addEventListener('change', toggleCustomShift);
+toggleCustomShift();
+
+// Suggest actual duration from the start/end span; still freely editable
+// afterward (e.g. to subtract an unpaid break).
+(function () {
+  const start = document.getElementById('custom_start');
+  const end = document.getElementById('custom_end');
+  const hours = document.getElementById('custom_hours');
+  function suggest() {
+    if (!start.value || !end.value) return;
+    const [sh, sm] = start.value.split(':').map(Number);
+    const [eh, em] = end.value.split(':').map(Number);
+    hours.value = Math.round(((eh * 60 + em) - (sh * 60 + sm)) / 60 * 100) / 100;
+  }
+  start.addEventListener('change', suggest);
+  end.addEventListener('change', suggest);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{# Language switcher for the standalone dark auth pages (login, forgot/reset
+   password, accept invite) — these don't load custom.css, so this uses its
+   own small self-contained style block (added identically to each page's
+   <style>) rather than the app-shell .appearance-btn classes.
+   Include with: {% include '_locale_switcher_auth.html' %} #}
+<div class="d-flex justify-content-center gap-2 mt-3 auth-locale-switcher">
+  {% for value, label in [('en', 'EN'), ('de', 'DE'), ('sq', 'SQ')] %}
+  <form action="{{ url_for('set_locale') }}" method="POST" class="d-inline">
+    <input type="hidden" name="locale" value="{{ value }}">
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <button type="submit" class="auth-locale-btn {% if get_locale().language == value %}active{% endif %}">{{ label }}</button>
+  </form>
+  {% endfor %}
+</div>

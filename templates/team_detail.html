@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}{{ team.name }}{% endblock %}
+{% block page_title %}{{ team.name }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('teams_list') }}" class="btn btn-sm btn-outline-secondary me-1">
+  <i class="bi bi-arrow-left me-1"></i>{{ _('All Teams') }}
+</a>
+{% if current_role in ('admin', 'superadmin') %}
+<a href="{{ url_for('teams_list') }}#team-card-{{ team.id }}" class="btn btn-sm btn-outline-primary">
+  <i class="bi bi-pencil me-1"></i>{{ _('Rename / Manage') }}
+</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% set active   = members | selectattr('status','eq','active')   | list %}
+{% set trainees = members | selectattr('status','eq','trainee')  | list %}
+{% set inactive = members | selectattr('status','eq','inactive') | list %}
+
+<!-- ── Stats row ─────────────────────────────────────────────────────────── -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--blue">
+      <div class="stat-card__icon"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ active|length }}</div>
+        <div class="stat-card__label">{{ _('Active Agents') }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--green">
+      <div class="stat-card__icon"><i class="bi bi-percent"></i></div>
+      <div class="stat-card__body">
+        {% set avg = (active | sum(attribute='fte_percent') / [active|length, 1]|max) | round(1) %}
+        <div class="stat-card__value">{{ avg }}%</div>
+        <div class="stat-card__label">{{ _('Avg FTE') }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--amber">
+      <div class="stat-card__icon"><i class="bi bi-calendar2-week"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ we_count }}</div>
+        <div class="stat-card__label">{{ _('Work Weekends') }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--purple">
+      <div class="stat-card__icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ trainees|length }}</div>
+        <div class="stat-card__label">{{ _('Trainees') }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Member table ───────────────────────────────────────────────────────── -->
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-people me-2 text-primary"></i>{{ _('All Members (%(n)s)', n=members|length) }}</span>
+    <a href="{{ url_for('employee_new') }}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus-lg me-1"></i>{{ _('Add to Team') }}
+    </a>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Name') }}</th>
+          <th>{{ _('FTE') }}</th>
+          <th>{{ _('Mode') }}</th>
+          <th>{{ _('Shift') }}</th>
+          <th>{{ _('Weekends') }}</th>
+          <th>{{ _('Holidays') }}</th>
+          <th>{{ _('Status') }}</th>
+          <th>{{ _('Notes') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for emp in members %}
+        <tr>
+          <td class="fw-medium">
+            <a href="{{ url_for('employee_detail', emp_id=emp.id) }}"
+               class="text-decoration-none text-dark">{{ emp.name }}</a>
+          </td>
+          <td><span class="badge bg-light text-dark border">{{ emp.fte_percent }}%</span></td>
+          <td><span class="mode-badge mode-{{ emp.fte_mode }}">{{ _(emp.fte_mode|capitalize) }}</span></td>
+          <td class="small">
+            {% if emp.custom_start %}<span class="text-primary">{{ emp.custom_start }}–{{ emp.custom_end }}</span>
+            {% elif emp.effective_shift_template %}<span class="shift-dot" style="background:{{ emp.effective_shift_template.color }}"></span>{{ emp.effective_shift_template.name }} <span class="text-muted">({{ emp.effective_shift_template.start_time }}–{{ emp.effective_shift_template.end_time }})</span>
+            {% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
+          <td>
+            {% if emp.works_saturday == 'yes' or emp.works_sunday == 'yes' %}<span class="badge bg-success-subtle text-success">{{ _('Yes') }}</span>
+            {% else %}<span class="badge bg-secondary-subtle text-secondary">{{ _('No') }}</span>{% endif %}
+          </td>
+          <td>
+            {% if emp.works_holidays %}<span class="badge bg-success-subtle text-success">{{ _('Yes') }}</span>
+            {% else %}<span class="badge bg-secondary-subtle text-secondary">{{ _('No') }}</span>{% endif %}
+          </td>
+          <td>
+            {% if emp.status == 'active' %}<span class="badge bg-success">{{ _('Active') }}</span>
+            {% elif emp.status == 'trainee' %}<span class="badge bg-info">{{ _('Trainee') }}</span>
+            {% else %}<span class="badge bg-secondary">{{ _('Inactive') }}</span>{% endif %}
+          </td>
+          <td class="text-muted small" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            {{ emp.contract_notes or emp.raw_notes or '—' }}
+          </td>
+          <td>
+            <a href="{{ url_for('employee_detail', emp_id=emp.id) }}"
+               class="btn btn-xs btn-outline-primary">{{ _('Edit') }}</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}{{ period.name }}{% endblock %}
+{% block page_title %}{{ period.name }}{% endblock %}
+
+{% block topbar_actions %}
+<form action="{{ url_for('forecast_delete', period_id=period.id) }}" method="POST"
+      class="d-inline" onsubmit="return confirm('{{ _('Delete this forecast period?') }}')">
+  <button type="submit" class="btn btn-sm btn-outline-danger">
+    <i class="bi bi-trash me-1"></i>{{ _('Delete') }}
+  </button>
+</form>
+{% endblock %}
+
+{% block content %}
+<!-- ── Summary cards ─────────────────────────────────────────────────────── -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--blue">
+      <div class="stat-card__icon"><i class="bi bi-calendar-range"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ forecasts|length }}</div>
+        <div class="stat-card__label">{{ _('Total Days') }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--green">
+      <div class="stat-card__icon"><i class="bi bi-telephone-fill"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ (forecasts | selectattr('total_contacts', 'gt', 0) | list | length) }}</div>
+        <div class="stat-card__label">{{ _('Active Days') }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--amber">
+      <div class="stat-card__icon"><i class="bi bi-people"></i></div>
+      <div class="stat-card__body">
+        {% set max_agents = forecasts | map(attribute='required_ks_agents') | max %}
+        <div class="stat-card__value">{{ max_agents }}</div>
+        <div class="stat-card__label">{{ _('Peak KS Agents') }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--purple">
+      <div class="stat-card__icon"><i class="bi bi-arrow-left-right"></i></div>
+      <div class="stat-card__body">
+        {% set active_days = forecasts | selectattr('total_contacts', 'gt', 0) | list %}
+        {% set avg_contacts = (active_days | sum(attribute='total_contacts') / [active_days|length, 1]|max) | round(0) | int %}
+        <div class="stat-card__value">{{ avg_contacts }}</div>
+        <div class="stat-card__label">{{ _('Avg Daily Contacts') }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Contact volume chart ──────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="bi bi-bar-chart-fill me-2 text-primary"></i>{{ _('Daily Contact Volume & Required KS Agents') }}
+  </div>
+  <div class="card-body">
+    <canvas id="forecastChart" height="100"></canvas>
+  </div>
+</div>
+
+<!-- ── Daily table ───────────────────────────────────────────────────────── -->
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-table me-2 text-secondary"></i>{{ _('Daily Breakdown') }}
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead>
+          <tr>
+            <th>{{ _('Date') }}</th><th>{{ _('Day') }}</th><th>{{ _('KW') }}</th>
+            <th class="text-end">{{ _('Sync') }}</th>
+            <th class="text-end">{{ _('Async') }}</th>
+            <th class="text-end">{{ _('Chat') }}</th>
+            <th class="text-end">{{ _('Total') }}</th>
+            <th class="text-end">{{ _('DE Contrib.') }}</th>
+            <th class="text-end">{{ _('KS Contacts') }}</th>
+            <th class="text-end">{{ _('KS Agents') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in forecasts %}
+          {% set is_we = f.date.weekday() >= 5 %}
+          <tr class="{{ 'table-light text-muted' if is_we else '' }}">
+            <td class="fw-medium">{{ f.date.strftime('%d.%m.%Y') }}</td>
+            <td>{{ f.day_of_week }}</td>
+            <td class="text-muted">{{ f.calendar_week }}</td>
+            <td class="text-end">{{ f.total_sync | round(0) | int }}</td>
+            <td class="text-end">{{ f.total_async | round(0) | int }}</td>
+            <td class="text-end">{{ f.total_chat | round(0) | int }}</td>
+            <td class="text-end fw-semibold">{{ f.total_contacts | round(0) | int }}</td>
+            <td class="text-end text-muted">{{ f.germany_contribution | round(0) | int }}</td>
+            <td class="text-end text-primary">{{ f.ks_contacts | round(0) | int }}</td>
+            <td class="text-end">
+              {% if f.required_ks_agents %}
+              <span class="badge bg-primary">{{ f.required_ks_agents }}</span>
+              {% else %}
+              <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('forecastChart');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: {{ chart_labels | safe }},
+    datasets: [
+      {
+        label: '{{ _('Sync') }}',
+        data: {{ chart_sync | safe }},
+        backgroundColor: 'rgba(59,130,246,0.7)',
+        stack: 'contacts',
+      },
+      {
+        label: '{{ _('Async') }}',
+        data: {{ chart_async | safe }},
+        backgroundColor: 'rgba(16,185,129,0.7)',
+        stack: 'contacts',
+      },
+      {
+        label: '{{ _('Chat') }}',
+        data: {{ chart_chat | safe }},
+        backgroundColor: 'rgba(245,158,11,0.7)',
+        stack: 'contacts',
+      },
+      {
+        label: '{{ _('KS Agents Required') }}',
+        data: {{ chart_agents | safe }},
+        type: 'line',
+        yAxisID: 'y2',
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.1)',
+        pointRadius: 2,
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { stacked: true, ticks: { font: { size: 9 }, maxRotation: 45 } },
+      y: { stacked: true, title: { display: true, text: '{{ _('Contacts') }}' } },
+      y2: {
+        position: 'right',
+        title: { display: true, text: '{{ _('Agents') }}' },
+        grid: { drawOnChartArea: false },
+      },
+    },
+    plugins: { legend: { position: 'top' } },
+  },
+});
+</script>
+{% endblock %}

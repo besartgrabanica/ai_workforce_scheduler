@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Teams') }}{% endblock %}
+{% block page_title %}{{ _('Teams') }}{% endblock %}
+
+{% set can_manage = current_role in ('admin', 'superadmin') %}
+
+{% block topbar_actions %}
+{% if can_manage %}
+<button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="collapse" data-bs-target="#addTeamForm">
+  <i class="bi bi-plus-lg me-1"></i>{{ _('Add Team') }}
+</button>
+<button type="button" id="manageModeBtn" class="btn btn-sm btn-outline-secondary" onclick="toggleManageMode()">
+  <i class="bi bi-pencil-square me-1"></i>{{ _('Manage Teams') }}
+</button>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% if can_manage %}
+<!-- Add team form (collapsed by default) -->
+<div class="collapse mb-3" id="addTeamForm">
+  <div class="card">
+    <div class="card-body">
+      <form action="{{ url_for('team_add') }}" method="POST">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">{{ _('New Team Name') }}</label>
+            <input type="text" name="name" class="form-control form-control-sm"
+                   placeholder="{{ _('e.g. Team Rinor') }}" required>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-sm w-100">
+              <i class="bi bi-plus me-1"></i>{{ _('Create Team') }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+  {% for t in teams_data %}
+  <div class="col-md-6 col-xl-4" id="team-card-{{ t.obj.id }}">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold flex-grow-1">
+          <span id="name-display-{{ t.obj.id }}">{{ t.obj.name }}</span>
+          <span class="d-none" id="name-edit-wrap-{{ t.obj.id }}">
+            <form action="{{ url_for('team_rename', team_id=t.obj.id) }}" method="POST"
+                  class="d-flex gap-2 align-items-center">
+              <input type="text" name="name" class="form-control form-control-sm"
+                     value="{{ t.obj.name }}" style="max-width:160px" required>
+              <button type="submit" class="btn btn-xs btn-success"><i class="bi bi-check"></i></button>
+              <button type="button" class="btn btn-xs btn-outline-secondary"
+                      onclick="cancelTeamRename({{ t.obj.id }}, '{{ t.obj.name | replace("'", "\\'") }}')">
+                {{ _('Cancel') }}
+              </button>
+            </form>
+          </span>
+        </span>
+        <span class="manage-only d-none me-1">
+          <button type="button" class="btn btn-xs btn-outline-secondary me-1"
+                  onclick="startTeamRename({{ t.obj.id }})">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <form action="{{ url_for('team_delete', team_id=t.obj.id) }}" method="POST" class="d-inline"
+                onsubmit="return confirm({{ _('Delete %(name)s? Only possible if it has no members.', name=t.obj.name) | tojson | forceescape }})">
+            <button type="submit" class="btn btn-xs btn-outline-danger"><i class="bi bi-trash"></i></button>
+          </form>
+        </span>
+        <a href="{{ url_for('team_detail', team_id=t.obj.id) }}"
+           class="btn btn-xs btn-outline-primary">{{ _('View detail') }}</a>
+      </div>
+      <div class="card-body">
+        <!-- Stat row -->
+        <div class="d-flex gap-3 mb-3">
+          <div class="text-center">
+            <div class="fw-bold fs-4 text-primary">{{ t.members|length }}</div>
+            <div class="text-muted small">{{ _('Agents') }}</div>
+          </div>
+          <div class="text-center">
+            <div class="fw-bold fs-4 text-success">{{ t.avg_fte }}%</div>
+            <div class="text-muted small">{{ _('Avg FTE') }}</div>
+          </div>
+          <div class="text-center">
+            <div class="fw-bold fs-4 text-warning">{{ t.we_count }}</div>
+            <div class="text-muted small">{{ _('Work WE') }}</div>
+          </div>
+        </div>
+
+        <!-- Shift distribution -->
+        <div class="mb-3">
+          <div class="small text-muted fw-semibold mb-1">{{ _('Shift distribution') }}</div>
+          {% for shift, cnt in t.shift_dist.items() | sort(attribute=1, reverse=True) %}
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="small">{{ shift }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress" style="width:80px;height:6px">
+                <div class="progress-bar bg-primary" style="width:{{ (cnt/t.members|length*100)|round }}%"></div>
+              </div>
+              <span class="small text-muted" style="width:24px">{{ cnt }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- First 5 member preview -->
+        <div class="small text-muted fw-semibold mb-1">{{ _('Members (preview)') }}</div>
+        <ul class="list-unstyled mb-0">
+          {% for emp in t.members[:5] %}
+          <li class="d-flex justify-content-between py-1 border-bottom">
+            <a href="{{ url_for('employee_detail', emp_id=emp.id) }}"
+               class="text-decoration-none text-dark small">{{ emp.name }}</a>
+            <span class="text-muted small">{{ emp.fte_percent }}%</span>
+          </li>
+          {% endfor %}
+          {% if t.members|length > 5 %}
+          <li class="pt-1">
+            <a href="{{ url_for('team_detail', team_id=t.obj.id) }}"
+               class="small text-primary">
+              {{ _('+%(n)s more →', n=(t.members|length - 5)) }}
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body text-center text-muted py-5">
+        {{ _('No teams yet.') }}
+        {% if can_manage %}{{ _('Use "Add Team" above, or') }} <a href="{{ url_for('employees_import') }}">{{ _('import employees') }}</a>.{% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let manageMode = false;
+const MANAGE_MODE_LABEL = {{ _('Manage Teams') | tojson }};
+const EXIT_MANAGE_MODE_LABEL = {{ _('Done') | tojson }};
+
+function toggleManageMode(force) {
+  manageMode = (force === undefined) ? !manageMode : force;
+  document.querySelectorAll('.manage-only').forEach(el => el.classList.toggle('d-none', !manageMode));
+  const btn = document.getElementById('manageModeBtn');
+  if (btn) {
+    btn.innerHTML = manageMode
+      ? '<i class="bi bi-check-lg me-1"></i>' + EXIT_MANAGE_MODE_LABEL
+      : '<i class="bi bi-pencil-square me-1"></i>' + MANAGE_MODE_LABEL;
+    btn.classList.toggle('btn-outline-secondary', !manageMode);
+    btn.classList.toggle('btn-warning', manageMode);
+  }
+}
+
+function startTeamRename(id) {
+  document.getElementById('name-display-' + id).classList.add('d-none');
+  document.getElementById('name-edit-wrap-' + id).classList.remove('d-none');
+}
+function cancelTeamRename(id, originalName) {
+  document.getElementById('name-edit-wrap-' + id).classList.add('d-none');
+  document.getElementById('name-display-' + id).classList.remove('d-none');
+}
+
+// Deep-linking from a team's detail page (#team-card-<id>) opens manage mode
+// and scrolls straight to that team, instead of leaving the section entirely.
+if (window.location.hash.startsWith('#team-card-')) {
+  toggleManageMode(true);
+  document.querySelector(window.location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,2681 @@
+# Albanian translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-14 12:10+0200\n"
+"PO-Revision-Date: 2026-07-13 15:59+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: sq <LL@li.org>\n"
+"Language: sq\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app.py:194
+msgid "You do not have permission to perform this action."
+msgstr "Nuk keni leje për ta kryer këtë veprim."
+
+#: app.py:209
+msgid "Only a global superadmin can do that."
+msgstr "Vetëm një superadministrator global mund ta bëjë këtë."
+
+#: app.py:224
+msgid "Only a global admin or superadmin can do that."
+msgstr "Vetëm një admin global ose superadmin mund ta bëjë këtë."
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "January"
+msgstr "Janar"
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "February"
+msgstr "Shkurt"
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "March"
+msgstr "Mars"
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "April"
+msgstr "Prill"
+
+#: app.py:252 templates/_i18n_registry.html:35
+msgid "May"
+msgstr "Maj"
+
+#: app.py:252 templates/_i18n_registry.html:35
+msgid "June"
+msgstr "Qershor"
+
+#: app.py:253 templates/_i18n_registry.html:35
+msgid "July"
+msgstr "Korrik"
+
+#: app.py:253 templates/_i18n_registry.html:35
+msgid "August"
+msgstr "Gusht"
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "September"
+msgstr "Shtator"
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "October"
+msgstr "Tetor"
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "November"
+msgstr "Nëntor"
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "December"
+msgstr "Dhjetor"
+
+#: app.py:627
+msgid "Viewer accounts cannot make changes."
+msgstr "Llogaritë me rol Shikues nuk mund të bëjnë ndryshime."
+
+#: app.py:644
+msgid "Invalid username or password."
+msgstr "Emër përdoruesi ose fjalëkalim i pavlefshëm."
+
+#: app.py:717
+msgid "Profile updated."
+msgstr "Profili u përditësua."
+
+#: app.py:724
+msgid "Current password is incorrect."
+msgstr "Fjalëkalimi aktual është i gabuar."
+
+#: app.py:726
+msgid "New password must be at least 6 characters."
+msgstr "Fjalëkalimi i ri duhet të ketë të paktën 6 karaktere."
+
+#: app.py:728
+msgid "New passwords do not match."
+msgstr "Fjalëkalimet e reja nuk përputhen."
+
+#: app.py:732
+msgid "Password changed."
+msgstr "Fjalëkalimi u ndryshua."
+
+#: app.py:746
+#, python-format
+msgid "Password reset email sent to %(email)s."
+msgstr "Email-i për rivendosjen e fjalëkalimit u dërgua te %(email)s."
+
+#: app.py:748
+#, python-format
+msgid "Could not send reset email: %(error)s"
+msgstr "E-mail-i i rivendosjes nuk mund të dërgohej: %(error)s"
+
+#: app.py:750
+msgid "No email on file for this account."
+msgstr "Nuk ka email të regjistruar për këtë llogari."
+
+#: app.py:755 app.py:2013
+msgid "Please choose an image file."
+msgstr "Ju lutemi zgjidhni një skedar imazhi."
+
+#: app.py:759
+msgid "Photo must be PNG, JPG, or WEBP."
+msgstr "Foto duhet të jetë PNG, JPG, ose WEBP."
+
+#: app.py:767
+msgid "Photo updated."
+msgstr "Foto u përditësua."
+
+#: app.py:774
+msgid "Photo removed."
+msgstr "Foto u hoq."
+
+#: app.py:826
+msgid ""
+"If an account exists for that email, a reset link is on its way. Check your "
+"inbox in the next few minutes."
+msgstr ""
+"Nëse ekziston një llogari për këtë email, një lidhje rivendosjeje po ju "
+"vjen. Kontrolloni inbox-in tuaj në minutat e ardhshme."
+
+#: app.py:839
+msgid "Invalid or unknown reset link."
+msgstr "Lidhje rivendosjeje e pavlefshme ose e panjohur."
+
+#: app.py:841
+msgid "This reset link has already been used."
+msgstr "Kjo lidhje rivendosjeje është përdorur tashmë."
+
+#: app.py:843
+msgid "This reset link has expired. Request a new one."
+msgstr "Kjo lidhje rivendosjeje ka skaduar. Kërkoni një të re."
+
+#: app.py:852 app.py:1119
+msgid "Password must be at least 6 characters."
+msgstr "Fjalëkalimi duhet të ketë të paktën 6 shkronja."
+
+#: app.py:855 app.py:1122
+msgid "Passwords do not match."
+msgstr "Fjalëkalimet nuk përputhen."
+
+#: app.py:860
+msgid "Password updated. You can now sign in with your new password."
+msgstr ""
+"Fjalëkalimi u përditësua. Tani mund të identifikoheni me fjalëkalimin e ri."
+
+#: app.py:882
+msgid "You do not have access to that project."
+msgstr "Nuk keni qasje në këtë projekt."
+
+#: app.py:922
+msgid ""
+"Project key must start with a letter/number and contain only lowercase "
+"letters, numbers, - or _."
+msgstr ""
+"Çelësi i projektit duhet të fillojë me një shkronjë/numër dhe të përmbajë "
+"vetëm shkronja të vogla, numra, - ose _."
+
+#: app.py:924
+msgid "A project with that key already exists."
+msgstr "Një projekt me këtë çelës ekziston tashmë."
+
+#: app.py:926
+msgid "Display name is required."
+msgstr "Emri i shfaqjes është i detyrueshëm."
+
+#: app.py:948
+#, python-format
+msgid "Project \"%(name)s\" created and ready to use."
+msgstr "Projekti \"%(name)s\" u krijua dhe është gati për përdorim."
+
+#: app.py:1003
+msgid "A valid email address is required."
+msgstr "Kërkohet një adresë email e vlefshme."
+
+#: app.py:1008
+msgid "Only a global superadmin can send a global-scope invite."
+msgstr ""
+"Vetëm një superadministrator global mund të dërgojë një ftesë me shtrirje "
+"globale."
+
+#: app.py:1011 app.py:1019 app.py:1224
+msgid "Unknown role."
+msgstr "Rol i panjohur."
+
+#: app.py:1016
+msgid ""
+"\"superadmin\" is a global-only role — invite as admin instead, or use a "
+"global invite."
+msgstr ""
+"\"superadmin\" është rol vetëm global — ftojeni si admin në vend të kësaj, "
+"ose përdorni një ftesë globale."
+
+#: app.py:1029
+#, python-format
+msgid ""
+"\"%(username)s\" already has an account — set their global role to %(role)s."
+msgstr ""
+"\"%(username)s\" ka tashmë një llogari — roli global u vendos në %(role)s."
+
+#: app.py:1031
+#, python-format
+msgid "\"%(username)s\" already has access to this project."
+msgstr "\"%(username)s\" ka tashmë qasje në këtë projekt."
+
+#: app.py:1035
+#, python-format
+msgid ""
+"\"%(username)s\" already has an account — granted access to this project as "
+"%(role)s."
+msgstr ""
+"\"%(username)s\" ka tashmë një llogari — iu dha qasje në këtë projekt si "
+"%(role)s."
+
+#: app.py:1039
+msgid " (dry-run — check the server log for the link)"
+msgstr " (provë — shikoni regjistrin e serverit për lidhjen)"
+
+#: app.py:1040
+#, python-format
+msgid "Invite sent to %(email)s%(note)s."
+msgstr "Ftesa u dërgua te %(email)s%(note)s."
+
+#: app.py:1049 app.py:1073
+msgid "You do not have permission to manage that invite."
+msgstr "Nuk keni leje ta menaxhoni këtë ftesë."
+
+#: app.py:1052
+msgid "Only pending or expired invites can be resent."
+msgstr "Vetëm ftesat në pritje ose të skaduara mund të ridërgohen."
+
+#: app.py:1064
+#, python-format
+msgid "Invite resent to %(email)s."
+msgstr "Ftesa u ridërgua te %(email)s."
+
+#: app.py:1076
+msgid "Cannot revoke an invite that was already accepted."
+msgstr "Nuk mund të anulohet një ftesë që është pranuar tashmë."
+
+#: app.py:1080
+#, python-format
+msgid "Invite to %(email)s revoked."
+msgstr "Ftesa për %(email)s u anulua."
+
+#: app.py:1092
+msgid "Invalid or unknown invite link."
+msgstr "Lidhje ftese e pavlefshme ose e panjohur."
+
+#: app.py:1094
+msgid "This invite has already been used."
+msgstr "Kjo ftesë është përdorur tashmë."
+
+#: app.py:1096
+msgid "This invite has been revoked."
+msgstr "Kjo ftesë është anuluar."
+
+#: app.py:1098
+msgid "This invite has expired. Ask an admin to resend it."
+msgstr "Kjo ftesë ka skaduar. Kërkojini një administratori ta ridërgojë."
+
+#: app.py:1110
+msgid "Username must be at least 2 characters."
+msgstr "Emri i përdoruesit duhet të ketë të paktën 2 shkronja."
+
+#: app.py:1113
+msgid "That username is already taken."
+msgstr "Ky emër përdoruesi është zënë tashmë."
+
+#: app.py:1116
+msgid "That email is already in use by another account."
+msgstr "Ky email është në përdorim nga një llogari tjetër."
+
+#: app.py:1138
+msgid "Account activated — welcome!"
+msgstr "Llogaria u aktivizua — mirësevini!"
+
+#: app.py:1167
+#, python-format
+msgid "User \"%(username)s\" updated."
+msgstr "Përdoruesi \"%(username)s\" u përditësua."
+
+#: app.py:1180
+msgid "Cannot remove your own access to this project."
+msgstr "Nuk mund të hiqni qasjen tuaj në këtë projekt."
+
+#: app.py:1185
+#, python-format
+msgid ""
+"\"%(username)s\" has no project-specific override here — their global role "
+"(if any) is what grants their access."
+msgstr ""
+"\"%(username)s\" nuk ka asnjë rregull të veçantë për këtë projekt — qasja e "
+"tyre përcaktohet nga roli global (nëse ka)."
+
+#: app.py:1192
+#, python-format
+msgid ""
+"Removed \"%(username)s\"'s project-specific override — their global %(role)s"
+" role still applies here."
+msgstr ""
+"U hoq rregulli i veçantë i \"%(username)s\" për projektin — roli global "
+"%(role)s vazhdon të vlejë këtu."
+
+#: app.py:1195
+#, python-format
+msgid "Removed \"%(username)s\"'s access to this project."
+msgstr "U hoq qasja e \"%(username)s\" në këtë projekt."
+
+#: app.py:1206
+msgid "Unknown project."
+msgstr "Projekt i panjohur."
+
+#: app.py:1208
+#, python-format
+msgid "\"%(username)s\" already has access to %(project)s."
+msgstr "\"%(username)s\" ka tashmë qasje në %(project)s."
+
+#: app.py:1212
+#, python-format
+msgid "Granted \"%(username)s\" access to %(project)s as %(role)s."
+msgstr "Iu dha \"%(username)s\" qasje në %(project)s si %(role)s."
+
+#: app.py:1222
+msgid "Cannot remove your own global superadmin access."
+msgstr "Nuk mund të hiqni qasjen tuaj si superadministrator global."
+
+#: app.py:1228
+msgid "none"
+msgstr "asnjë"
+
+#: app.py:1229
+#, python-format
+msgid "\"%(username)s\"'s global role is now %(role)s."
+msgstr "Roli global i \"%(username)s\" tani është %(role)s."
+
+#: app.py:1314 templates/dashboard.html:59
+msgid "Required KS Agents"
+msgstr "Agjentët e Kërkuar KS"
+
+#: app.py:1314 templates/dashboard.html:60
+msgid "Total Contacts"
+msgstr "Kontaktet Gjithsej"
+
+#: app.py:1314 templates/dashboard.html:61
+msgid "Synchron Contacts"
+msgstr "Kontaktet Sinkrone"
+
+#: app.py:1315 templates/dashboard.html:62
+msgid "Asynchron Contacts"
+msgstr "Kontaktet Asinkrone"
+
+#: app.py:1315 templates/dashboard.html:63
+msgid "Chat Contacts"
+msgstr "Kontaktet e Chat-it"
+
+#: app.py:1315 templates/dashboard.html:64
+msgid "Germany Contribution"
+msgstr "Kontributi i Gjermanisë"
+
+#: app.py:1346
+msgid "label"
+msgstr "label"
+
+#: app.py:1387
+msgid "Period name is required."
+msgstr "Kërkohet emri i periudhës."
+
+#: app.py:1403
+msgid "TFC forecast file is required."
+msgstr "Kërkohet skedari i parashikimit TFC."
+
+#: app.py:1416
+#, python-format
+msgid "Error parsing files: %(error)s"
+msgstr "Gabim gjatë përpunimit të skedarëve: %(error)s"
+
+#: app.py:1420
+msgid "No data found in TFC file."
+msgstr "Nuk u gjetën të dhëna në skedarin TFC."
+
+#: app.py:1433 app.py:1586
+#, python-format
+msgid "Format warning: %(msg)s"
+msgstr "Paralajmërim formati: %(msg)s"
+
+#: app.py:1498
+#, python-format
+msgid "Forecast period \"%(name)s\" imported successfully (%(n)s days)."
+msgstr "Periudha e parashikimit \"%(name)s\" u importua me sukses (%(n)s ditë)."
+
+#: app.py:1531
+msgid "Forecast period deleted."
+msgstr "Periudha e parashikimit u fshi."
+
+#: app.py:1575
+msgid "Please select a file."
+msgstr "Ju lutemi zgjidhni një skedar."
+
+#: app.py:1594
+#, python-format
+msgid "AI parsed %(n)s employees."
+msgstr "IA përpunoi %(n)s punonjës."
+
+#: app.py:1596
+msgid "ANTHROPIC_API_KEY not set — using defaults."
+msgstr ""
+"ANTHROPIC_API_KEY nuk është vendosur — po përdoren vlerat e parazgjedhura."
+
+#: app.py:1710
+#, python-format
+msgid "%(n)s employees imported/updated."
+msgstr "%(n)s punonjës u importuan/përditësuan."
+
+#: app.py:1793
+msgid "created"
+msgstr "u krijua"
+
+#: app.py:1793
+msgid "updated"
+msgstr "u përditësua"
+
+#: app.py:1794
+#, python-format
+msgid "Employee %(name)s %(action)s."
+msgstr "Punonjësi %(name)s %(action)s."
+
+#: app.py:1806
+#, python-format
+msgid "%(name)s deleted."
+msgstr "%(name)s u fshi."
+
+#: app.py:1856
+#, python-format
+msgid "%(n)s employees updated."
+msgstr "%(n)s punonjës u përditësuan."
+
+#: app.py:1892
+#, python-format
+msgid "Schedule generated: %(n)s employees, %(pct)s%% avg coverage."
+msgstr "Orari u krijua: %(n)s punonjës, %(pct)s%% mbulim mesatar."
+
+#: app.py:1968
+msgid "Schedule deleted."
+msgstr "Orari u fshi."
+
+#: app.py:2017
+msgid "Logo must be PNG, JPG, SVG, or WEBP."
+msgstr "Logo duhet të jetë PNG, JPG, SVG ose WEBP."
+
+#: app.py:2024
+msgid "Logo updated."
+msgstr "Logo u përditësua."
+
+#: app.py:2030
+msgid "Logo removed."
+msgstr "Logo u hoq."
+
+#: app.py:2050
+msgid "Business parameters saved."
+msgstr "Parametrat e biznesit u ruajtën."
+
+#: app.py:2070
+msgid "AI settings saved (applies to every project)."
+msgstr "Cilësimet e IA-s u ruajtën (vlen për çdo projekt)."
+
+#: app.py:2109
+#, python-format
+msgid "Shift template \"%(name)s\" added."
+msgstr "Modeli i turnit \"%(name)s\" u shtua."
+
+#: app.py:2128
+#, python-format
+msgid "Shift \"%(name)s\" updated."
+msgstr "Turni \"%(name)s\" u përditësua."
+
+#: app.py:2139
+#, python-format
+msgid "Shift \"%(name)s\" deleted."
+msgstr "Turni \"%(name)s\" u fshi."
+
+#: app.py:2141
+msgid "Cannot delete a default shift template."
+msgstr "Nuk mund të fshihet një model turni i parazgjedhur."
+
+#: app.py:2152
+#, python-format
+msgid "\"%(name)s\" is now the default shift template."
+msgstr "\"%(name)s\" tani është turni i paracaktuar."
+
+#: app.py:2180 app.py:2196
+msgid "Team name cannot be empty."
+msgstr "Emri i ekipit nuk mund të jetë bosh."
+
+#: app.py:2182 app.py:2198
+#, python-format
+msgid "A team named \"%(name)s\" already exists."
+msgstr "Një ekip me emrin \"%(name)s\" ekziston tashmë."
+
+#: app.py:2186
+#, python-format
+msgid "Team \"%(name)s\" created."
+msgstr "Ekipi \"%(name)s\" u krijua."
+
+#: app.py:2205
+#, python-format
+msgid "Team renamed from \"%(old)s\" to \"%(new)s\"."
+msgstr "Ekipi u riemërua nga \"%(old)s\" në \"%(new)s\"."
+
+#: app.py:2215 app.py:2266
+#, python-format
+msgid ""
+"Cannot delete \"%(name)s\" — it has %(n)s employees. Reassign or move them "
+"first."
+msgstr ""
+"Nuk mund të fshihet \"%(name)s\" — ka %(n)s punonjës. Rialokojini ose "
+"zhvendosini së pari."
+
+#: app.py:2220
+#, python-format
+msgid "Team \"%(name)s\" deleted."
+msgstr "Ekipi \"%(name)s\" u fshi."
+
+#: app.py:2233 app.py:2249
+msgid "Group name cannot be empty."
+msgstr "Emri i grupit nuk mund të jetë bosh."
+
+#: app.py:2235 app.py:2251
+#, python-format
+msgid "A schedule group named \"%(name)s\" already exists."
+msgstr "Një grup orari me emrin \"%(name)s\" ekziston tashmë."
+
+#: app.py:2239
+#, python-format
+msgid "Schedule group \"%(name)s\" created."
+msgstr "Grupi i orarit \"%(name)s\" u krijua."
+
+#: app.py:2256
+#, python-format
+msgid "Schedule group renamed from \"%(old)s\" to \"%(new)s\"."
+msgstr "Grupi i orarit u riemërua nga \"%(old)s\" në \"%(new)s\"."
+
+#: app.py:2271
+#, python-format
+msgid "Schedule group \"%(name)s\" deleted."
+msgstr "Grupi i orarit \"%(name)s\" u fshi."
+
+#: app.py:2326
+msgid "Client Forecast"
+msgstr "Parashikimi i Klientit"
+
+#: app.py:2326
+msgid "KiKxxl Commitment"
+msgstr "Angazhimi KiKxxl"
+
+#: app.py:2326
+msgid "Employee Specification"
+msgstr "Specifikimi i Punonjësit"
+
+#: app.py:2326
+msgid "Miscellaneous"
+msgstr "Të tjera"
+
+#: app.py:2332
+msgid "Workforce Management"
+msgstr "Menaxhimi i Fuqisë Punëtore"
+
+#: app.py:2332
+msgid "Human Resources"
+msgstr "Burimet Njerëzore"
+
+#: app.py:2332
+msgid "Executive"
+msgstr "Ekzekutivi"
+
+#: app.py:2333
+msgid "Quality Management"
+msgstr "Menaxhimi i Cilësisë"
+
+#: app.py:2333
+msgid "Learning & Development"
+msgstr "Mësimi & Zhvillimi"
+
+#: app.py:2333
+msgid "AI & Automation"
+msgstr "IA & Automatizimi"
+
+#: app.py:2349
+msgid "No file selected."
+msgstr "Nuk u zgjodh asnjë skedar."
+
+#: app.py:2368
+#, python-format
+msgid "\"%(name)s\" uploaded successfully."
+msgstr "\"%(name)s\" u ngarkua me sukses."
+
+#: app.py:2387
+#, python-format
+msgid "\"%(name)s\" deleted."
+msgstr "\"%(name)s\" u fshi."
+
+#: templates/_i18n_registry.html:21
+msgid "Viewer"
+msgstr "Shikues"
+
+#: templates/_i18n_registry.html:21
+msgid "Editor"
+msgstr "Redaktues"
+
+#: templates/_i18n_registry.html:21 templates/base.html:144
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/_i18n_registry.html:21 templates/users.html:372
+msgid "Superadmin"
+msgstr "Superadmin"
+
+#: templates/_i18n_registry.html:24
+msgid "Pending"
+msgstr "Në pritje"
+
+#: templates/_i18n_registry.html:24
+msgid "Accepted"
+msgstr "Pranuar"
+
+#: templates/_i18n_registry.html:24
+msgid "Expired"
+msgstr "Skaduar"
+
+#: templates/_i18n_registry.html:24
+msgid "Revoked"
+msgstr "Anuluar"
+
+#: templates/_i18n_registry.html:27 templates/employees_list.html:33
+#: templates/team_detail.html:108 templates/users.html:62
+msgid "Active"
+msgstr "Aktiv"
+
+#: templates/_i18n_registry.html:27 templates/employees_list.html:34
+#: templates/team_detail.html:110 templates/users.html:64
+msgid "Inactive"
+msgstr "Joaktiv"
+
+#: templates/_i18n_registry.html:27 templates/employees_list.html:35
+#: templates/team_detail.html:109
+msgid "Trainee"
+msgstr "Praktikant"
+
+#: templates/_i18n_registry.html:30 templates/employees_import_review.html:50
+#: templates/forecast_list.html:20
+msgid "Days"
+msgstr "Ditë"
+
+#: templates/_i18n_registry.html:30 templates/employees_import_review.html:51
+#: templates/shift_templates.html:40 templates/shift_templates.html:68
+#: templates/shift_templates.html:137
+msgid "Hours"
+msgstr "Orë"
+
+#: templates/_i18n_registry.html:30 templates/employees_import_review.html:52
+msgid "Combined"
+msgstr "Kombinuar"
+
+#: templates/_i18n_registry.html:40
+msgid "Monday"
+msgstr "E hënë"
+
+#: templates/_i18n_registry.html:40
+msgid "Tuesday"
+msgstr "E martë"
+
+#: templates/_i18n_registry.html:40
+msgid "Wednesday"
+msgstr "E mërkurë"
+
+#: templates/_i18n_registry.html:40
+msgid "Thursday"
+msgstr "E enjte"
+
+#: templates/_i18n_registry.html:41
+msgid "Friday"
+msgstr "E premte"
+
+#: templates/_i18n_registry.html:41 templates/employees_import_review.html:82
+#: templates/schedule_detail.html:40
+msgid "Saturday"
+msgstr "E shtunë"
+
+#: templates/_i18n_registry.html:41 templates/employees_import_review.html:90
+msgid "Sunday"
+msgstr "E diel"
+
+#: templates/accept_invite.html:6
+msgid "Accept Invite"
+msgstr "Prano Ftesën"
+
+#: templates/accept_invite.html:6 templates/base.html:8 templates/base.html:18
+#: templates/forgot_password.html:6 templates/login.html:6
+#: templates/login.html:42 templates/reset_password.html:6
+msgid "Workforce Scheduler"
+msgstr "Planifikuesi i Fuqisë Punëtore"
+
+#: templates/accept_invite.html:43
+msgid "You're Invited"
+msgstr "Jeni Ftuar"
+
+#: templates/accept_invite.html:44
+msgid "Choose a username and password to activate your account."
+msgstr ""
+"Zgjidhni një emër përdoruesi dhe fjalëkalim për të aktivizuar llogarinë "
+"tuaj."
+
+#: templates/accept_invite.html:60 templates/forgot_password.html:66
+msgid "Back to sign in"
+msgstr "Kthehu te identifikimi"
+
+#: templates/accept_invite.html:64
+#, python-format
+msgid "Invited as %(email)s with role %(role)s for %(project)s."
+msgstr "Ftuar si %(email)s me rolin %(role)s për %(project)s."
+
+#: templates/accept_invite.html:69 templates/account.html:48
+#: templates/login.html:57 templates/users.html:26 templates/users.html:168
+msgid "Username"
+msgstr "Emri i përdoruesit"
+
+#: templates/accept_invite.html:71
+msgid "e.g. firstname.lastname"
+msgstr "p.sh. emri.mbiemri"
+
+#: templates/accept_invite.html:74 templates/login.html:62
+msgid "Password"
+msgstr "Fjalëkalimi"
+
+#: templates/accept_invite.html:74 templates/reset_password.html:67
+msgid "min. 6 characters"
+msgstr "min. 6 shkronja"
+
+#: templates/accept_invite.html:79
+msgid "Confirm password"
+msgstr "Konfirmo fjalëkalimin"
+
+#: templates/accept_invite.html:84
+msgid "Activate Account"
+msgstr "Aktivizo Llogarinë"
+
+#: templates/account.html:2 templates/account.html:3 templates/base.html:171
+msgid "My Account"
+msgstr "Llogaria Ime"
+
+#: templates/account.html:11
+msgid "Profile Photo"
+msgstr "Foto Profili"
+
+#: templates/account.html:16
+msgid "Current photo"
+msgstr "Foto aktuale"
+
+#: templates/account.html:24
+msgid "PNG, JPG, or WEBP."
+msgstr "PNG, JPG, ose WEBP."
+
+#: templates/account.html:29 templates/documents.html:121
+#: templates/settings.html:31
+msgid "Upload"
+msgstr "Ngarko"
+
+#: templates/account.html:32
+msgid "Remove your photo?"
+msgstr "Të heqësh foton tënde?"
+
+#: templates/account.html:35
+msgid "Remove Photo"
+msgstr "Hiq Foton"
+
+#: templates/account.html:44 templates/employee_detail.html:25
+msgid "Basic Information"
+msgstr "Informacioni Bazë"
+
+#: templates/account.html:52 templates/forgot_password.html:56
+#: templates/users.html:107 templates/users.html:244 templates/users.html:299
+msgid "Email"
+msgstr "Email"
+
+#: templates/account.html:60 templates/employee_detail.html:30
+msgid "First Name"
+msgstr "Emri"
+
+#: templates/account.html:64 templates/employee_detail.html:35
+msgid "Last Name"
+msgstr "Mbiemri"
+
+#: templates/account.html:68
+msgid "Position"
+msgstr "Pozicioni"
+
+#: templates/account.html:70
+msgid "e.g. Workforce Planner"
+msgstr "p.sh. Planifikues i Fuqisë Punëtore"
+
+#: templates/account.html:73
+msgid "I work for"
+msgstr "Unë punoj për"
+
+#: templates/account.html:75
+msgid "— Not set —"
+msgstr "— Nuk është vendosur —"
+
+#: templates/account.html:76
+msgid "A Project"
+msgstr "Një Projekt"
+
+#: templates/account.html:77
+msgid "A Department"
+msgstr "Një Departament"
+
+#: templates/account.html:81 templates/account.html:142 templates/base.html:37
+#: templates/projects_admin.html:63 templates/users.html:336
+msgid "Project"
+msgstr "Projekti"
+
+#: templates/account.html:89
+msgid "Department"
+msgstr "Departamenti"
+
+#: templates/account.html:98 templates/schedule_detail.html:138
+#: templates/shift_templates.html:148 templates/users.html:190
+#: templates/users.html:317
+msgid "Save"
+msgstr "Ruaj"
+
+#: templates/account.html:106
+msgid "Appearance & Language"
+msgstr "Pamja & Gjuha"
+
+#: templates/account.html:108
+msgid "Theme"
+msgstr "Tema"
+
+#: templates/account.html:111 templates/base.html:193
+msgid "Light"
+msgstr "E çelët"
+
+#: templates/account.html:111 templates/base.html:193
+msgid "Hybrid"
+msgstr "Hibride"
+
+#: templates/account.html:111 templates/base.html:193
+msgid "Dark"
+msgstr "E errët"
+
+#: templates/account.html:121
+msgid "Language"
+msgstr "Gjuha"
+
+#: templates/account.html:131
+msgid "Access"
+msgstr "Qasja"
+
+#: templates/account.html:136
+#, python-format
+msgid "Global %(role)s — access to every project, present and future."
+msgstr "%(role)s Global — qasje në çdo projekt, tani dhe në të ardhmen."
+
+#: templates/account.html:142 templates/users.html:108
+#: templates/users.html:262
+msgid "Role"
+msgstr "Roli"
+
+#: templates/account.html:154
+msgid "No project access."
+msgstr "Nuk ka qasje në projekt."
+
+#: templates/account.html:161
+msgid "Security"
+msgstr "Siguria"
+
+#: templates/account.html:166
+msgid "Current Password"
+msgstr "Fjalëkalimi Aktual"
+
+#: templates/account.html:170 templates/users.html:304
+msgid "New Password"
+msgstr "Fjalëkalim i Ri"
+
+#: templates/account.html:174
+msgid "Confirm New Password"
+msgstr "Konfirmo Fjalëkalimin e Ri"
+
+#: templates/account.html:178
+msgid "Change Password"
+msgstr "Ndrysho Fjalëkalimin"
+
+#: templates/account.html:183
+msgid "Don't know your current password?"
+msgstr "Nuk e di fjalëkalimin tënd aktual?"
+
+#: templates/account.html:185
+msgid "Send a password reset link to your email?"
+msgstr ""
+"Të dërgohet një lidhje për rivendosjen e fjalëkalimit në email-in tënd?"
+
+#: templates/account.html:188
+msgid "Email Me a Reset Link"
+msgstr "Më Dërgo një Lidhje Rivendosjeje"
+
+#: templates/ai_chat.html:2 templates/ai_chat.html:3 templates/base.html:130
+msgid "AI Assistant"
+msgstr "Asistenti IA"
+
+#: templates/ai_chat.html:11
+msgid "Conversations"
+msgstr "Bisedat"
+
+#: templates/ai_chat.html:26
+msgid "Delete this conversation?"
+msgstr "Fshi këtë bisedë?"
+
+#: templates/ai_chat.html:27 templates/employee_detail.html:11
+#: templates/forecast_detail.html:9 templates/forecast_list.html:39
+#: templates/schedule_detail.html:13 templates/shift_templates.html:98
+msgid "Delete"
+msgstr "Fshi"
+
+#: templates/ai_chat.html:34
+msgid "No conversations yet."
+msgstr "Ende pa biseda."
+
+#: templates/ai_chat.html:46
+msgid "Workforce AI Assistant"
+msgstr "Asistenti IA për Fuqinë Punëtore"
+
+#: templates/ai_chat.html:47
+msgid "Ask anything about your employees, teams, schedules, and coverage."
+msgstr "Pyesni çdo gjë rreth punonjësve, ekipeve, orareve dhe mbulimit tuaj."
+
+#: templates/ai_chat.html:51 templates/ai_chat.html:113
+msgid "How many employees are in each team?"
+msgstr "Sa punonjës ka çdo ekip?"
+
+#: templates/ai_chat.html:52 templates/ai_chat.html:114
+msgid "List all employees who work weekends."
+msgstr "Listoni të gjithë punonjësit që punojnë në fundjavë."
+
+#: templates/ai_chat.html:53
+msgid "What is the average FTE across all teams?"
+msgstr "Cili është FTE mesatar në të gjitha ekipet?"
+
+#: templates/ai_chat.html:54
+msgid "Which employees work morning shifts only?"
+msgstr "Cilët punonjës punojnë vetëm në turnin e mëngjesit?"
+
+#: templates/ai_chat.html:55
+#, python-format
+msgid "Summarise the %(project)s workforce."
+msgstr "Përmblidhni fuqinë punëtore të %(project)s."
+
+#: templates/ai_chat.html:56
+msgid "Who are the trainees in the system?"
+msgstr "Kush janë praktikantët në sistem?"
+
+#: templates/ai_chat.html:82
+msgid "Start by asking a question below."
+msgstr "Filloni duke bërë një pyetje më poshtë."
+
+#: templates/ai_chat.html:115
+msgid "Summarise the workforce."
+msgstr "Përmblidhni fuqinë punëtore."
+
+#: templates/ai_chat.html:116
+msgid "Which teams have the most agents?"
+msgstr "Cilat ekipe kanë më shumë agjentë?"
+
+#: templates/ai_chat.html:129
+msgid "Ask anything about your workforce…"
+msgstr "Pyesni çdo gjë rreth fuqisë suaj punëtore…"
+
+#: templates/ai_chat.html:138
+msgid "Context includes all employees, teams, and schedules."
+msgstr "Konteksti përfshin të gjithë punonjësit, ekipet dhe oraret."
+
+#: templates/ai_chat.html:227
+msgid "⚠️ Network error: "
+msgstr "⚠️ Gabim rrjeti: "
+
+#: templates/ai_settings.html:2 templates/ai_settings.html:3
+#: templates/ai_settings.html:10 templates/base.html:138
+msgid "AI Settings"
+msgstr "Cilësimet e IA-s"
+
+#: templates/ai_settings.html:11 templates/users.html:159
+msgid "global superadmin only"
+msgstr "vetëm superadministrator global"
+
+#: templates/ai_settings.html:15
+#, python-format
+msgid "Applies to every project, not just %(project)s."
+msgstr "Vlen për çdo projekt, jo vetëm %(project)s."
+
+#: templates/ai_settings.html:24
+msgid "Mistral (EU-hosted)"
+msgstr "Mistral (i pritur në BE)"
+
+#: templates/ai_settings.html:24
+msgid "Anthropic (Claude)"
+msgstr "Anthropic (Claude)"
+
+#: templates/ai_settings.html:25
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#: templates/ai_settings.html:25
+msgid "Gemini"
+msgstr "Gemini"
+
+#: templates/ai_settings.html:25
+msgid "Ollama (local)"
+msgstr "Ollama (lokal)"
+
+#: templates/ai_settings.html:37
+msgid "Save AI Settings"
+msgstr "Ruaj Cilësimet e IA-s"
+
+#: templates/base.html:69
+msgid "Main"
+msgstr "Kryesore"
+
+#: templates/base.html:73 templates/dashboard.html:2
+#: templates/dashboard.html:3
+msgid "Dashboard"
+msgstr "Paneli"
+
+#: templates/base.html:79
+msgid "Forecast"
+msgstr "Parashikimi"
+
+#: templates/base.html:83
+msgid "People"
+msgstr "Personeli"
+
+#: templates/base.html:87 templates/dashboard.html:91
+#: templates/teams_list.html:2 templates/teams_list.html:3
+msgid "Teams"
+msgstr "Ekipet"
+
+#: templates/base.html:95 templates/employees_list.html:2
+#: templates/employees_list.html:3
+msgid "Employees"
+msgstr "Punonjësit"
+
+#: templates/base.html:100
+msgid "Planning"
+msgstr "Planifikimi"
+
+#: templates/base.html:104 templates/schedule_list.html:2
+#: templates/schedule_list.html:3
+msgid "Schedules"
+msgstr "Oraret"
+
+#: templates/base.html:110 templates/shift_templates.html:2
+#: templates/shift_templates.html:3
+msgid "Shift Templates"
+msgstr "Modelet e Turneve"
+
+#: templates/base.html:116 templates/business_parameters.html:2
+#: templates/business_parameters.html:3 templates/business_parameters.html:9
+msgid "Business Parameters"
+msgstr "Parametrat e Biznesit"
+
+#: templates/base.html:122 templates/documents.html:2
+#: templates/documents.html:3
+msgid "Documents"
+msgstr "Dokumentet"
+
+#: templates/base.html:126
+msgid "Intelligence"
+msgstr "Inteligjenca"
+
+#: templates/base.html:131
+msgid "Beta"
+msgstr "Beta"
+
+#: templates/base.html:148 templates/settings.html:2 templates/settings.html:3
+msgid "Settings"
+msgstr "Cilësimet"
+
+#: templates/base.html:154 templates/users.html:2
+msgid "Users"
+msgstr "Përdoruesit"
+
+#: templates/base.html:161 templates/projects_admin.html:2
+#: templates/projects_admin.html:3
+msgid "Projects"
+msgstr "Projektet"
+
+#: templates/base.html:181 templates/users.html:43
+msgid "global"
+msgstr "global"
+
+#: templates/base.html:181
+msgid "this project"
+msgstr "këtë projekt"
+
+#: templates/base.html:186 templates/no_access.html:46
+msgid "Sign out"
+msgstr "Dil"
+
+#: templates/business_parameters.html:26
+msgid "Save Parameters"
+msgstr "Ruaj Parametrat"
+
+#: templates/dashboard.html:7
+msgid "New Schedule"
+msgstr "Orar i Ri"
+
+#: templates/dashboard.html:19
+msgid "Active Employees"
+msgstr "Punonjës Aktivë"
+
+#: templates/dashboard.html:28 templates/forecast_list.html:2
+#: templates/forecast_list.html:3
+msgid "Forecast Periods"
+msgstr "Periudha Parashikimi"
+
+#: templates/dashboard.html:37
+msgid "Schedules Generated"
+msgstr "Orare të Krijuara"
+
+#: templates/dashboard.html:46
+msgid "Active Teams"
+msgstr "Ekipe Aktive"
+
+#: templates/dashboard.html:55
+msgid "Forecast Trend"
+msgstr "Trendi i Parashikimit"
+
+#: templates/dashboard.html:79
+msgid "No forecast data yet."
+msgstr "Ende pa të dhëna parashikimi."
+
+#: templates/dashboard.html:80
+msgid "Upload a forecast"
+msgstr "Ngarko një parashikim"
+
+#: templates/dashboard.html:80
+msgid "to see trends here."
+msgstr "për të parë trendet këtu."
+
+#: templates/dashboard.html:94
+msgid "View all"
+msgstr "Shiko të gjitha"
+
+#: templates/dashboard.html:124
+msgid "trainee"
+msgstr "praktikant"
+
+#: templates/dashboard.html:135
+msgid "No employees yet."
+msgstr "Ende pa punonjës."
+
+#: templates/dashboard.html:141 templates/employees_list.html:209
+msgid "Import from Excel"
+msgstr "Importo nga Excel"
+
+#: templates/dashboard.html:151
+msgid "Quick Actions"
+msgstr "Veprime të Shpejta"
+
+#: templates/dashboard.html:155 templates/forecast_list.html:7
+msgid "Upload New Forecast"
+msgstr "Ngarko Parashikim të Ri"
+
+#: templates/dashboard.html:158 templates/employees_import.html:2
+#: templates/employees_import.html:3
+msgid "Import Employees"
+msgstr "Importo Punonjës"
+
+#: templates/dashboard.html:161
+msgid "Add Employee Manually"
+msgstr "Shto Punonjës Manualisht"
+
+#: templates/dashboard.html:173
+msgid "Generate"
+msgstr "Krijo"
+
+#: templates/dashboard.html:184
+msgid "Recent Schedules"
+msgstr "Oraret e Fundit"
+
+#: templates/dashboard.html:185
+msgid "All"
+msgstr "Të gjitha"
+
+#: templates/dashboard.html:200 templates/forecast_list.html:35
+#: templates/schedule_list.html:77
+msgid "View"
+msgstr "Shiko"
+
+#: templates/dashboard.html:204 templates/schedule_list.html:92
+msgid "No schedules yet."
+msgstr "Ende pa orare."
+
+#: templates/documents.html:7 templates/documents.html:89
+msgid "Upload Document"
+msgstr "Ngarko Dokument"
+
+#: templates/documents.html:17
+msgid "No documents yet"
+msgstr "Ende pa dokumente"
+
+#: templates/documents.html:18
+msgid "Upload forecasts, schedule exports, HR documents, and more."
+msgstr ""
+"Ngarkoni parashikime, eksporte oraresh, dokumente të BNJ dhe më shumë."
+
+#: templates/documents.html:20
+msgid "Upload First Document"
+msgstr "Ngarko Dokumentin e Parë"
+
+#: templates/documents.html:28
+#, python-format
+msgid "All (%(n)s)"
+msgstr "Të gjitha (%(n)s)"
+
+#: templates/documents.html:69
+msgid "Download"
+msgstr "Shkarko"
+
+#: templates/documents.html:72 templates/employee_detail.html:9
+#: templates/shift_templates.html:97
+#, python-format
+msgid "Delete %(name)s?"
+msgstr "Fshi %(name)s?"
+
+#: templates/documents.html:97
+msgid "Click to select a file"
+msgstr "Kliko për të zgjedhur një skedar"
+
+#: templates/documents.html:98
+msgid "Excel, PDF, Word, or any format"
+msgstr "Excel, PDF, Word ose çdo format"
+
+#: templates/documents.html:105
+msgid "Category"
+msgstr "Kategoria"
+
+#: templates/documents.html:113
+msgid "Description"
+msgstr "Përshkrimi"
+
+#: templates/documents.html:113 templates/schedule_list.html:36
+msgid "optional"
+msgstr "opsionale"
+
+#: templates/documents.html:115
+msgid "e.g. E.ON TFC forecast June–August 2026"
+msgstr "p.sh. Parashikimi TFC i E.ON Qershor–Gusht 2026"
+
+#: templates/documents.html:119 templates/employee_detail.html:262
+#: templates/employee_groups.html:67 templates/employees_import.html:46
+#: templates/employees_list.html:221 templates/forecast_new.html:71
+#: templates/schedule_detail.html:137 templates/shift_templates.html:147
+#: templates/teams_list.html:59 templates/users.html:271
+#: templates/users.html:316 templates/users.html:353
+msgid "Cancel"
+msgstr "Anulo"
+
+#: templates/employee_detail.html:3 templates/employee_detail.html:4
+msgid "New Employee"
+msgstr "Punonjës i Ri"
+
+#: templates/employee_detail.html:40 templates/employees_import_review.html:31
+#: templates/employees_list.html:84 templates/schedule_detail.html:54
+msgid "Team"
+msgstr "Ekipi"
+
+#: templates/employee_detail.html:42
+msgid "— Choose a team —"
+msgstr "— Zgjidh një ekip —"
+
+#: templates/employee_detail.html:50 templates/employees_list.html:91
+#: templates/schedule_detail.html:113 templates/team_detail.html:80
+#: templates/users.html:29 templates/users.html:110
+msgid "Status"
+msgstr "Statusi"
+
+#: templates/employee_detail.html:60
+#: templates/employees_import_review.html:115
+msgid "Scheduled Together With"
+msgstr "I Planifikuar Bashkë Me"
+
+#: templates/employee_detail.html:62 templates/users.html:185
+msgid "— none —"
+msgstr "— asnjë —"
+
+#: templates/employee_detail.html:69
+msgid "Everyone in a group works the exact same days/shifts."
+msgstr "Të gjithë në një grup punojnë saktësisht të njëjtat ditë/turne."
+
+#: templates/employee_detail.html:70
+msgid "Manage groups"
+msgstr "Menaxho grupet"
+
+#: templates/employee_detail.html:79
+msgid "Contract & Hours"
+msgstr "Kontrata & Orët"
+
+#: templates/employee_detail.html:84 templates/employees_import_review.html:40
+#, python-format
+msgid "FTE %%"
+msgstr "FTE %%"
+
+#: templates/employee_detail.html:96 templates/employees_import_review.html:48
+msgid "FTE Mode"
+msgstr "Modaliteti FTE"
+
+#: templates/employee_detail.html:98
+#, python-format
+msgid "Days — works N%% of eligible days, full shift each day"
+msgstr "Ditë — punon N%% të ditëve të mundshme, turn të plotë çdo ditë"
+
+#: templates/employee_detail.html:99
+#, python-format
+msgid "Hours — works every day, but N%% of standard daily hours"
+msgstr "Orë — punon çdo ditë, por vetëm N%% të orëve standarde ditore"
+
+#: templates/employee_detail.html:100
+msgid "Combined — reduces both days and hours proportionally"
+msgstr "Kombinuar — redukton në mënyrë proporcionale si ditët ashtu edhe orët"
+
+#: templates/employee_detail.html:110
+msgid "Select a mode to see description."
+msgstr "Zgjidhni një modalitet për të parë përshkrimin."
+
+#: templates/employee_detail.html:116
+msgid "Shift Template"
+msgstr "Modeli i Turnit"
+
+#: templates/employee_detail.html:126 templates/employee_detail.html:133
+#: templates/employees_list.html:146 templates/employees_list.html:153
+msgid "— Custom hours —"
+msgstr "— Orë të personalizuara —"
+
+#: templates/employee_detail.html:145
+msgid "Custom Start"
+msgstr "Fillimi i Personalizuar"
+
+#: templates/employee_detail.html:150
+msgid "Custom End"
+msgstr "Mbarimi i Personalizuar"
+
+#: templates/employee_detail.html:155
+msgid "Actual Duration"
+msgstr "Kohëzgjatja Aktuale"
+
+#: templates/employee_detail.html:158
+msgid "Net hours worked (e.g. accounting for a break)."
+msgstr "Orët neto të punuara (p.sh. duke llogaritur një pushim)."
+
+#: templates/employee_detail.html:166
+msgid "Availability"
+msgstr "Disponueshmëria"
+
+#: templates/employee_detail.html:170
+msgid "Works Saturday"
+msgstr "Punon të shtunën"
+
+#: templates/employee_detail.html:172 templates/employee_detail.html:182
+#: templates/employee_detail.html:192
+#: templates/employees_import_review.html:84
+#: templates/employees_import_review.html:92
+#: templates/employees_import_review.html:100
+#: templates/employees_list.html:164 templates/employees_list.html:171
+#: templates/employees_list.html:178 templates/team_detail.html:101
+#: templates/team_detail.html:105
+msgid "No"
+msgstr "Jo"
+
+#: templates/employee_detail.html:172 templates/employee_detail.html:182
+#: templates/employee_detail.html:192
+#: templates/employees_import_review.html:84
+#: templates/employees_import_review.html:92
+#: templates/employees_import_review.html:100
+#: templates/employees_list.html:164 templates/employees_list.html:171
+#: templates/employees_list.html:178 templates/team_detail.html:100
+#: templates/team_detail.html:104
+msgid "Yes"
+msgstr "Po"
+
+#: templates/employee_detail.html:180
+msgid "Works Sunday"
+msgstr "Punon të dielën"
+
+#: templates/employee_detail.html:190
+msgid "Works Holidays"
+msgstr "Punon në festa"
+
+#: templates/employee_detail.html:202
+msgid "Day-specific Restrictions"
+msgstr "Kufizime sipas Ditës"
+
+#: templates/employee_detail.html:214
+#: templates/employees_import_review.html:131
+msgid "Any"
+msgstr "Çdo"
+
+#: templates/employee_detail.html:215
+msgid "Off (not scheduled)"
+msgstr "Jashtë (pa u planifikuar)"
+
+#: templates/employee_detail.html:229
+#: templates/employees_import_review.html:109
+msgid "Excluded Dates"
+msgstr "Datat e Përjashtuara"
+
+#: templates/employee_detail.html:233
+msgid ""
+"Comma-separated dates (YYYY-MM-DD), or click them on the calendar below."
+msgstr ""
+"Data të ndara me presje (VVVV-MM-DD), ose klikoji në kalendarin poshtë."
+
+#: templates/employee_detail.html:241
+msgid "Notes & Contract"
+msgstr "Shënime & Kontrata"
+
+#: templates/employee_detail.html:245
+msgid "Original Notes (from Excel)"
+msgstr "Shënimet Origjinale (nga Excel)"
+
+#: templates/employee_detail.html:248
+msgid "Preserved for reference — original Albanian/German text."
+msgstr "Ruajtur për referencë — teksti origjinal në shqip/gjermanisht."
+
+#: templates/employee_detail.html:252
+msgid "Contract / Scheduling Notes"
+msgstr "Shënime Kontrate / Planifikimi"
+
+#: templates/employee_detail.html:255
+msgid "Internal scheduling notes, written by whoever manages this employee."
+msgstr ""
+"Shënime të brendshme të planifikimit, të shkruara nga personi që e menaxhon "
+"këtë punonjës."
+
+#: templates/employee_detail.html:260
+msgid "Create"
+msgstr "Krijo"
+
+#: templates/employee_detail.html:260
+msgid "Save Changes"
+msgstr "Ruaj Ndryshimet"
+
+#: templates/employee_detail.html:274
+#, python-format
+msgid ""
+"Works <strong>N%% of eligible days</strong> each month, with a full shift on"
+" each working day."
+msgstr ""
+"Punon <strong>N%% të ditëve të mundshme</strong> në muaj, me turn të plotë "
+"çdo ditë pune."
+
+#: templates/employee_detail.html:275
+#, python-format
+msgid ""
+"Works <strong>every eligible day</strong> but only N%% of standard daily "
+"hours (shorter shifts)."
+msgstr ""
+"Punon <strong>çdo ditë të mundshme</strong>, por vetëm N%% të orëve "
+"standarde ditore (turne më të shkurtra)."
+
+#: templates/employee_detail.html:276
+#, python-format
+msgid ""
+"Reduces <strong>both</strong> working days and shift length proportionally "
+"(√FTE%% each)."
+msgstr ""
+"Redukton <strong>si</strong> ditët e punës ashtu edhe kohëzgjatjen e turnit "
+"në mënyrë proporcionale (nga √FTE%% secila)."
+
+#: templates/employee_groups.html:2 templates/employee_groups.html:3
+#: templates/employees_list.html:10
+msgid "Schedule Groups"
+msgstr "Grupet e Orarit"
+
+#: templates/employee_groups.html:9
+msgid "All Employees"
+msgstr "Të Gjithë Punonjësit"
+
+#: templates/employee_groups.html:13
+msgid "Add Group"
+msgstr "Shto Grup"
+
+#: templates/employee_groups.html:16 templates/employee_groups.html:117
+msgid "Manage Groups"
+msgstr "Menaxho Grupet"
+
+#: templates/employee_groups.html:24
+msgid ""
+"Employees in the same group are always scheduled identically — same days "
+"off, same shift, every day. Useful for people who want (or need) to always "
+"work together."
+msgstr ""
+"Punonjësit në të njëjtin grup planifikohen gjithmonë njësoj — të njëjtat "
+"ditë pushimi, i njëjti turn, çdo ditë. E dobishme për njerëzit që duan (ose "
+"duhet) të punojnë gjithmonë së bashku."
+
+#: templates/employee_groups.html:25
+msgid ""
+"Assign an employee to a group from their profile page (Contract & Hours → "
+"Scheduled Together With)."
+msgstr ""
+"Cakto një punonjës në një grup nga faqja e tij e profilit (Kontrata & Orët →"
+" I Planifikuar Së Bashku Me)."
+
+#: templates/employee_groups.html:36
+msgid "New Group Name"
+msgstr "Emri i Grupit të Ri"
+
+#: templates/employee_groups.html:38
+msgid "e.g. Kaltrina + Rozana"
+msgstr "p.sh. Kaltrina + Rozana"
+
+#: templates/employee_groups.html:42
+msgid "Create Group"
+msgstr "Krijo Grupin"
+
+#: templates/employee_groups.html:79 templates/teams_list.html:70
+#, python-format
+msgid "Delete %(name)s? Only possible if it has no members."
+msgstr "Fshi %(name)s? E mundur vetëm nëse nuk ka anëtarë."
+
+#: templates/employee_groups.html:91 templates/employees_list.html:72
+msgid "No Team"
+msgstr "Pa Ekip"
+
+#: templates/employee_groups.html:96
+msgid ""
+"No members yet — assign employees to this group from their profile page."
+msgstr ""
+"Ende asnjë anëtar — cakto punonjës në këtë grup nga faqja e tyre e profilit."
+
+#: templates/employee_groups.html:105
+msgid "No schedule groups yet."
+msgstr "Ende pa grupe orari."
+
+#: templates/employee_groups.html:106
+msgid "Use \"Add Group\" above to create one."
+msgstr "Përdor \"Shto Grup\" më lart për të krijuar një."
+
+#: templates/employee_groups.html:118 templates/teams_list.html:149
+msgid "Done"
+msgstr "Përfundo"
+
+#: templates/employees_import.html:9
+msgid "Import Employee Specifications"
+msgstr "Importo Specifikimet e Punonjësve"
+
+#: templates/employees_import.html:13
+msgid ""
+"Upload the <strong>Specifikat e punetoreve</strong> Excel file.\n"
+"      Optionally enable <strong>AI parsing</strong> to automatically interpret Albanian/German notes\n"
+"      into structured shift constraints."
+msgstr ""
+"Ngarkoni skedarin Excel <strong>Specifikat e punëtorëve</strong>.\n"
+"      Opsionalisht aktivizoni <strong>përpunimin me IA</strong> për të interpretuar automatikisht shënimet në shqip/gjermanisht\n"
+"      në kufizime të strukturuara turnesh."
+
+#: templates/employees_import.html:23
+msgid "or any employee spec file with the same format"
+msgstr "ose çdo skedar specifikimi punonjësish me të njëjtin format"
+
+#: templates/employees_import.html:35
+msgid "Use AI to parse employee notes"
+msgstr "Përdor IA për të përpunuar shënimet e punonjësve"
+
+#: templates/employees_import.html:39
+msgid ""
+"Sends employee notes to <strong>Claude Opus</strong> to extract shift type, hours, excluded dates,\n"
+"          and day-of-week restrictions from Albanian/German text.\n"
+"          Requires <code>ANTHROPIC_API_KEY</code> in your <code>.env</code> file."
+msgstr ""
+"Dërgon shënimet e punonjësve te <strong>Claude Opus</strong> për të nxjerrë llojin e turnit, orët, datat e përjashtuara\n"
+"          dhe kufizimet sipas ditës nga teksti në shqip/gjermanisht.\n"
+"          Kërkon <code>ANTHROPIC_API_KEY</code> në skedarin tuaj <code>.env</code>."
+
+#: templates/employees_import.html:48
+msgid "Parse & Review"
+msgstr "Përpuno & Shqyrto"
+
+#: templates/employees_import_review.html:2
+msgid "Review Import"
+msgstr "Shqyrto Importimin"
+
+#: templates/employees_import_review.html:3
+msgid "Review Parsed Employees"
+msgstr "Shqyrto Punonjësit e Përpunuar"
+
+#: templates/employees_import_review.html:8
+#, python-format
+msgid "%(n)s employees parsed."
+msgstr "%(n)s punonjës u përpunuan."
+
+#: templates/employees_import_review.html:9
+msgid "Review and adjust the values below before saving to the database."
+msgstr ""
+"Shqyrtoni dhe rregulloni vlerat më poshtë përpara se t'i ruani në bazën e të"
+" dhënave."
+
+#: templates/employees_import_review.html:35 templates/schedule_list.html:38
+msgid "— None —"
+msgstr "— Asnjë —"
+
+#: templates/employees_import_review.html:56 templates/employees_list.html:87
+#: templates/team_detail.html:77
+msgid "Shift"
+msgstr "Turni"
+
+#: templates/employees_import_review.html:65
+msgid "Custom"
+msgstr "Personalizuar"
+
+#: templates/employees_import_review.html:69 templates/forecast_list.html:18
+#: templates/schedule_detail.html:125 templates/shift_templates.html:30
+#: templates/shift_templates.html:68 templates/shift_templates.html:128
+msgid "Start"
+msgstr "Fillimi"
+
+#: templates/employees_import_review.html:75 templates/forecast_list.html:19
+#: templates/schedule_detail.html:129 templates/shift_templates.html:35
+#: templates/shift_templates.html:68 templates/shift_templates.html:132
+msgid "End"
+msgstr "Mbarimi"
+
+#: templates/employees_import_review.html:98 templates/employees_list.html:90
+#: templates/team_detail.html:79
+msgid "Holidays"
+msgstr "Festat"
+
+#: templates/employees_import_review.html:117
+msgid "Full name of another employee"
+msgstr "Emri i plotë i një punonjësi tjetër"
+
+#: templates/employees_import_review.html:121
+msgid "AI-Parsed Day Restrictions"
+msgstr "Kufizime Ditore të Përpunuara nga IA"
+
+#: templates/employees_import_review.html:123
+msgid "Mon"
+msgstr "Hën"
+
+#: templates/employees_import_review.html:123
+msgid "Tue"
+msgstr "Mar"
+
+#: templates/employees_import_review.html:123
+msgid "Wed"
+msgstr "Mër"
+
+#: templates/employees_import_review.html:123
+msgid "Thu"
+msgstr "Enj"
+
+#: templates/employees_import_review.html:123
+msgid "Fri"
+msgstr "Pre"
+
+#: templates/employees_import_review.html:123 templates/employees_list.html:88
+msgid "Sat"
+msgstr "Sht"
+
+#: templates/employees_import_review.html:123 templates/employees_list.html:89
+msgid "Sun"
+msgstr "Die"
+
+#: templates/employees_import_review.html:132
+msgid "Off"
+msgstr "Jashtë"
+
+#: templates/employees_import_review.html:146
+msgid "AI-Parsed Notes"
+msgstr "Shënime të Përpunuara nga IA"
+
+#: templates/employees_import_review.html:151
+msgid "Original Notes"
+msgstr "Shënimet Origjinale"
+
+#: templates/employees_import_review.html:162
+msgid "Back"
+msgstr "Prapa"
+
+#: templates/employees_import_review.html:165
+#, python-format
+msgid "Save %(n)s Employees"
+msgstr "Ruaj %(n)s Punonjës"
+
+#: templates/employees_list.html:7
+msgid "Import"
+msgstr "Importo"
+
+#: templates/employees_list.html:13 templates/employees_list.html:233
+msgid "Edit Mode"
+msgstr "Modaliteti i Redaktimit"
+
+#: templates/employees_list.html:16
+msgid "Add Employee"
+msgstr "Shto Punonjës"
+
+#: templates/employees_list.html:27
+msgid "Search by name…"
+msgstr "Kërko sipas emrit…"
+
+#: templates/employees_list.html:32
+msgid "All statuses"
+msgstr "Të gjitha statuset"
+
+#: templates/employees_list.html:40
+msgid "All teams"
+msgstr "Të gjitha ekipet"
+
+#: templates/employees_list.html:47
+msgid "Search"
+msgstr "Kërko"
+
+#: templates/employees_list.html:49
+msgid "Clear"
+msgstr "Pastro"
+
+#: templates/employees_list.html:53
+#, python-format
+msgid "%(n)s employees"
+msgstr "%(n)s punonjës"
+
+#: templates/employees_list.html:83 templates/schedule_detail.html:53
+#: templates/schedule_list.html:60 templates/shift_templates.html:25
+#: templates/shift_templates.html:68 templates/shift_templates.html:123
+#: templates/team_detail.html:74
+msgid "Name"
+msgstr "Emri"
+
+#: templates/employees_list.html:85 templates/schedule_detail.html:55
+#: templates/team_detail.html:75
+msgid "FTE"
+msgstr "FTE"
+
+#: templates/employees_list.html:86 templates/team_detail.html:76
+msgid "Mode"
+msgstr "Modaliteti"
+
+#: templates/employees_list.html:104
+#, python-format
+msgid "Scheduled together: %(name)s"
+msgstr "I planifikuar bashkë me: %(name)s"
+
+#: templates/employees_list.html:109
+msgid "— No team —"
+msgstr "— Pa ekip —"
+
+#: templates/employees_list.html:195 templates/shift_templates.html:93
+#: templates/team_detail.html:117 templates/users.html:71
+#: templates/users.html:284
+msgid "Edit"
+msgstr "Redakto"
+
+#: templates/employees_list.html:208
+msgid "No employees found."
+msgstr "Nuk u gjetën punonjës."
+
+#: templates/employees_list.html:209
+msgid "or"
+msgstr "ose"
+
+#: templates/employees_list.html:210
+msgid "add manually"
+msgstr "shto manualisht"
+
+#: templates/employees_list.html:219
+#, python-format
+msgid "Editing %(n)s employees shown above."
+msgstr "Duke redaktuar %(n)s punonjësit e shfaqur më sipër."
+
+#: templates/employees_list.html:223
+msgid "Save All Changes"
+msgstr "Ruaj Të Gjitha Ndryshimet"
+
+#: templates/employees_list.html:234
+msgid "Exit Edit Mode"
+msgstr "Dil nga Modaliteti i Redaktimit"
+
+#: templates/forecast_detail.html:7 templates/forecast_list.html:38
+msgid "Delete this forecast period?"
+msgstr "Fshi këtë periudhë parashikimi?"
+
+#: templates/forecast_detail.html:22
+msgid "Total Days"
+msgstr "Ditë Gjithsej"
+
+#: templates/forecast_detail.html:31
+msgid "Active Days"
+msgstr "Ditë Aktive"
+
+#: templates/forecast_detail.html:41
+msgid "Peak KS Agents"
+msgstr "Kulmi i Agjentëve KS"
+
+#: templates/forecast_detail.html:52
+msgid "Avg Daily Contacts"
+msgstr "Kontakte Mesatare Ditore"
+
+#: templates/forecast_detail.html:61
+msgid "Daily Contact Volume & Required KS Agents"
+msgstr "Volumi Ditor i Kontakteve & Agjentët KS të Nevojshëm"
+
+#: templates/forecast_detail.html:71
+msgid "Daily Breakdown"
+msgstr "Ndarja Ditore"
+
+#: templates/forecast_detail.html:78
+msgid "Date"
+msgstr "Data"
+
+#: templates/forecast_detail.html:78
+msgid "Day"
+msgstr "Dita"
+
+#: templates/forecast_detail.html:78
+msgid "KW"
+msgstr "JV"
+
+#: templates/forecast_detail.html:79 templates/forecast_detail.html:126
+msgid "Sync"
+msgstr "Sinkron"
+
+#: templates/forecast_detail.html:80 templates/forecast_detail.html:132
+msgid "Async"
+msgstr "Asinkron"
+
+#: templates/forecast_detail.html:81 templates/forecast_detail.html:138
+msgid "Chat"
+msgstr "Chat"
+
+#: templates/forecast_detail.html:82
+msgid "Total"
+msgstr "Gjithsej"
+
+#: templates/forecast_detail.html:83
+msgid "DE Contrib."
+msgstr "Kontributi DE"
+
+#: templates/forecast_detail.html:84
+msgid "KS Contacts"
+msgstr "Kontaktet KS"
+
+#: templates/forecast_detail.html:85
+msgid "KS Agents"
+msgstr "Agjentët KS"
+
+#: templates/forecast_detail.html:144
+msgid "KS Agents Required"
+msgstr "Agjentë KS të Nevojshëm"
+
+#: templates/forecast_detail.html:160
+msgid "Contacts"
+msgstr "Kontaktet"
+
+#: templates/forecast_detail.html:163 templates/schedule_detail.html:184
+#: templates/teams_list.html:82
+msgid "Agents"
+msgstr "Agjentët"
+
+#: templates/forecast_list.html:17 templates/forecast_new.html:24
+msgid "Period Name"
+msgstr "Emri i Periudhës"
+
+#: templates/forecast_list.html:21
+msgid "Imported"
+msgstr "Importuar"
+
+#: templates/forecast_list.html:45
+msgid "No forecast periods yet."
+msgstr "Ende pa periudha parashikimi."
+
+#: templates/forecast_list.html:45
+msgid "Upload one"
+msgstr "Ngarko një"
+
+#: templates/forecast_new.html:2 templates/forecast_new.html:3
+msgid "Upload Forecast"
+msgstr "Ngarko Parashikim"
+
+#: templates/forecast_new.html:11
+msgid "Import E.ON Forecast Data"
+msgstr "Importo të Dhëna Parashikimi E.ON"
+
+#: templates/forecast_new.html:16
+msgid "Upload workflow:"
+msgstr "Rrjedha e ngarkimit:"
+
+#: templates/forecast_new.html:17
+msgid ""
+"Upload the <strong>TFC forecast</strong> (required) and optionally the\n"
+"      <strong>German Abnahmemenge</strong> and <strong>Forecast Calculation</strong> files.\n"
+"      The system calculates Kosovo's required agents automatically."
+msgstr ""
+"Ngarkoni <strong>parashikimin TFC</strong> (i detyrueshëm) dhe opsionalisht skedarët\n"
+"      <strong>Abnahmemenge gjerman</strong> dhe <strong>Llogaritja e Parashikimit</strong>.\n"
+"      Sistemi llogarit automatikisht agjentët e nevojshëm për Kosovën."
+
+#: templates/forecast_new.html:26
+msgid "e.g. E.ON June–August 2026"
+msgstr "p.sh. E.ON Qershor–Gusht 2026"
+
+#: templates/forecast_new.html:34
+msgid "TFC Forecast"
+msgstr "Parashikimi TFC"
+
+#: templates/forecast_new.html:36 templates/schedule_detail.html:169
+msgid "Required"
+msgstr "I Detyrueshëm"
+
+#: templates/forecast_new.html:47
+msgid "Abnahmemenge DE"
+msgstr "Abnahmemenge DE"
+
+#: templates/forecast_new.html:48
+msgid "German offices contribution"
+msgstr "Kontributi i zyrave gjermane"
+
+#: templates/forecast_new.html:49 templates/forecast_new.html:62
+msgid "Optional"
+msgstr "Opsionale"
+
+#: templates/forecast_new.html:60
+msgid "Forecast Calculation"
+msgstr "Llogaritja e Parashikimit"
+
+#: templates/forecast_new.html:61
+msgid "Kosovo FTE override"
+msgstr "Anulim FTE për Kosovën"
+
+#: templates/forecast_new.html:73
+msgid "Import Forecast"
+msgstr "Importo Parashikimin"
+
+#: templates/forgot_password.html:6 templates/forgot_password.html:42
+msgid "Forgot Password"
+msgstr "Harruat Fjalëkalimin"
+
+#: templates/forgot_password.html:43
+msgid "Enter your email and we'll send you a reset link."
+msgstr ""
+"Vendosni emailin tuaj dhe ne do t'ju dërgojmë një lidhje rivendosjeje."
+
+#: templates/forgot_password.html:61
+msgid "Send Reset Link"
+msgstr "Dërgo Lidhjen e Rivendosjes"
+
+#: templates/login.html:6 templates/login.html:70
+msgid "Sign In"
+msgstr "Identifikohu"
+
+#: templates/login.html:59
+msgid "Enter your username"
+msgstr "Vendosni emrin e përdoruesit"
+
+#: templates/login.html:64
+msgid "Enter your password"
+msgstr "Vendosni fjalëkalimin"
+
+#: templates/login.html:67
+msgid "Forgot password?"
+msgstr "Harruat fjalëkalimin?"
+
+#: templates/no_access.html:6 templates/no_access.html:40
+msgid "No Project Access"
+msgstr "Pa Qasje në Projekt"
+
+#: templates/no_access.html:42
+#, python-format
+msgid ""
+"Your account (%(username)s) isn't assigned to any project yet. Ask a "
+"superadmin to grant you access."
+msgstr ""
+"Llogaria juaj (%(username)s) nuk është caktuar ende në asnjë projekt. "
+"Kërkojini një superadministratori t'ju japë qasje."
+
+#: templates/projects_admin.html:7
+msgid "Add Project"
+msgstr "Shto Projekt"
+
+#: templates/projects_admin.html:14
+msgid ""
+"Each project gets its own fully isolated database — nothing here is shared "
+"with any other client. A new project is ready to use immediately, no restart"
+" needed. Only global admins/superadmins see this page."
+msgstr ""
+"Çdo projekt merr bazën e vet të plotësisht të izoluar të të dhënave — asgjë "
+"këtu nuk ndahet me ndonjë klient tjetër. Një projekt i ri është gati për "
+"përdorim menjëherë, pa nevojë për rinisje. Vetëm "
+"administratorët/superadminët globalë e shohin këtë faqe."
+
+#: templates/projects_admin.html:20
+msgid "New Project"
+msgstr "Projekt i Ri"
+
+#: templates/projects_admin.html:25
+msgid "Project Key"
+msgstr "Çelësi i Projektit"
+
+#: templates/projects_admin.html:27
+msgid "e.g. flixbus"
+msgstr "p.sh. flixbus"
+
+#: templates/projects_admin.html:28
+msgid "Lowercase letters, numbers, - or _ only. Used internally, never shown."
+msgstr ""
+"Vetëm shkronja të vogla, numra, - ose _. Përdoret vetëm brenda sistemit, nuk"
+" shfaqet kurrë."
+
+#: templates/projects_admin.html:31
+msgid "Display Name"
+msgstr "Emri i Shfaqjes"
+
+#: templates/projects_admin.html:33
+msgid "e.g. FlixBus Germany"
+msgstr "p.sh. FlixBus Gjermani"
+
+#: templates/projects_admin.html:36
+msgid "Company"
+msgstr "Kompania"
+
+#: templates/projects_admin.html:40 templates/projects_admin.html:64
+msgid "Client"
+msgstr "Klienti"
+
+#: templates/projects_admin.html:42
+msgid "e.g. FlixBus (mobility)"
+msgstr "p.sh. FlixBus (mobilitet)"
+
+#: templates/projects_admin.html:45 templates/projects_admin.html:65
+msgid "Site"
+msgstr "Vendndodhja"
+
+#: templates/projects_admin.html:47
+msgid "e.g. Kosovo (Prishtina)"
+msgstr "p.sh. Kosovë (Prishtinë)"
+
+#: templates/projects_admin.html:51
+msgid "Create Project"
+msgstr "Krijo Projektin"
+
+#: templates/projects_admin.html:82
+msgid "Switch to"
+msgstr "Kalo te"
+
+#: templates/projects_admin.html:87
+msgid "No projects yet."
+msgstr "Ende asnjë projekt."
+
+#: templates/reset_password.html:6 templates/reset_password.html:42
+msgid "Reset Password"
+msgstr "Rivendos Fjalëkalimin"
+
+#: templates/reset_password.html:44
+#, python-format
+msgid "Choose a new password for %(username)s."
+msgstr "Zgjidhni një fjalëkalim të ri për %(username)s."
+
+#: templates/reset_password.html:61
+msgid "Request a new reset link"
+msgstr "Kërko një lidhje të re rivendosjeje"
+
+#: templates/reset_password.html:67
+msgid "New password"
+msgstr "Fjalëkalim i ri"
+
+#: templates/reset_password.html:72
+msgid "Confirm new password"
+msgstr "Konfirmo fjalëkalimin e ri"
+
+#: templates/reset_password.html:77
+msgid "Update Password"
+msgstr "Përditëso Fjalëkalimin"
+
+#: templates/schedule_detail.html:8
+msgid "Export Excel"
+msgstr "Eksporto në Excel"
+
+#: templates/schedule_detail.html:11 templates/schedule_list.html:83
+msgid "Delete this schedule?"
+msgstr "Fshi këtë orar?"
+
+#: templates/schedule_detail.html:23
+#, python-format
+msgid "Daily Coverage — %(month)s %(year)s"
+msgstr "Mbulimi Ditor — %(month)s %(year)s"
+
+#: templates/schedule_detail.html:37
+msgid "Full"
+msgstr "I plotë"
+
+#: templates/schedule_detail.html:38
+msgid "Morning"
+msgstr "Mëngjes"
+
+#: templates/schedule_detail.html:39
+msgid "Afternoon"
+msgstr "Pasdite"
+
+#: templates/schedule_detail.html:41 templates/schedule_detail.html:117
+msgid "Day Off"
+msgstr "Ditë Pushimi"
+
+#: templates/schedule_detail.html:42
+msgid "Weekend Off"
+msgstr "Fundjavë Pushimi"
+
+#: templates/schedule_detail.html:43 templates/schedule_detail.html:118
+msgid "Holiday"
+msgstr "Festë"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Mo"
+msgstr "Hë"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Tu"
+msgstr "Ma"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "We"
+msgstr "Më"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Th"
+msgstr "En"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Fr"
+msgstr "Pr"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Sa"
+msgstr "Sh"
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Su"
+msgstr "Di"
+
+#: templates/schedule_detail.html:105
+msgid "Override Assignment"
+msgstr "Anulo Caktimin"
+
+#: templates/schedule_detail.html:116
+msgid "Work"
+msgstr "Punë"
+
+#: templates/schedule_detail.html:119
+msgid "Unavailable"
+msgstr "I padisponueshëm"
+
+#: templates/schedule_detail.html:161
+msgid "Scheduled"
+msgstr "I planifikuar"
+
+#: templates/schedule_list.html:10
+msgid "Generate New Schedule"
+msgstr "Krijo Orar të Ri"
+
+#: templates/schedule_list.html:14
+msgid "Schedule Name"
+msgstr "Emri i Orarit"
+
+#: templates/schedule_list.html:20
+msgid "Month"
+msgstr "Muaji"
+
+#: templates/schedule_list.html:30
+msgid "Year"
+msgstr "Viti"
+
+#: templates/schedule_list.html:36
+msgid "Link to Forecast Period"
+msgstr "Lidh me Periudhën e Parashikimit"
+
+#: templates/schedule_list.html:45
+msgid "Generate Schedule"
+msgstr "Krijo Orarin"
+
+#: templates/schedule_list.html:55
+msgid "All Schedules"
+msgstr "Të gjitha Oraret"
+
+#: templates/schedule_list.html:61
+msgid "Period"
+msgstr "Periudha"
+
+#: templates/schedule_list.html:62
+msgid "Generated"
+msgstr "Krijuar"
+
+#: templates/settings.html:11
+msgid "Project Logo"
+msgstr "Logo e Projektit"
+
+#: templates/settings.html:15
+msgid "Current logo"
+msgstr "Logo aktuale"
+
+#: templates/settings.html:24
+#, python-format
+msgid "Shown in the sidebar and project switcher for %(project)s."
+msgstr ""
+"Shfaqet në anën anësore dhe në ndërruesin e projekteve për %(project)s."
+
+#: templates/settings.html:25
+msgid "PNG, JPG, SVG, or WEBP."
+msgstr "PNG, JPG, SVG ose WEBP."
+
+#: templates/settings.html:34
+msgid "Remove the current logo?"
+msgstr "Hiq logon aktuale?"
+
+#: templates/settings.html:37
+msgid "Remove Logo"
+msgstr "Hiq Logon"
+
+#: templates/shift_templates.html:10
+msgid "Add Shift"
+msgstr "Shto Turn"
+
+#: templates/shift_templates.html:27
+msgid "e.g. Split"
+msgstr "p.sh. I ndarë"
+
+#: templates/shift_templates.html:45 templates/shift_templates.html:141
+msgid "Color"
+msgstr "Ngjyra"
+
+#: templates/shift_templates.html:51
+msgid "Make this the default shift"
+msgstr "Bëje këtë turn të paracaktuar"
+
+#: templates/shift_templates.html:54
+msgid "Save Shift"
+msgstr "Ruaj Turnin"
+
+#: templates/shift_templates.html:69
+msgid "Default"
+msgstr "I paracaktuar"
+
+#: templates/shift_templates.html:87
+msgid "Set as default"
+msgstr "Vendos si të paracaktuar"
+
+#: templates/shift_templates.html:116
+msgid "Edit Shift Template"
+msgstr "Redakto Modelin e Turnit"
+
+#: templates/team_detail.html:7
+msgid "All Teams"
+msgstr "Të gjitha Ekipet"
+
+#: templates/team_detail.html:11
+msgid "Rename / Manage"
+msgstr "Riemërto / Menaxho"
+
+#: templates/team_detail.html:28
+msgid "Active Agents"
+msgstr "Agjentë Aktivë"
+
+#: templates/team_detail.html:38 templates/teams_list.html:86
+msgid "Avg FTE"
+msgstr "FTE Mesatar"
+
+#: templates/team_detail.html:47
+msgid "Work Weekends"
+msgstr "Punon Fundjavave"
+
+#: templates/team_detail.html:56
+msgid "Trainees"
+msgstr "Praktikantë"
+
+#: templates/team_detail.html:65
+#, python-format
+msgid "All Members (%(n)s)"
+msgstr "Të gjithë Anëtarët (%(n)s)"
+
+#: templates/team_detail.html:67
+msgid "Add to Team"
+msgstr "Shto në Ekip"
+
+#: templates/team_detail.html:78
+msgid "Weekends"
+msgstr "Fundjavat"
+
+#: templates/team_detail.html:81
+msgid "Notes"
+msgstr "Shënime"
+
+#: templates/teams_list.html:10
+msgid "Add Team"
+msgstr "Shto Ekip"
+
+#: templates/teams_list.html:13 templates/teams_list.html:148
+msgid "Manage Teams"
+msgstr "Menaxho Ekipet"
+
+#: templates/teams_list.html:28
+msgid "New Team Name"
+msgstr "Emri i Ekipit të Ri"
+
+#: templates/teams_list.html:30
+msgid "e.g. Team Rinor"
+msgstr "p.sh. Ekipi Rinor"
+
+#: templates/teams_list.html:34
+msgid "Create Team"
+msgstr "Krijo Ekipin"
+
+#: templates/teams_list.html:75
+msgid "View detail"
+msgstr "Shiko detajet"
+
+#: templates/teams_list.html:90
+msgid "Work WE"
+msgstr "Punon FJ"
+
+#: templates/teams_list.html:96
+msgid "Shift distribution"
+msgstr "Shpërndarja e Turneve"
+
+#: templates/teams_list.html:111
+msgid "Members (preview)"
+msgstr "Anëtarët (parashikim)"
+
+#: templates/teams_list.html:124
+#, python-format
+msgid "+%(n)s more →"
+msgstr "+%(n)s të tjerë →"
+
+#: templates/teams_list.html:136
+msgid "No teams yet."
+msgstr "Ende asnjë ekip."
+
+#: templates/teams_list.html:137
+msgid "Use \"Add Team\" above, or"
+msgstr "Përdor \"Shto Ekip\" më lart, ose"
+
+#: templates/teams_list.html:137
+msgid "import employees"
+msgstr "importo punonjësit"
+
+#: templates/users.html:3
+msgid "User Management"
+msgstr "Menaxhimi i Përdoruesve"
+
+#: templates/users.html:7
+msgid "Invite User"
+msgstr "Fto Përdorues"
+
+#: templates/users.html:14
+#, python-format
+msgid ""
+"Showing everyone with access to %(project)s (the project you're currently "
+"in). Switch projects from the sidebar to manage another project's users."
+msgstr ""
+"Po shfaqen të gjithë me qasje në %(project)s (projekti ku ndodheni tani). "
+"Ndërroni projektin nga ana anësore për të menaxhuar përdoruesit e një "
+"projekti tjetër."
+
+#: templates/users.html:19
+#, python-format
+msgid "Users with access to %(project)s"
+msgstr "Përdoruesit me qasje në %(project)s"
+
+#: templates/users.html:27
+msgid "Role here"
+msgstr "Roli këtu"
+
+#: templates/users.html:28
+msgid "Other projects"
+msgstr "Projekte të tjera"
+
+#: templates/users.html:30
+msgid "Created"
+msgstr "Krijuar"
+
+#: templates/users.html:40 templates/users.html:179
+msgid "you"
+msgstr "ju"
+
+#: templates/users.html:52 templates/users.html:123
+msgid "all projects"
+msgstr "të gjitha projektet"
+
+#: templates/users.html:76
+msgid "Grant Access"
+msgstr "Jep Qasje"
+
+#: templates/users.html:81
+#, python-format
+msgid "Remove %(name)s's project-specific role override for %(project)s?"
+msgstr "Hiq rregullin e veçantë të rolit të %(name)s për %(project)s?"
+
+#: templates/users.html:81
+#, python-format
+msgid " Their global %(role)s role will still apply."
+msgstr " Roli i tyre global %(role)s do të vazhdojë të vlejë."
+
+#: templates/users.html:82
+msgid "Remove"
+msgstr "Hiq"
+
+#: templates/users.html:88
+msgid "No users found."
+msgstr "Nuk u gjetën përdorues."
+
+#: templates/users.html:100
+msgid "Invitations"
+msgstr "Ftesat"
+
+#: templates/users.html:109 templates/users.html:252
+msgid "Scope"
+msgstr "Shtrirja"
+
+#: templates/users.html:111
+msgid "Sent"
+msgstr "Dërguar"
+
+#: templates/users.html:131
+msgid "Resend"
+msgstr "Ridërgo"
+
+#: templates/users.html:136
+#, python-format
+msgid "Revoke the invite to %(email)s?"
+msgstr "Anulo ftesën për %(email)s?"
+
+#: templates/users.html:137
+msgid "Revoke"
+msgstr "Anulo"
+
+#: templates/users.html:148
+msgid ""
+"Email is in dry-run mode — invite links are printed to the server log, not "
+"actually emailed."
+msgstr ""
+"Emaili është në modalitet prove — lidhjet e ftesave shtypen në regjistrin e "
+"serverit, nuk dërgohen realisht me email."
+
+#: templates/users.html:158
+msgid "Global Roles"
+msgstr "Rolet Globale"
+
+#: templates/users.html:163
+#, python-format
+msgid ""
+"A global role applies to <strong>every project</strong>, present and future "
+"— not just %(project)s. Only a global superadmin can grant or change these."
+msgstr ""
+"Një rol global vlen për <strong>çdo projekt</strong>, aktual dhe të ardhshëm"
+" — jo vetëm %(project)s. Vetëm një superadministrator global mund t'i japë "
+"ose ndryshojë këto."
+
+#: templates/users.html:169
+msgid "Global role"
+msgstr "Roli global"
+
+#: templates/users.html:205
+msgid "Role Reference"
+msgstr "Referenca e Roleve"
+
+#: templates/users.html:210
+msgid "Read-only access. Cannot make any changes."
+msgstr "Qasje vetëm-lexim. Nuk mund të bëjë ndryshime."
+
+#: templates/users.html:211
+msgid ""
+"Full operational access: employees, forecasts, schedules, documents, AI "
+"chat."
+msgstr ""
+"Qasje e plotë operacionale: punonjës, parashikime, orare, dokumente, chat me"
+" IA."
+
+#: templates/users.html:212
+msgid "Editor + Settings, teams, and managing who has access to this project."
+msgstr "Redaktues + Cilësimet, ekipet dhe menaxhimi i qasjes në këtë projekt."
+
+#: templates/users.html:213
+msgid "Reserved for the global tier — see below. Not grantable per-project."
+msgstr ""
+"I rezervuar për nivelin global — shiko më poshtë. Nuk jepet për projekt "
+"individual."
+
+#: templates/users.html:224
+msgid ""
+"<strong>Global roles</strong> (viewer/editor/admin/superadmin) apply to every project automatically,\n"
+"        present and future, instead of one specific project. Only <strong>global superadmin</strong>\n"
+"        additionally unlocks AI/technical settings. Someone's effective role in a project is always the\n"
+"        higher of their global role and any project-specific grant."
+msgstr ""
+"<strong>Rolet globale</strong> (shikues/redaktues/admin/superadmin) vlejnë automatikisht për çdo\n"
+"        projekt, aktual dhe të ardhshëm, në vend të një projekti të vetëm. Vetëm <strong>superadministratori global</strong>\n"
+"        zhbllokon gjithashtu cilësimet e IA-s/teknike. Roli efektiv i dikujt në një projekt është gjithmonë\n"
+"        më i larti ndërmjet rolit të tij global dhe çdo dhënieje specifike për projektin."
+
+#: templates/users.html:238
+#, python-format
+msgid "Invite to %(project)s"
+msgstr "Fto në %(project)s"
+
+#: templates/users.html:247
+msgid ""
+"We'll email them a link to choose their own username and password. If this "
+"email already has an account, access is granted immediately instead."
+msgstr ""
+"Do t'u dërgojmë me email një lidhje për të zgjedhur emrin e tyre të "
+"përdoruesit dhe fjalëkalimin. Nëse ky email ka tashmë një llogari, qasja "
+"jepet menjëherë në vend të kësaj."
+
+#: templates/users.html:254
+#, python-format
+msgid "This project (%(project)s) only"
+msgstr "Vetëm ky projekt (%(project)s)"
+
+#: templates/users.html:255
+msgid "Global — every project, present and future"
+msgstr "Global — çdo projekt, aktual dhe i ardhshëm"
+
+#: templates/users.html:272
+msgid "Send Invite"
+msgstr "Dërgo Ftesën"
+
+#: templates/users.html:290
+#, python-format
+msgid "Role in %(project)s"
+msgstr "Roli në %(project)s"
+
+#: templates/users.html:301
+msgid "Needed for \"forgot password\" to work for this account."
+msgstr "E nevojshme që \"harrova fjalëkalimin\" të funksionojë për këtë llogari."
+
+#: templates/users.html:304
+msgid "leave blank to keep"
+msgstr "lëreni bosh për ta ruajtur"
+
+#: templates/users.html:306
+msgid "Leave blank to keep current"
+msgstr "Lëreni bosh për të ruajtur atë aktual"
+
+#: templates/users.html:311
+msgid "Active account"
+msgstr "Llogari aktive"
+
+#: templates/users.html:330 templates/users.html:354
+msgid "Grant"
+msgstr "Jep"
+
+#: templates/users.html:330
+msgid "access"
+msgstr "qasje"
+
+#: templates/users.html:344
+msgid "Role there"
+msgstr "Roli atje"
+
+#: templates/users.html:386
+msgid ""
+"This sets a project-specific override on top of their global role — leave it"
+" matching their effective role above to change nothing."
+msgstr ""
+"Kjo vendos një rregull të veçantë për projektin, mbi rolin e tyre global — "
+"lëreni njësoj me rolin efektiv të treguar më sipër për të mos ndryshuar "
+"asgjë."
+
+#~ msgid "Full Name"
+#~ msgstr "Emri i Plotë"
+
+#~ msgid "— Custom (specify below) —"
+#~ msgstr "— Personalizuar (specifiko më poshtë) —"
+
+#~ msgid "Yes — always"
+#~ msgstr "Po — gjithmonë"
+
+#~ msgid "Sometimes"
+#~ msgstr "Ndonjëherë"
+
+#~ msgid "Internal scheduling notes (AI-parsed or manually written)."
+#~ msgstr ""
+#~ "Shënime të brendshme planifikimi (të përpunuara nga IA ose të shkruara "
+#~ "manualisht)."
+
+#~ msgid "Team Name"
+#~ msgstr "Emri i Ekipit"
+
+#~ msgid "No teams yet."
+#~ msgstr "Ende asnjë ekip."
+
+#~ msgid "No teams with active employees yet."
+#~ msgstr "Ende pa ekipe me punonjës aktivë."
+
+#~ msgid "first."
+#~ msgstr "së pari."
+
+#~ msgid "shared window"
+#~ msgstr "intervali i përbashkët"
+
+#~ msgid "Already all on %(team)s"
+#~ msgstr "Tashmë të gjithë në %(team)s"
+
+#~ msgid "Actual Shift"
+#~ msgstr "Turni Aktual"
+
+#~ msgid "Group Name"
+#~ msgstr "Emri i Grupit"
+
+#~ msgid "Members"
+#~ msgstr "Anëtarët"
+
+#~ msgid "Rename"
+#~ msgstr "Riemërto"
+
+#~ msgid "Shift Overlap"
+#~ msgstr "Mbivendosja e Turneve"
+
+#~ msgid ""
+#~ "Pairs of employees whose actual working hours overlap by at least 4 hours. "
+#~ "The default shift most of the workforce shares is excluded — this is about "
+#~ "the exceptions. Pairs split across different teams are listed first."
+#~ msgstr ""
+#~ "Çifte punonjësish orari aktual i punës së të cilëve mbivendoset për të "
+#~ "paktën 4 orë. Turni i paracaktuar që ka pjesa më e madhe e stafit është "
+#~ "përjashtuar — bëhet fjalë për përjashtimet. Çiftet e ndara në ekipe të "
+#~ "ndryshme listohen të parat."
+
+#~ msgid ""
+#~ "No significantly overlapping pairs found — everyone with non-default hours "
+#~ "works a distinct window."
+#~ msgstr ""
+#~ "Nuk u gjetën çifte me mbivendosje të dukshme — të gjithë me orë jo-standarde"
+#~ " punojnë në një interval të veçantë."
+
+#~ msgid "Employee"
+#~ msgstr "Punonjësi"
+
+#~ msgid "Overlap"
+#~ msgstr "Mbivendosja"
+
+#~ msgid "Same team"
+#~ msgstr "I njëjti ekip"
+
+#~ msgid "Different teams — consider placing together"
+#~ msgstr "Ekipe të ndryshme — konsidero vendosjen së bashku"
+
+#~ msgid "Only a global superadmin can change AI settings."
+#~ msgstr ""
+#~ "Vetëm një superadministrator global mund të ndryshojë cilësimet e IA-s."

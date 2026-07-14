@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Upload Forecast') }}{% endblock %}
+{% block page_title %}{{ _('Upload Forecast') }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-lg-8">
+
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-upload me-2 text-primary"></i>{{ _('Import E.ON Forecast Data') }}
+  </div>
+  <div class="card-body">
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      <strong>{{ _('Upload workflow:') }}</strong>
+      {% trans %}Upload the <strong>TFC forecast</strong> (required) and optionally the
+      <strong>German Abnahmemenge</strong> and <strong>Forecast Calculation</strong> files.
+      The system calculates Kosovo's required agents automatically.{% endtrans %}
+    </div>
+
+    <form action="{{ url_for('forecast_new') }}" method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ _('Period Name') }}</label>
+        <input type="text" name="name" class="form-control"
+               placeholder="{{ _('e.g. E.ON June–August 2026') }}" required>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <!-- TFC File -->
+        <div class="col-md-4">
+          <div class="upload-zone" id="zone-tfc" onclick="document.getElementById('tfc_file').click()">
+            <i class="bi bi-file-earmark-spreadsheet text-primary" style="font-size:2rem"></i>
+            <div class="fw-semibold mt-2">{{ _('TFC Forecast') }}</div>
+            <div class="text-muted small">TFC_Juni-August_*.xlsx</div>
+            <div class="badge bg-danger mt-1">{{ _('Required') }}</div>
+            <div class="file-name mt-2 text-success small" id="name-tfc"></div>
+          </div>
+          <input type="file" id="tfc_file" name="tfc_file" accept=".xlsx"
+                 class="d-none" onchange="showFileName(this,'name-tfc','zone-tfc')">
+        </div>
+
+        <!-- Abnahmemenge DE -->
+        <div class="col-md-4">
+          <div class="upload-zone" id="zone-abnahme" onclick="document.getElementById('abnahme_file').click()">
+            <i class="bi bi-file-earmark-spreadsheet text-success" style="font-size:2rem"></i>
+            <div class="fw-semibold mt-2">{{ _('Abnahmemenge DE') }}</div>
+            <div class="text-muted small">{{ _('German offices contribution') }}</div>
+            <div class="badge bg-secondary mt-1">{{ _('Optional') }}</div>
+            <div class="file-name mt-2 text-success small" id="name-abnahme"></div>
+          </div>
+          <input type="file" id="abnahme_file" name="abnahme_file" accept=".xlsx"
+                 class="d-none" onchange="showFileName(this,'name-abnahme','zone-abnahme')">
+        </div>
+
+        <!-- Forecast Calculation -->
+        <div class="col-md-4">
+          <div class="upload-zone" id="zone-fccalc" onclick="document.getElementById('fc_calc_file').click()">
+            <i class="bi bi-file-earmark-spreadsheet text-warning" style="font-size:2rem"></i>
+            <div class="fw-semibold mt-2">{{ _('Forecast Calculation') }}</div>
+            <div class="text-muted small">{{ _('Kosovo FTE override') }}</div>
+            <div class="badge bg-secondary mt-1">{{ _('Optional') }}</div>
+            <div class="file-name mt-2 text-success small" id="name-fccalc"></div>
+          </div>
+          <input type="file" id="fc_calc_file" name="fc_calc_file" accept=".xlsx"
+                 class="d-none" onchange="showFileName(this,'name-fccalc','zone-fccalc')">
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{{ url_for('forecast_list') }}" class="btn btn-outline-secondary">{{ _('Cancel') }}</a>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-upload me-1"></i>{{ _('Import Forecast') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showFileName(input, labelId, zoneId) {
+  const el = document.getElementById(labelId);
+  const zone = document.getElementById(zoneId);
+  if (input.files.length) {
+    el.textContent = input.files[0].name;
+    zone.classList.add('upload-zone--selected');
+  }
+}
+</script>
+{% endblock %}

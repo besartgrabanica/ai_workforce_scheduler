@@ -1,0 +1,2517 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-14 12:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app.py:194
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: app.py:209
+msgid "Only a global superadmin can do that."
+msgstr ""
+
+#: app.py:224
+msgid "Only a global admin or superadmin can do that."
+msgstr ""
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "January"
+msgstr ""
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "February"
+msgstr ""
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "March"
+msgstr ""
+
+#: app.py:252 templates/_i18n_registry.html:34
+msgid "April"
+msgstr ""
+
+#: app.py:252 templates/_i18n_registry.html:35
+msgid "May"
+msgstr ""
+
+#: app.py:252 templates/_i18n_registry.html:35
+msgid "June"
+msgstr ""
+
+#: app.py:253 templates/_i18n_registry.html:35
+msgid "July"
+msgstr ""
+
+#: app.py:253 templates/_i18n_registry.html:35
+msgid "August"
+msgstr ""
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "September"
+msgstr ""
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "October"
+msgstr ""
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "November"
+msgstr ""
+
+#: app.py:253 templates/_i18n_registry.html:36
+msgid "December"
+msgstr ""
+
+#: app.py:627
+msgid "Viewer accounts cannot make changes."
+msgstr ""
+
+#: app.py:644
+msgid "Invalid username or password."
+msgstr ""
+
+#: app.py:717
+msgid "Profile updated."
+msgstr ""
+
+#: app.py:724
+msgid "Current password is incorrect."
+msgstr ""
+
+#: app.py:726
+msgid "New password must be at least 6 characters."
+msgstr ""
+
+#: app.py:728
+msgid "New passwords do not match."
+msgstr ""
+
+#: app.py:732
+msgid "Password changed."
+msgstr ""
+
+#: app.py:746
+#, python-format
+msgid "Password reset email sent to %(email)s."
+msgstr ""
+
+#: app.py:748
+#, python-format
+msgid "Could not send reset email: %(error)s"
+msgstr ""
+
+#: app.py:750
+msgid "No email on file for this account."
+msgstr ""
+
+#: app.py:755 app.py:2013
+msgid "Please choose an image file."
+msgstr ""
+
+#: app.py:759
+msgid "Photo must be PNG, JPG, or WEBP."
+msgstr ""
+
+#: app.py:767
+msgid "Photo updated."
+msgstr ""
+
+#: app.py:774
+msgid "Photo removed."
+msgstr ""
+
+#: app.py:826
+msgid ""
+"If an account exists for that email, a reset link is on its way. Check "
+"your inbox in the next few minutes."
+msgstr ""
+
+#: app.py:839
+msgid "Invalid or unknown reset link."
+msgstr ""
+
+#: app.py:841
+msgid "This reset link has already been used."
+msgstr ""
+
+#: app.py:843
+msgid "This reset link has expired. Request a new one."
+msgstr ""
+
+#: app.py:852 app.py:1119
+msgid "Password must be at least 6 characters."
+msgstr ""
+
+#: app.py:855 app.py:1122
+msgid "Passwords do not match."
+msgstr ""
+
+#: app.py:860
+msgid "Password updated. You can now sign in with your new password."
+msgstr ""
+
+#: app.py:882
+msgid "You do not have access to that project."
+msgstr ""
+
+#: app.py:922
+msgid ""
+"Project key must start with a letter/number and contain only lowercase "
+"letters, numbers, - or _."
+msgstr ""
+
+#: app.py:924
+msgid "A project with that key already exists."
+msgstr ""
+
+#: app.py:926
+msgid "Display name is required."
+msgstr ""
+
+#: app.py:948
+#, python-format
+msgid "Project \"%(name)s\" created and ready to use."
+msgstr ""
+
+#: app.py:1003
+msgid "A valid email address is required."
+msgstr ""
+
+#: app.py:1008
+msgid "Only a global superadmin can send a global-scope invite."
+msgstr ""
+
+#: app.py:1011 app.py:1019 app.py:1224
+msgid "Unknown role."
+msgstr ""
+
+#: app.py:1016
+msgid ""
+"\"superadmin\" is a global-only role — invite as admin instead, or use a "
+"global invite."
+msgstr ""
+
+#: app.py:1029
+#, python-format
+msgid ""
+"\"%(username)s\" already has an account — set their global role to "
+"%(role)s."
+msgstr ""
+
+#: app.py:1031
+#, python-format
+msgid "\"%(username)s\" already has access to this project."
+msgstr ""
+
+#: app.py:1035
+#, python-format
+msgid ""
+"\"%(username)s\" already has an account — granted access to this project "
+"as %(role)s."
+msgstr ""
+
+#: app.py:1039
+msgid " (dry-run — check the server log for the link)"
+msgstr ""
+
+#: app.py:1040
+#, python-format
+msgid "Invite sent to %(email)s%(note)s."
+msgstr ""
+
+#: app.py:1049 app.py:1073
+msgid "You do not have permission to manage that invite."
+msgstr ""
+
+#: app.py:1052
+msgid "Only pending or expired invites can be resent."
+msgstr ""
+
+#: app.py:1064
+#, python-format
+msgid "Invite resent to %(email)s."
+msgstr ""
+
+#: app.py:1076
+msgid "Cannot revoke an invite that was already accepted."
+msgstr ""
+
+#: app.py:1080
+#, python-format
+msgid "Invite to %(email)s revoked."
+msgstr ""
+
+#: app.py:1092
+msgid "Invalid or unknown invite link."
+msgstr ""
+
+#: app.py:1094
+msgid "This invite has already been used."
+msgstr ""
+
+#: app.py:1096
+msgid "This invite has been revoked."
+msgstr ""
+
+#: app.py:1098
+msgid "This invite has expired. Ask an admin to resend it."
+msgstr ""
+
+#: app.py:1110
+msgid "Username must be at least 2 characters."
+msgstr ""
+
+#: app.py:1113
+msgid "That username is already taken."
+msgstr ""
+
+#: app.py:1116
+msgid "That email is already in use by another account."
+msgstr ""
+
+#: app.py:1138
+msgid "Account activated — welcome!"
+msgstr ""
+
+#: app.py:1167
+#, python-format
+msgid "User \"%(username)s\" updated."
+msgstr ""
+
+#: app.py:1180
+msgid "Cannot remove your own access to this project."
+msgstr ""
+
+#: app.py:1185
+#, python-format
+msgid ""
+"\"%(username)s\" has no project-specific override here — their global "
+"role (if any) is what grants their access."
+msgstr ""
+
+#: app.py:1192
+#, python-format
+msgid ""
+"Removed \"%(username)s\"'s project-specific override — their global "
+"%(role)s role still applies here."
+msgstr ""
+
+#: app.py:1195
+#, python-format
+msgid "Removed \"%(username)s\"'s access to this project."
+msgstr ""
+
+#: app.py:1206
+msgid "Unknown project."
+msgstr ""
+
+#: app.py:1208
+#, python-format
+msgid "\"%(username)s\" already has access to %(project)s."
+msgstr ""
+
+#: app.py:1212
+#, python-format
+msgid "Granted \"%(username)s\" access to %(project)s as %(role)s."
+msgstr ""
+
+#: app.py:1222
+msgid "Cannot remove your own global superadmin access."
+msgstr ""
+
+#: app.py:1228
+msgid "none"
+msgstr ""
+
+#: app.py:1229
+#, python-format
+msgid "\"%(username)s\"'s global role is now %(role)s."
+msgstr ""
+
+#: app.py:1314 templates/dashboard.html:59
+msgid "Required KS Agents"
+msgstr ""
+
+#: app.py:1314 templates/dashboard.html:60
+msgid "Total Contacts"
+msgstr ""
+
+#: app.py:1314 templates/dashboard.html:61
+msgid "Synchron Contacts"
+msgstr ""
+
+#: app.py:1315 templates/dashboard.html:62
+msgid "Asynchron Contacts"
+msgstr ""
+
+#: app.py:1315 templates/dashboard.html:63
+msgid "Chat Contacts"
+msgstr ""
+
+#: app.py:1315 templates/dashboard.html:64
+msgid "Germany Contribution"
+msgstr ""
+
+#: app.py:1346
+msgid "label"
+msgstr ""
+
+#: app.py:1387
+msgid "Period name is required."
+msgstr ""
+
+#: app.py:1403
+msgid "TFC forecast file is required."
+msgstr ""
+
+#: app.py:1416
+#, python-format
+msgid "Error parsing files: %(error)s"
+msgstr ""
+
+#: app.py:1420
+msgid "No data found in TFC file."
+msgstr ""
+
+#: app.py:1433 app.py:1586
+#, python-format
+msgid "Format warning: %(msg)s"
+msgstr ""
+
+#: app.py:1498
+#, python-format
+msgid "Forecast period \"%(name)s\" imported successfully (%(n)s days)."
+msgstr ""
+
+#: app.py:1531
+msgid "Forecast period deleted."
+msgstr ""
+
+#: app.py:1575
+msgid "Please select a file."
+msgstr ""
+
+#: app.py:1594
+#, python-format
+msgid "AI parsed %(n)s employees."
+msgstr ""
+
+#: app.py:1596
+msgid "ANTHROPIC_API_KEY not set — using defaults."
+msgstr ""
+
+#: app.py:1710
+#, python-format
+msgid "%(n)s employees imported/updated."
+msgstr ""
+
+#: app.py:1793
+msgid "created"
+msgstr ""
+
+#: app.py:1793
+msgid "updated"
+msgstr ""
+
+#: app.py:1794
+#, python-format
+msgid "Employee %(name)s %(action)s."
+msgstr ""
+
+#: app.py:1806
+#, python-format
+msgid "%(name)s deleted."
+msgstr ""
+
+#: app.py:1856
+#, python-format
+msgid "%(n)s employees updated."
+msgstr ""
+
+#: app.py:1892
+#, python-format
+msgid "Schedule generated: %(n)s employees, %(pct)s%% avg coverage."
+msgstr ""
+
+#: app.py:1968
+msgid "Schedule deleted."
+msgstr ""
+
+#: app.py:2017
+msgid "Logo must be PNG, JPG, SVG, or WEBP."
+msgstr ""
+
+#: app.py:2024
+msgid "Logo updated."
+msgstr ""
+
+#: app.py:2030
+msgid "Logo removed."
+msgstr ""
+
+#: app.py:2050
+msgid "Business parameters saved."
+msgstr ""
+
+#: app.py:2070
+msgid "AI settings saved (applies to every project)."
+msgstr ""
+
+#: app.py:2109
+#, python-format
+msgid "Shift template \"%(name)s\" added."
+msgstr ""
+
+#: app.py:2128
+#, python-format
+msgid "Shift \"%(name)s\" updated."
+msgstr ""
+
+#: app.py:2139
+#, python-format
+msgid "Shift \"%(name)s\" deleted."
+msgstr ""
+
+#: app.py:2141
+msgid "Cannot delete a default shift template."
+msgstr ""
+
+#: app.py:2152
+#, python-format
+msgid "\"%(name)s\" is now the default shift template."
+msgstr ""
+
+#: app.py:2180 app.py:2196
+msgid "Team name cannot be empty."
+msgstr ""
+
+#: app.py:2182 app.py:2198
+#, python-format
+msgid "A team named \"%(name)s\" already exists."
+msgstr ""
+
+#: app.py:2186
+#, python-format
+msgid "Team \"%(name)s\" created."
+msgstr ""
+
+#: app.py:2205
+#, python-format
+msgid "Team renamed from \"%(old)s\" to \"%(new)s\"."
+msgstr ""
+
+#: app.py:2215 app.py:2266
+#, python-format
+msgid ""
+"Cannot delete \"%(name)s\" — it has %(n)s employees. Reassign or move "
+"them first."
+msgstr ""
+
+#: app.py:2220
+#, python-format
+msgid "Team \"%(name)s\" deleted."
+msgstr ""
+
+#: app.py:2233 app.py:2249
+msgid "Group name cannot be empty."
+msgstr ""
+
+#: app.py:2235 app.py:2251
+#, python-format
+msgid "A schedule group named \"%(name)s\" already exists."
+msgstr ""
+
+#: app.py:2239
+#, python-format
+msgid "Schedule group \"%(name)s\" created."
+msgstr ""
+
+#: app.py:2256
+#, python-format
+msgid "Schedule group renamed from \"%(old)s\" to \"%(new)s\"."
+msgstr ""
+
+#: app.py:2271
+#, python-format
+msgid "Schedule group \"%(name)s\" deleted."
+msgstr ""
+
+#: app.py:2326
+msgid "Client Forecast"
+msgstr ""
+
+#: app.py:2326
+msgid "KiKxxl Commitment"
+msgstr ""
+
+#: app.py:2326
+msgid "Employee Specification"
+msgstr ""
+
+#: app.py:2326
+msgid "Miscellaneous"
+msgstr ""
+
+#: app.py:2332
+msgid "Workforce Management"
+msgstr ""
+
+#: app.py:2332
+msgid "Human Resources"
+msgstr ""
+
+#: app.py:2332
+msgid "Executive"
+msgstr ""
+
+#: app.py:2333
+msgid "Quality Management"
+msgstr ""
+
+#: app.py:2333
+msgid "Learning & Development"
+msgstr ""
+
+#: app.py:2333
+msgid "AI & Automation"
+msgstr ""
+
+#: app.py:2349
+msgid "No file selected."
+msgstr ""
+
+#: app.py:2368
+#, python-format
+msgid "\"%(name)s\" uploaded successfully."
+msgstr ""
+
+#: app.py:2387
+#, python-format
+msgid "\"%(name)s\" deleted."
+msgstr ""
+
+#: templates/_i18n_registry.html:21
+msgid "Viewer"
+msgstr ""
+
+#: templates/_i18n_registry.html:21
+msgid "Editor"
+msgstr ""
+
+#: templates/_i18n_registry.html:21 templates/base.html:144
+msgid "Admin"
+msgstr ""
+
+#: templates/_i18n_registry.html:21 templates/users.html:372
+msgid "Superadmin"
+msgstr ""
+
+#: templates/_i18n_registry.html:24
+msgid "Pending"
+msgstr ""
+
+#: templates/_i18n_registry.html:24
+msgid "Accepted"
+msgstr ""
+
+#: templates/_i18n_registry.html:24
+msgid "Expired"
+msgstr ""
+
+#: templates/_i18n_registry.html:24
+msgid "Revoked"
+msgstr ""
+
+#: templates/_i18n_registry.html:27 templates/employees_list.html:33
+#: templates/team_detail.html:108 templates/users.html:62
+msgid "Active"
+msgstr ""
+
+#: templates/_i18n_registry.html:27 templates/employees_list.html:34
+#: templates/team_detail.html:110 templates/users.html:64
+msgid "Inactive"
+msgstr ""
+
+#: templates/_i18n_registry.html:27 templates/employees_list.html:35
+#: templates/team_detail.html:109
+msgid "Trainee"
+msgstr ""
+
+#: templates/_i18n_registry.html:30 templates/employees_import_review.html:50
+#: templates/forecast_list.html:20
+msgid "Days"
+msgstr ""
+
+#: templates/_i18n_registry.html:30 templates/employees_import_review.html:51
+#: templates/shift_templates.html:40 templates/shift_templates.html:68
+#: templates/shift_templates.html:137
+msgid "Hours"
+msgstr ""
+
+#: templates/_i18n_registry.html:30 templates/employees_import_review.html:52
+msgid "Combined"
+msgstr ""
+
+#: templates/_i18n_registry.html:40
+msgid "Monday"
+msgstr ""
+
+#: templates/_i18n_registry.html:40
+msgid "Tuesday"
+msgstr ""
+
+#: templates/_i18n_registry.html:40
+msgid "Wednesday"
+msgstr ""
+
+#: templates/_i18n_registry.html:40
+msgid "Thursday"
+msgstr ""
+
+#: templates/_i18n_registry.html:41
+msgid "Friday"
+msgstr ""
+
+#: templates/_i18n_registry.html:41 templates/employees_import_review.html:82
+#: templates/schedule_detail.html:40
+msgid "Saturday"
+msgstr ""
+
+#: templates/_i18n_registry.html:41 templates/employees_import_review.html:90
+msgid "Sunday"
+msgstr ""
+
+#: templates/accept_invite.html:6
+msgid "Accept Invite"
+msgstr ""
+
+#: templates/accept_invite.html:6 templates/base.html:8 templates/base.html:18
+#: templates/forgot_password.html:6 templates/login.html:6
+#: templates/login.html:42 templates/reset_password.html:6
+msgid "Workforce Scheduler"
+msgstr ""
+
+#: templates/accept_invite.html:43
+msgid "You're Invited"
+msgstr ""
+
+#: templates/accept_invite.html:44
+msgid "Choose a username and password to activate your account."
+msgstr ""
+
+#: templates/accept_invite.html:60 templates/forgot_password.html:66
+msgid "Back to sign in"
+msgstr ""
+
+#: templates/accept_invite.html:64
+#, python-format
+msgid "Invited as %(email)s with role %(role)s for %(project)s."
+msgstr ""
+
+#: templates/accept_invite.html:69 templates/account.html:48
+#: templates/login.html:57 templates/users.html:26 templates/users.html:168
+msgid "Username"
+msgstr ""
+
+#: templates/accept_invite.html:71
+msgid "e.g. firstname.lastname"
+msgstr ""
+
+#: templates/accept_invite.html:74 templates/login.html:62
+msgid "Password"
+msgstr ""
+
+#: templates/accept_invite.html:74 templates/reset_password.html:67
+msgid "min. 6 characters"
+msgstr ""
+
+#: templates/accept_invite.html:79
+msgid "Confirm password"
+msgstr ""
+
+#: templates/accept_invite.html:84
+msgid "Activate Account"
+msgstr ""
+
+#: templates/account.html:2 templates/account.html:3 templates/base.html:171
+msgid "My Account"
+msgstr ""
+
+#: templates/account.html:11
+msgid "Profile Photo"
+msgstr ""
+
+#: templates/account.html:16
+msgid "Current photo"
+msgstr ""
+
+#: templates/account.html:24
+msgid "PNG, JPG, or WEBP."
+msgstr ""
+
+#: templates/account.html:29 templates/documents.html:121
+#: templates/settings.html:31
+msgid "Upload"
+msgstr ""
+
+#: templates/account.html:32
+msgid "Remove your photo?"
+msgstr ""
+
+#: templates/account.html:35
+msgid "Remove Photo"
+msgstr ""
+
+#: templates/account.html:44 templates/employee_detail.html:25
+msgid "Basic Information"
+msgstr ""
+
+#: templates/account.html:52 templates/forgot_password.html:56
+#: templates/users.html:107 templates/users.html:244 templates/users.html:299
+msgid "Email"
+msgstr ""
+
+#: templates/account.html:60 templates/employee_detail.html:30
+msgid "First Name"
+msgstr ""
+
+#: templates/account.html:64 templates/employee_detail.html:35
+msgid "Last Name"
+msgstr ""
+
+#: templates/account.html:68
+msgid "Position"
+msgstr ""
+
+#: templates/account.html:70
+msgid "e.g. Workforce Planner"
+msgstr ""
+
+#: templates/account.html:73
+msgid "I work for"
+msgstr ""
+
+#: templates/account.html:75
+msgid "— Not set —"
+msgstr ""
+
+#: templates/account.html:76
+msgid "A Project"
+msgstr ""
+
+#: templates/account.html:77
+msgid "A Department"
+msgstr ""
+
+#: templates/account.html:81 templates/account.html:142 templates/base.html:37
+#: templates/projects_admin.html:63 templates/users.html:336
+msgid "Project"
+msgstr ""
+
+#: templates/account.html:89
+msgid "Department"
+msgstr ""
+
+#: templates/account.html:98 templates/schedule_detail.html:138
+#: templates/shift_templates.html:148 templates/users.html:190
+#: templates/users.html:317
+msgid "Save"
+msgstr ""
+
+#: templates/account.html:106
+msgid "Appearance & Language"
+msgstr ""
+
+#: templates/account.html:108
+msgid "Theme"
+msgstr ""
+
+#: templates/account.html:111 templates/base.html:193
+msgid "Light"
+msgstr ""
+
+#: templates/account.html:111 templates/base.html:193
+msgid "Hybrid"
+msgstr ""
+
+#: templates/account.html:111 templates/base.html:193
+msgid "Dark"
+msgstr ""
+
+#: templates/account.html:121
+msgid "Language"
+msgstr ""
+
+#: templates/account.html:131
+msgid "Access"
+msgstr ""
+
+#: templates/account.html:136
+#, python-format
+msgid "Global %(role)s — access to every project, present and future."
+msgstr ""
+
+#: templates/account.html:142 templates/users.html:108 templates/users.html:262
+msgid "Role"
+msgstr ""
+
+#: templates/account.html:154
+msgid "No project access."
+msgstr ""
+
+#: templates/account.html:161
+msgid "Security"
+msgstr ""
+
+#: templates/account.html:166
+msgid "Current Password"
+msgstr ""
+
+#: templates/account.html:170 templates/users.html:304
+msgid "New Password"
+msgstr ""
+
+#: templates/account.html:174
+msgid "Confirm New Password"
+msgstr ""
+
+#: templates/account.html:178
+msgid "Change Password"
+msgstr ""
+
+#: templates/account.html:183
+msgid "Don't know your current password?"
+msgstr ""
+
+#: templates/account.html:185
+msgid "Send a password reset link to your email?"
+msgstr ""
+
+#: templates/account.html:188
+msgid "Email Me a Reset Link"
+msgstr ""
+
+#: templates/ai_chat.html:2 templates/ai_chat.html:3 templates/base.html:130
+msgid "AI Assistant"
+msgstr ""
+
+#: templates/ai_chat.html:11
+msgid "Conversations"
+msgstr ""
+
+#: templates/ai_chat.html:26
+msgid "Delete this conversation?"
+msgstr ""
+
+#: templates/ai_chat.html:27 templates/employee_detail.html:11
+#: templates/forecast_detail.html:9 templates/forecast_list.html:39
+#: templates/schedule_detail.html:13 templates/shift_templates.html:98
+msgid "Delete"
+msgstr ""
+
+#: templates/ai_chat.html:34
+msgid "No conversations yet."
+msgstr ""
+
+#: templates/ai_chat.html:46
+msgid "Workforce AI Assistant"
+msgstr ""
+
+#: templates/ai_chat.html:47
+msgid "Ask anything about your employees, teams, schedules, and coverage."
+msgstr ""
+
+#: templates/ai_chat.html:51 templates/ai_chat.html:113
+msgid "How many employees are in each team?"
+msgstr ""
+
+#: templates/ai_chat.html:52 templates/ai_chat.html:114
+msgid "List all employees who work weekends."
+msgstr ""
+
+#: templates/ai_chat.html:53
+msgid "What is the average FTE across all teams?"
+msgstr ""
+
+#: templates/ai_chat.html:54
+msgid "Which employees work morning shifts only?"
+msgstr ""
+
+#: templates/ai_chat.html:55
+#, python-format
+msgid "Summarise the %(project)s workforce."
+msgstr ""
+
+#: templates/ai_chat.html:56
+msgid "Who are the trainees in the system?"
+msgstr ""
+
+#: templates/ai_chat.html:82
+msgid "Start by asking a question below."
+msgstr ""
+
+#: templates/ai_chat.html:115
+msgid "Summarise the workforce."
+msgstr ""
+
+#: templates/ai_chat.html:116
+msgid "Which teams have the most agents?"
+msgstr ""
+
+#: templates/ai_chat.html:129
+msgid "Ask anything about your workforce…"
+msgstr ""
+
+#: templates/ai_chat.html:138
+msgid "Context includes all employees, teams, and schedules."
+msgstr ""
+
+#: templates/ai_chat.html:227
+msgid "⚠️ Network error: "
+msgstr ""
+
+#: templates/ai_settings.html:2 templates/ai_settings.html:3
+#: templates/ai_settings.html:10 templates/base.html:138
+msgid "AI Settings"
+msgstr ""
+
+#: templates/ai_settings.html:11 templates/users.html:159
+msgid "global superadmin only"
+msgstr ""
+
+#: templates/ai_settings.html:15
+#, python-format
+msgid "Applies to every project, not just %(project)s."
+msgstr ""
+
+#: templates/ai_settings.html:24
+msgid "Mistral (EU-hosted)"
+msgstr ""
+
+#: templates/ai_settings.html:24
+msgid "Anthropic (Claude)"
+msgstr ""
+
+#: templates/ai_settings.html:25
+msgid "OpenAI"
+msgstr ""
+
+#: templates/ai_settings.html:25
+msgid "Gemini"
+msgstr ""
+
+#: templates/ai_settings.html:25
+msgid "Ollama (local)"
+msgstr ""
+
+#: templates/ai_settings.html:37
+msgid "Save AI Settings"
+msgstr ""
+
+#: templates/base.html:69
+msgid "Main"
+msgstr ""
+
+#: templates/base.html:73 templates/dashboard.html:2 templates/dashboard.html:3
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:79
+msgid "Forecast"
+msgstr ""
+
+#: templates/base.html:83
+msgid "People"
+msgstr ""
+
+#: templates/base.html:87 templates/dashboard.html:91
+#: templates/teams_list.html:2 templates/teams_list.html:3
+msgid "Teams"
+msgstr ""
+
+#: templates/base.html:95 templates/employees_list.html:2
+#: templates/employees_list.html:3
+msgid "Employees"
+msgstr ""
+
+#: templates/base.html:100
+msgid "Planning"
+msgstr ""
+
+#: templates/base.html:104 templates/schedule_list.html:2
+#: templates/schedule_list.html:3
+msgid "Schedules"
+msgstr ""
+
+#: templates/base.html:110 templates/shift_templates.html:2
+#: templates/shift_templates.html:3
+msgid "Shift Templates"
+msgstr ""
+
+#: templates/base.html:116 templates/business_parameters.html:2
+#: templates/business_parameters.html:3 templates/business_parameters.html:9
+msgid "Business Parameters"
+msgstr ""
+
+#: templates/base.html:122 templates/documents.html:2
+#: templates/documents.html:3
+msgid "Documents"
+msgstr ""
+
+#: templates/base.html:126
+msgid "Intelligence"
+msgstr ""
+
+#: templates/base.html:131
+msgid "Beta"
+msgstr ""
+
+#: templates/base.html:148 templates/settings.html:2 templates/settings.html:3
+msgid "Settings"
+msgstr ""
+
+#: templates/base.html:154 templates/users.html:2
+msgid "Users"
+msgstr ""
+
+#: templates/base.html:161 templates/projects_admin.html:2
+#: templates/projects_admin.html:3
+msgid "Projects"
+msgstr ""
+
+#: templates/base.html:181 templates/users.html:43
+msgid "global"
+msgstr ""
+
+#: templates/base.html:181
+msgid "this project"
+msgstr ""
+
+#: templates/base.html:186 templates/no_access.html:46
+msgid "Sign out"
+msgstr ""
+
+#: templates/business_parameters.html:26
+msgid "Save Parameters"
+msgstr ""
+
+#: templates/dashboard.html:7
+msgid "New Schedule"
+msgstr ""
+
+#: templates/dashboard.html:19
+msgid "Active Employees"
+msgstr ""
+
+#: templates/dashboard.html:28 templates/forecast_list.html:2
+#: templates/forecast_list.html:3
+msgid "Forecast Periods"
+msgstr ""
+
+#: templates/dashboard.html:37
+msgid "Schedules Generated"
+msgstr ""
+
+#: templates/dashboard.html:46
+msgid "Active Teams"
+msgstr ""
+
+#: templates/dashboard.html:55
+msgid "Forecast Trend"
+msgstr ""
+
+#: templates/dashboard.html:79
+msgid "No forecast data yet."
+msgstr ""
+
+#: templates/dashboard.html:80
+msgid "Upload a forecast"
+msgstr ""
+
+#: templates/dashboard.html:80
+msgid "to see trends here."
+msgstr ""
+
+#: templates/dashboard.html:94
+msgid "View all"
+msgstr ""
+
+#: templates/dashboard.html:124
+msgid "trainee"
+msgstr ""
+
+#: templates/dashboard.html:135
+msgid "No employees yet."
+msgstr ""
+
+#: templates/dashboard.html:141 templates/employees_list.html:209
+msgid "Import from Excel"
+msgstr ""
+
+#: templates/dashboard.html:151
+msgid "Quick Actions"
+msgstr ""
+
+#: templates/dashboard.html:155 templates/forecast_list.html:7
+msgid "Upload New Forecast"
+msgstr ""
+
+#: templates/dashboard.html:158 templates/employees_import.html:2
+#: templates/employees_import.html:3
+msgid "Import Employees"
+msgstr ""
+
+#: templates/dashboard.html:161
+msgid "Add Employee Manually"
+msgstr ""
+
+#: templates/dashboard.html:173
+msgid "Generate"
+msgstr ""
+
+#: templates/dashboard.html:184
+msgid "Recent Schedules"
+msgstr ""
+
+#: templates/dashboard.html:185
+msgid "All"
+msgstr ""
+
+#: templates/dashboard.html:200 templates/forecast_list.html:35
+#: templates/schedule_list.html:77
+msgid "View"
+msgstr ""
+
+#: templates/dashboard.html:204 templates/schedule_list.html:92
+msgid "No schedules yet."
+msgstr ""
+
+#: templates/documents.html:7 templates/documents.html:89
+msgid "Upload Document"
+msgstr ""
+
+#: templates/documents.html:17
+msgid "No documents yet"
+msgstr ""
+
+#: templates/documents.html:18
+msgid "Upload forecasts, schedule exports, HR documents, and more."
+msgstr ""
+
+#: templates/documents.html:20
+msgid "Upload First Document"
+msgstr ""
+
+#: templates/documents.html:28
+#, python-format
+msgid "All (%(n)s)"
+msgstr ""
+
+#: templates/documents.html:69
+msgid "Download"
+msgstr ""
+
+#: templates/documents.html:72 templates/employee_detail.html:9
+#: templates/shift_templates.html:97
+#, python-format
+msgid "Delete %(name)s?"
+msgstr ""
+
+#: templates/documents.html:97
+msgid "Click to select a file"
+msgstr ""
+
+#: templates/documents.html:98
+msgid "Excel, PDF, Word, or any format"
+msgstr ""
+
+#: templates/documents.html:105
+msgid "Category"
+msgstr ""
+
+#: templates/documents.html:113
+msgid "Description"
+msgstr ""
+
+#: templates/documents.html:113 templates/schedule_list.html:36
+msgid "optional"
+msgstr ""
+
+#: templates/documents.html:115
+msgid "e.g. E.ON TFC forecast June–August 2026"
+msgstr ""
+
+#: templates/documents.html:119 templates/employee_detail.html:262
+#: templates/employee_groups.html:67 templates/employees_import.html:46
+#: templates/employees_list.html:221 templates/forecast_new.html:71
+#: templates/schedule_detail.html:137 templates/shift_templates.html:147
+#: templates/teams_list.html:59 templates/users.html:271
+#: templates/users.html:316 templates/users.html:353
+msgid "Cancel"
+msgstr ""
+
+#: templates/employee_detail.html:3 templates/employee_detail.html:4
+msgid "New Employee"
+msgstr ""
+
+#: templates/employee_detail.html:40 templates/employees_import_review.html:31
+#: templates/employees_list.html:84 templates/schedule_detail.html:54
+msgid "Team"
+msgstr ""
+
+#: templates/employee_detail.html:42
+msgid "— Choose a team —"
+msgstr ""
+
+#: templates/employee_detail.html:50 templates/employees_list.html:91
+#: templates/schedule_detail.html:113 templates/team_detail.html:80
+#: templates/users.html:29 templates/users.html:110
+msgid "Status"
+msgstr ""
+
+#: templates/employee_detail.html:60 templates/employees_import_review.html:115
+msgid "Scheduled Together With"
+msgstr ""
+
+#: templates/employee_detail.html:62 templates/users.html:185
+msgid "— none —"
+msgstr ""
+
+#: templates/employee_detail.html:69
+msgid "Everyone in a group works the exact same days/shifts."
+msgstr ""
+
+#: templates/employee_detail.html:70
+msgid "Manage groups"
+msgstr ""
+
+#: templates/employee_detail.html:79
+msgid "Contract & Hours"
+msgstr ""
+
+#: templates/employee_detail.html:84 templates/employees_import_review.html:40
+#, python-format
+msgid "FTE %%"
+msgstr ""
+
+#: templates/employee_detail.html:96 templates/employees_import_review.html:48
+msgid "FTE Mode"
+msgstr ""
+
+#: templates/employee_detail.html:98
+#, python-format
+msgid "Days — works N%% of eligible days, full shift each day"
+msgstr ""
+
+#: templates/employee_detail.html:99
+#, python-format
+msgid "Hours — works every day, but N%% of standard daily hours"
+msgstr ""
+
+#: templates/employee_detail.html:100
+msgid "Combined — reduces both days and hours proportionally"
+msgstr ""
+
+#: templates/employee_detail.html:110
+msgid "Select a mode to see description."
+msgstr ""
+
+#: templates/employee_detail.html:116
+msgid "Shift Template"
+msgstr ""
+
+#: templates/employee_detail.html:126 templates/employee_detail.html:133
+#: templates/employees_list.html:146 templates/employees_list.html:153
+msgid "— Custom hours —"
+msgstr ""
+
+#: templates/employee_detail.html:145
+msgid "Custom Start"
+msgstr ""
+
+#: templates/employee_detail.html:150
+msgid "Custom End"
+msgstr ""
+
+#: templates/employee_detail.html:155
+msgid "Actual Duration"
+msgstr ""
+
+#: templates/employee_detail.html:158
+msgid "Net hours worked (e.g. accounting for a break)."
+msgstr ""
+
+#: templates/employee_detail.html:166
+msgid "Availability"
+msgstr ""
+
+#: templates/employee_detail.html:170
+msgid "Works Saturday"
+msgstr ""
+
+#: templates/employee_detail.html:172 templates/employee_detail.html:182
+#: templates/employee_detail.html:192 templates/employees_import_review.html:84
+#: templates/employees_import_review.html:92
+#: templates/employees_import_review.html:100 templates/employees_list.html:164
+#: templates/employees_list.html:171 templates/employees_list.html:178
+#: templates/team_detail.html:101 templates/team_detail.html:105
+msgid "No"
+msgstr ""
+
+#: templates/employee_detail.html:172 templates/employee_detail.html:182
+#: templates/employee_detail.html:192 templates/employees_import_review.html:84
+#: templates/employees_import_review.html:92
+#: templates/employees_import_review.html:100 templates/employees_list.html:164
+#: templates/employees_list.html:171 templates/employees_list.html:178
+#: templates/team_detail.html:100 templates/team_detail.html:104
+msgid "Yes"
+msgstr ""
+
+#: templates/employee_detail.html:180
+msgid "Works Sunday"
+msgstr ""
+
+#: templates/employee_detail.html:190
+msgid "Works Holidays"
+msgstr ""
+
+#: templates/employee_detail.html:202
+msgid "Day-specific Restrictions"
+msgstr ""
+
+#: templates/employee_detail.html:214
+#: templates/employees_import_review.html:131
+msgid "Any"
+msgstr ""
+
+#: templates/employee_detail.html:215
+msgid "Off (not scheduled)"
+msgstr ""
+
+#: templates/employee_detail.html:229
+#: templates/employees_import_review.html:109
+msgid "Excluded Dates"
+msgstr ""
+
+#: templates/employee_detail.html:233
+msgid "Comma-separated dates (YYYY-MM-DD), or click them on the calendar below."
+msgstr ""
+
+#: templates/employee_detail.html:241
+msgid "Notes & Contract"
+msgstr ""
+
+#: templates/employee_detail.html:245
+msgid "Original Notes (from Excel)"
+msgstr ""
+
+#: templates/employee_detail.html:248
+msgid "Preserved for reference — original Albanian/German text."
+msgstr ""
+
+#: templates/employee_detail.html:252
+msgid "Contract / Scheduling Notes"
+msgstr ""
+
+#: templates/employee_detail.html:255
+msgid "Internal scheduling notes, written by whoever manages this employee."
+msgstr ""
+
+#: templates/employee_detail.html:260
+msgid "Create"
+msgstr ""
+
+#: templates/employee_detail.html:260
+msgid "Save Changes"
+msgstr ""
+
+#: templates/employee_detail.html:274
+#, python-format
+msgid ""
+"Works <strong>N%% of eligible days</strong> each month, with a full shift"
+" on each working day."
+msgstr ""
+
+#: templates/employee_detail.html:275
+#, python-format
+msgid ""
+"Works <strong>every eligible day</strong> but only N%% of standard daily "
+"hours (shorter shifts)."
+msgstr ""
+
+#: templates/employee_detail.html:276
+#, python-format
+msgid ""
+"Reduces <strong>both</strong> working days and shift length "
+"proportionally (√FTE%% each)."
+msgstr ""
+
+#: templates/employee_groups.html:2 templates/employee_groups.html:3
+#: templates/employees_list.html:10
+msgid "Schedule Groups"
+msgstr ""
+
+#: templates/employee_groups.html:9
+msgid "All Employees"
+msgstr ""
+
+#: templates/employee_groups.html:13
+msgid "Add Group"
+msgstr ""
+
+#: templates/employee_groups.html:16 templates/employee_groups.html:117
+msgid "Manage Groups"
+msgstr ""
+
+#: templates/employee_groups.html:24
+msgid ""
+"Employees in the same group are always scheduled identically — same days "
+"off, same shift, every day. Useful for people who want (or need) to "
+"always work together."
+msgstr ""
+
+#: templates/employee_groups.html:25
+msgid ""
+"Assign an employee to a group from their profile page (Contract & Hours →"
+" Scheduled Together With)."
+msgstr ""
+
+#: templates/employee_groups.html:36
+msgid "New Group Name"
+msgstr ""
+
+#: templates/employee_groups.html:38
+msgid "e.g. Kaltrina + Rozana"
+msgstr ""
+
+#: templates/employee_groups.html:42
+msgid "Create Group"
+msgstr ""
+
+#: templates/employee_groups.html:79 templates/teams_list.html:70
+#, python-format
+msgid "Delete %(name)s? Only possible if it has no members."
+msgstr ""
+
+#: templates/employee_groups.html:91 templates/employees_list.html:72
+msgid "No Team"
+msgstr ""
+
+#: templates/employee_groups.html:96
+msgid "No members yet — assign employees to this group from their profile page."
+msgstr ""
+
+#: templates/employee_groups.html:105
+msgid "No schedule groups yet."
+msgstr ""
+
+#: templates/employee_groups.html:106
+msgid "Use \"Add Group\" above to create one."
+msgstr ""
+
+#: templates/employee_groups.html:118 templates/teams_list.html:149
+msgid "Done"
+msgstr ""
+
+#: templates/employees_import.html:9
+msgid "Import Employee Specifications"
+msgstr ""
+
+#: templates/employees_import.html:13
+msgid ""
+"Upload the <strong>Specifikat e punetoreve</strong> Excel file.\n"
+"      Optionally enable <strong>AI parsing</strong> to automatically "
+"interpret Albanian/German notes\n"
+"      into structured shift constraints."
+msgstr ""
+
+#: templates/employees_import.html:23
+msgid "or any employee spec file with the same format"
+msgstr ""
+
+#: templates/employees_import.html:35
+msgid "Use AI to parse employee notes"
+msgstr ""
+
+#: templates/employees_import.html:39
+msgid ""
+"Sends employee notes to <strong>Claude Opus</strong> to extract shift "
+"type, hours, excluded dates,\n"
+"          and day-of-week restrictions from Albanian/German text.\n"
+"          Requires <code>ANTHROPIC_API_KEY</code> in your "
+"<code>.env</code> file."
+msgstr ""
+
+#: templates/employees_import.html:48
+msgid "Parse & Review"
+msgstr ""
+
+#: templates/employees_import_review.html:2
+msgid "Review Import"
+msgstr ""
+
+#: templates/employees_import_review.html:3
+msgid "Review Parsed Employees"
+msgstr ""
+
+#: templates/employees_import_review.html:8
+#, python-format
+msgid "%(n)s employees parsed."
+msgstr ""
+
+#: templates/employees_import_review.html:9
+msgid "Review and adjust the values below before saving to the database."
+msgstr ""
+
+#: templates/employees_import_review.html:35 templates/schedule_list.html:38
+msgid "— None —"
+msgstr ""
+
+#: templates/employees_import_review.html:56 templates/employees_list.html:87
+#: templates/team_detail.html:77
+msgid "Shift"
+msgstr ""
+
+#: templates/employees_import_review.html:65
+msgid "Custom"
+msgstr ""
+
+#: templates/employees_import_review.html:69 templates/forecast_list.html:18
+#: templates/schedule_detail.html:125 templates/shift_templates.html:30
+#: templates/shift_templates.html:68 templates/shift_templates.html:128
+msgid "Start"
+msgstr ""
+
+#: templates/employees_import_review.html:75 templates/forecast_list.html:19
+#: templates/schedule_detail.html:129 templates/shift_templates.html:35
+#: templates/shift_templates.html:68 templates/shift_templates.html:132
+msgid "End"
+msgstr ""
+
+#: templates/employees_import_review.html:98 templates/employees_list.html:90
+#: templates/team_detail.html:79
+msgid "Holidays"
+msgstr ""
+
+#: templates/employees_import_review.html:117
+msgid "Full name of another employee"
+msgstr ""
+
+#: templates/employees_import_review.html:121
+msgid "AI-Parsed Day Restrictions"
+msgstr ""
+
+#: templates/employees_import_review.html:123
+msgid "Mon"
+msgstr ""
+
+#: templates/employees_import_review.html:123
+msgid "Tue"
+msgstr ""
+
+#: templates/employees_import_review.html:123
+msgid "Wed"
+msgstr ""
+
+#: templates/employees_import_review.html:123
+msgid "Thu"
+msgstr ""
+
+#: templates/employees_import_review.html:123
+msgid "Fri"
+msgstr ""
+
+#: templates/employees_import_review.html:123 templates/employees_list.html:88
+msgid "Sat"
+msgstr ""
+
+#: templates/employees_import_review.html:123 templates/employees_list.html:89
+msgid "Sun"
+msgstr ""
+
+#: templates/employees_import_review.html:132
+msgid "Off"
+msgstr ""
+
+#: templates/employees_import_review.html:146
+msgid "AI-Parsed Notes"
+msgstr ""
+
+#: templates/employees_import_review.html:151
+msgid "Original Notes"
+msgstr ""
+
+#: templates/employees_import_review.html:162
+msgid "Back"
+msgstr ""
+
+#: templates/employees_import_review.html:165
+#, python-format
+msgid "Save %(n)s Employees"
+msgstr ""
+
+#: templates/employees_list.html:7
+msgid "Import"
+msgstr ""
+
+#: templates/employees_list.html:13 templates/employees_list.html:233
+msgid "Edit Mode"
+msgstr ""
+
+#: templates/employees_list.html:16
+msgid "Add Employee"
+msgstr ""
+
+#: templates/employees_list.html:27
+msgid "Search by name…"
+msgstr ""
+
+#: templates/employees_list.html:32
+msgid "All statuses"
+msgstr ""
+
+#: templates/employees_list.html:40
+msgid "All teams"
+msgstr ""
+
+#: templates/employees_list.html:47
+msgid "Search"
+msgstr ""
+
+#: templates/employees_list.html:49
+msgid "Clear"
+msgstr ""
+
+#: templates/employees_list.html:53
+#, python-format
+msgid "%(n)s employees"
+msgstr ""
+
+#: templates/employees_list.html:83 templates/schedule_detail.html:53
+#: templates/schedule_list.html:60 templates/shift_templates.html:25
+#: templates/shift_templates.html:68 templates/shift_templates.html:123
+#: templates/team_detail.html:74
+msgid "Name"
+msgstr ""
+
+#: templates/employees_list.html:85 templates/schedule_detail.html:55
+#: templates/team_detail.html:75
+msgid "FTE"
+msgstr ""
+
+#: templates/employees_list.html:86 templates/team_detail.html:76
+msgid "Mode"
+msgstr ""
+
+#: templates/employees_list.html:104
+#, python-format
+msgid "Scheduled together: %(name)s"
+msgstr ""
+
+#: templates/employees_list.html:109
+msgid "— No team —"
+msgstr ""
+
+#: templates/employees_list.html:195 templates/shift_templates.html:93
+#: templates/team_detail.html:117 templates/users.html:71
+#: templates/users.html:284
+msgid "Edit"
+msgstr ""
+
+#: templates/employees_list.html:208
+msgid "No employees found."
+msgstr ""
+
+#: templates/employees_list.html:209
+msgid "or"
+msgstr ""
+
+#: templates/employees_list.html:210
+msgid "add manually"
+msgstr ""
+
+#: templates/employees_list.html:219
+#, python-format
+msgid "Editing %(n)s employees shown above."
+msgstr ""
+
+#: templates/employees_list.html:223
+msgid "Save All Changes"
+msgstr ""
+
+#: templates/employees_list.html:234
+msgid "Exit Edit Mode"
+msgstr ""
+
+#: templates/forecast_detail.html:7 templates/forecast_list.html:38
+msgid "Delete this forecast period?"
+msgstr ""
+
+#: templates/forecast_detail.html:22
+msgid "Total Days"
+msgstr ""
+
+#: templates/forecast_detail.html:31
+msgid "Active Days"
+msgstr ""
+
+#: templates/forecast_detail.html:41
+msgid "Peak KS Agents"
+msgstr ""
+
+#: templates/forecast_detail.html:52
+msgid "Avg Daily Contacts"
+msgstr ""
+
+#: templates/forecast_detail.html:61
+msgid "Daily Contact Volume & Required KS Agents"
+msgstr ""
+
+#: templates/forecast_detail.html:71
+msgid "Daily Breakdown"
+msgstr ""
+
+#: templates/forecast_detail.html:78
+msgid "Date"
+msgstr ""
+
+#: templates/forecast_detail.html:78
+msgid "Day"
+msgstr ""
+
+#: templates/forecast_detail.html:78
+msgid "KW"
+msgstr ""
+
+#: templates/forecast_detail.html:79 templates/forecast_detail.html:126
+msgid "Sync"
+msgstr ""
+
+#: templates/forecast_detail.html:80 templates/forecast_detail.html:132
+msgid "Async"
+msgstr ""
+
+#: templates/forecast_detail.html:81 templates/forecast_detail.html:138
+msgid "Chat"
+msgstr ""
+
+#: templates/forecast_detail.html:82
+msgid "Total"
+msgstr ""
+
+#: templates/forecast_detail.html:83
+msgid "DE Contrib."
+msgstr ""
+
+#: templates/forecast_detail.html:84
+msgid "KS Contacts"
+msgstr ""
+
+#: templates/forecast_detail.html:85
+msgid "KS Agents"
+msgstr ""
+
+#: templates/forecast_detail.html:144
+msgid "KS Agents Required"
+msgstr ""
+
+#: templates/forecast_detail.html:160
+msgid "Contacts"
+msgstr ""
+
+#: templates/forecast_detail.html:163 templates/schedule_detail.html:184
+#: templates/teams_list.html:82
+msgid "Agents"
+msgstr ""
+
+#: templates/forecast_list.html:17 templates/forecast_new.html:24
+msgid "Period Name"
+msgstr ""
+
+#: templates/forecast_list.html:21
+msgid "Imported"
+msgstr ""
+
+#: templates/forecast_list.html:45
+msgid "No forecast periods yet."
+msgstr ""
+
+#: templates/forecast_list.html:45
+msgid "Upload one"
+msgstr ""
+
+#: templates/forecast_new.html:2 templates/forecast_new.html:3
+msgid "Upload Forecast"
+msgstr ""
+
+#: templates/forecast_new.html:11
+msgid "Import E.ON Forecast Data"
+msgstr ""
+
+#: templates/forecast_new.html:16
+msgid "Upload workflow:"
+msgstr ""
+
+#: templates/forecast_new.html:17
+msgid ""
+"Upload the <strong>TFC forecast</strong> (required) and optionally the\n"
+"      <strong>German Abnahmemenge</strong> and <strong>Forecast "
+"Calculation</strong> files.\n"
+"      The system calculates Kosovo's required agents automatically."
+msgstr ""
+
+#: templates/forecast_new.html:26
+msgid "e.g. E.ON June–August 2026"
+msgstr ""
+
+#: templates/forecast_new.html:34
+msgid "TFC Forecast"
+msgstr ""
+
+#: templates/forecast_new.html:36 templates/schedule_detail.html:169
+msgid "Required"
+msgstr ""
+
+#: templates/forecast_new.html:47
+msgid "Abnahmemenge DE"
+msgstr ""
+
+#: templates/forecast_new.html:48
+msgid "German offices contribution"
+msgstr ""
+
+#: templates/forecast_new.html:49 templates/forecast_new.html:62
+msgid "Optional"
+msgstr ""
+
+#: templates/forecast_new.html:60
+msgid "Forecast Calculation"
+msgstr ""
+
+#: templates/forecast_new.html:61
+msgid "Kosovo FTE override"
+msgstr ""
+
+#: templates/forecast_new.html:73
+msgid "Import Forecast"
+msgstr ""
+
+#: templates/forgot_password.html:6 templates/forgot_password.html:42
+msgid "Forgot Password"
+msgstr ""
+
+#: templates/forgot_password.html:43
+msgid "Enter your email and we'll send you a reset link."
+msgstr ""
+
+#: templates/forgot_password.html:61
+msgid "Send Reset Link"
+msgstr ""
+
+#: templates/login.html:6 templates/login.html:70
+msgid "Sign In"
+msgstr ""
+
+#: templates/login.html:59
+msgid "Enter your username"
+msgstr ""
+
+#: templates/login.html:64
+msgid "Enter your password"
+msgstr ""
+
+#: templates/login.html:67
+msgid "Forgot password?"
+msgstr ""
+
+#: templates/no_access.html:6 templates/no_access.html:40
+msgid "No Project Access"
+msgstr ""
+
+#: templates/no_access.html:42
+#, python-format
+msgid ""
+"Your account (%(username)s) isn't assigned to any project yet. Ask a "
+"superadmin to grant you access."
+msgstr ""
+
+#: templates/projects_admin.html:7
+msgid "Add Project"
+msgstr ""
+
+#: templates/projects_admin.html:14
+msgid ""
+"Each project gets its own fully isolated database — nothing here is "
+"shared with any other client. A new project is ready to use immediately, "
+"no restart needed. Only global admins/superadmins see this page."
+msgstr ""
+
+#: templates/projects_admin.html:20
+msgid "New Project"
+msgstr ""
+
+#: templates/projects_admin.html:25
+msgid "Project Key"
+msgstr ""
+
+#: templates/projects_admin.html:27
+msgid "e.g. flixbus"
+msgstr ""
+
+#: templates/projects_admin.html:28
+msgid "Lowercase letters, numbers, - or _ only. Used internally, never shown."
+msgstr ""
+
+#: templates/projects_admin.html:31
+msgid "Display Name"
+msgstr ""
+
+#: templates/projects_admin.html:33
+msgid "e.g. FlixBus Germany"
+msgstr ""
+
+#: templates/projects_admin.html:36
+msgid "Company"
+msgstr ""
+
+#: templates/projects_admin.html:40 templates/projects_admin.html:64
+msgid "Client"
+msgstr ""
+
+#: templates/projects_admin.html:42
+msgid "e.g. FlixBus (mobility)"
+msgstr ""
+
+#: templates/projects_admin.html:45 templates/projects_admin.html:65
+msgid "Site"
+msgstr ""
+
+#: templates/projects_admin.html:47
+msgid "e.g. Kosovo (Prishtina)"
+msgstr ""
+
+#: templates/projects_admin.html:51
+msgid "Create Project"
+msgstr ""
+
+#: templates/projects_admin.html:82
+msgid "Switch to"
+msgstr ""
+
+#: templates/projects_admin.html:87
+msgid "No projects yet."
+msgstr ""
+
+#: templates/reset_password.html:6 templates/reset_password.html:42
+msgid "Reset Password"
+msgstr ""
+
+#: templates/reset_password.html:44
+#, python-format
+msgid "Choose a new password for %(username)s."
+msgstr ""
+
+#: templates/reset_password.html:61
+msgid "Request a new reset link"
+msgstr ""
+
+#: templates/reset_password.html:67
+msgid "New password"
+msgstr ""
+
+#: templates/reset_password.html:72
+msgid "Confirm new password"
+msgstr ""
+
+#: templates/reset_password.html:77
+msgid "Update Password"
+msgstr ""
+
+#: templates/schedule_detail.html:8
+msgid "Export Excel"
+msgstr ""
+
+#: templates/schedule_detail.html:11 templates/schedule_list.html:83
+msgid "Delete this schedule?"
+msgstr ""
+
+#: templates/schedule_detail.html:23
+#, python-format
+msgid "Daily Coverage — %(month)s %(year)s"
+msgstr ""
+
+#: templates/schedule_detail.html:37
+msgid "Full"
+msgstr ""
+
+#: templates/schedule_detail.html:38
+msgid "Morning"
+msgstr ""
+
+#: templates/schedule_detail.html:39
+msgid "Afternoon"
+msgstr ""
+
+#: templates/schedule_detail.html:41 templates/schedule_detail.html:117
+msgid "Day Off"
+msgstr ""
+
+#: templates/schedule_detail.html:42
+msgid "Weekend Off"
+msgstr ""
+
+#: templates/schedule_detail.html:43 templates/schedule_detail.html:118
+msgid "Holiday"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Mo"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Tu"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "We"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Th"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Fr"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Sa"
+msgstr ""
+
+#: templates/schedule_detail.html:58 templates/schedule_detail.html:151
+msgid "Su"
+msgstr ""
+
+#: templates/schedule_detail.html:105
+msgid "Override Assignment"
+msgstr ""
+
+#: templates/schedule_detail.html:116
+msgid "Work"
+msgstr ""
+
+#: templates/schedule_detail.html:119
+msgid "Unavailable"
+msgstr ""
+
+#: templates/schedule_detail.html:161
+msgid "Scheduled"
+msgstr ""
+
+#: templates/schedule_list.html:10
+msgid "Generate New Schedule"
+msgstr ""
+
+#: templates/schedule_list.html:14
+msgid "Schedule Name"
+msgstr ""
+
+#: templates/schedule_list.html:20
+msgid "Month"
+msgstr ""
+
+#: templates/schedule_list.html:30
+msgid "Year"
+msgstr ""
+
+#: templates/schedule_list.html:36
+msgid "Link to Forecast Period"
+msgstr ""
+
+#: templates/schedule_list.html:45
+msgid "Generate Schedule"
+msgstr ""
+
+#: templates/schedule_list.html:55
+msgid "All Schedules"
+msgstr ""
+
+#: templates/schedule_list.html:61
+msgid "Period"
+msgstr ""
+
+#: templates/schedule_list.html:62
+msgid "Generated"
+msgstr ""
+
+#: templates/settings.html:11
+msgid "Project Logo"
+msgstr ""
+
+#: templates/settings.html:15
+msgid "Current logo"
+msgstr ""
+
+#: templates/settings.html:24
+#, python-format
+msgid "Shown in the sidebar and project switcher for %(project)s."
+msgstr ""
+
+#: templates/settings.html:25
+msgid "PNG, JPG, SVG, or WEBP."
+msgstr ""
+
+#: templates/settings.html:34
+msgid "Remove the current logo?"
+msgstr ""
+
+#: templates/settings.html:37
+msgid "Remove Logo"
+msgstr ""
+
+#: templates/shift_templates.html:10
+msgid "Add Shift"
+msgstr ""
+
+#: templates/shift_templates.html:27
+msgid "e.g. Split"
+msgstr ""
+
+#: templates/shift_templates.html:45 templates/shift_templates.html:141
+msgid "Color"
+msgstr ""
+
+#: templates/shift_templates.html:51
+msgid "Make this the default shift"
+msgstr ""
+
+#: templates/shift_templates.html:54
+msgid "Save Shift"
+msgstr ""
+
+#: templates/shift_templates.html:69
+msgid "Default"
+msgstr ""
+
+#: templates/shift_templates.html:87
+msgid "Set as default"
+msgstr ""
+
+#: templates/shift_templates.html:116
+msgid "Edit Shift Template"
+msgstr ""
+
+#: templates/team_detail.html:7
+msgid "All Teams"
+msgstr ""
+
+#: templates/team_detail.html:11
+msgid "Rename / Manage"
+msgstr ""
+
+#: templates/team_detail.html:28
+msgid "Active Agents"
+msgstr ""
+
+#: templates/team_detail.html:38 templates/teams_list.html:86
+msgid "Avg FTE"
+msgstr ""
+
+#: templates/team_detail.html:47
+msgid "Work Weekends"
+msgstr ""
+
+#: templates/team_detail.html:56
+msgid "Trainees"
+msgstr ""
+
+#: templates/team_detail.html:65
+#, python-format
+msgid "All Members (%(n)s)"
+msgstr ""
+
+#: templates/team_detail.html:67
+msgid "Add to Team"
+msgstr ""
+
+#: templates/team_detail.html:78
+msgid "Weekends"
+msgstr ""
+
+#: templates/team_detail.html:81
+msgid "Notes"
+msgstr ""
+
+#: templates/teams_list.html:10
+msgid "Add Team"
+msgstr ""
+
+#: templates/teams_list.html:13 templates/teams_list.html:148
+msgid "Manage Teams"
+msgstr ""
+
+#: templates/teams_list.html:28
+msgid "New Team Name"
+msgstr ""
+
+#: templates/teams_list.html:30
+msgid "e.g. Team Rinor"
+msgstr ""
+
+#: templates/teams_list.html:34
+msgid "Create Team"
+msgstr ""
+
+#: templates/teams_list.html:75
+msgid "View detail"
+msgstr ""
+
+#: templates/teams_list.html:90
+msgid "Work WE"
+msgstr ""
+
+#: templates/teams_list.html:96
+msgid "Shift distribution"
+msgstr ""
+
+#: templates/teams_list.html:111
+msgid "Members (preview)"
+msgstr ""
+
+#: templates/teams_list.html:124
+#, python-format
+msgid "+%(n)s more →"
+msgstr ""
+
+#: templates/teams_list.html:136
+msgid "No teams yet."
+msgstr ""
+
+#: templates/teams_list.html:137
+msgid "Use \"Add Team\" above, or"
+msgstr ""
+
+#: templates/teams_list.html:137
+msgid "import employees"
+msgstr ""
+
+#: templates/users.html:3
+msgid "User Management"
+msgstr ""
+
+#: templates/users.html:7
+msgid "Invite User"
+msgstr ""
+
+#: templates/users.html:14
+#, python-format
+msgid ""
+"Showing everyone with access to %(project)s (the project you're currently"
+" in). Switch projects from the sidebar to manage another project's users."
+msgstr ""
+
+#: templates/users.html:19
+#, python-format
+msgid "Users with access to %(project)s"
+msgstr ""
+
+#: templates/users.html:27
+msgid "Role here"
+msgstr ""
+
+#: templates/users.html:28
+msgid "Other projects"
+msgstr ""
+
+#: templates/users.html:30
+msgid "Created"
+msgstr ""
+
+#: templates/users.html:40 templates/users.html:179
+msgid "you"
+msgstr ""
+
+#: templates/users.html:52 templates/users.html:123
+msgid "all projects"
+msgstr ""
+
+#: templates/users.html:76
+msgid "Grant Access"
+msgstr ""
+
+#: templates/users.html:81
+#, python-format
+msgid "Remove %(name)s's project-specific role override for %(project)s?"
+msgstr ""
+
+#: templates/users.html:81
+#, python-format
+msgid " Their global %(role)s role will still apply."
+msgstr ""
+
+#: templates/users.html:82
+msgid "Remove"
+msgstr ""
+
+#: templates/users.html:88
+msgid "No users found."
+msgstr ""
+
+#: templates/users.html:100
+msgid "Invitations"
+msgstr ""
+
+#: templates/users.html:109 templates/users.html:252
+msgid "Scope"
+msgstr ""
+
+#: templates/users.html:111
+msgid "Sent"
+msgstr ""
+
+#: templates/users.html:131
+msgid "Resend"
+msgstr ""
+
+#: templates/users.html:136
+#, python-format
+msgid "Revoke the invite to %(email)s?"
+msgstr ""
+
+#: templates/users.html:137
+msgid "Revoke"
+msgstr ""
+
+#: templates/users.html:148
+msgid ""
+"Email is in dry-run mode — invite links are printed to the server log, "
+"not actually emailed."
+msgstr ""
+
+#: templates/users.html:158
+msgid "Global Roles"
+msgstr ""
+
+#: templates/users.html:163
+#, python-format
+msgid ""
+"A global role applies to <strong>every project</strong>, present and "
+"future — not just %(project)s. Only a global superadmin can grant or "
+"change these."
+msgstr ""
+
+#: templates/users.html:169
+msgid "Global role"
+msgstr ""
+
+#: templates/users.html:205
+msgid "Role Reference"
+msgstr ""
+
+#: templates/users.html:210
+msgid "Read-only access. Cannot make any changes."
+msgstr ""
+
+#: templates/users.html:211
+msgid ""
+"Full operational access: employees, forecasts, schedules, documents, AI "
+"chat."
+msgstr ""
+
+#: templates/users.html:212
+msgid "Editor + Settings, teams, and managing who has access to this project."
+msgstr ""
+
+#: templates/users.html:213
+msgid "Reserved for the global tier — see below. Not grantable per-project."
+msgstr ""
+
+#: templates/users.html:224
+msgid ""
+"<strong>Global roles</strong> (viewer/editor/admin/superadmin) apply to "
+"every project automatically,\n"
+"        present and future, instead of one specific project. Only "
+"<strong>global superadmin</strong>\n"
+"        additionally unlocks AI/technical settings. Someone's effective "
+"role in a project is always the\n"
+"        higher of their global role and any project-specific grant."
+msgstr ""
+
+#: templates/users.html:238
+#, python-format
+msgid "Invite to %(project)s"
+msgstr ""
+
+#: templates/users.html:247
+msgid ""
+"We'll email them a link to choose their own username and password. If "
+"this email already has an account, access is granted immediately instead."
+msgstr ""
+
+#: templates/users.html:254
+#, python-format
+msgid "This project (%(project)s) only"
+msgstr ""
+
+#: templates/users.html:255
+msgid "Global — every project, present and future"
+msgstr ""
+
+#: templates/users.html:272
+msgid "Send Invite"
+msgstr ""
+
+#: templates/users.html:290
+#, python-format
+msgid "Role in %(project)s"
+msgstr ""
+
+#: templates/users.html:301
+msgid "Needed for \"forgot password\" to work for this account."
+msgstr ""
+
+#: templates/users.html:304
+msgid "leave blank to keep"
+msgstr ""
+
+#: templates/users.html:306
+msgid "Leave blank to keep current"
+msgstr ""
+
+#: templates/users.html:311
+msgid "Active account"
+msgstr ""
+
+#: templates/users.html:330 templates/users.html:354
+msgid "Grant"
+msgstr ""
+
+#: templates/users.html:330
+msgid "access"
+msgstr ""
+
+#: templates/users.html:344
+msgid "Role there"
+msgstr ""
+
+#: templates/users.html:386
+msgid ""
+"This sets a project-specific override on top of their global role — leave"
+" it matching their effective role above to change nothing."
+msgstr ""
+

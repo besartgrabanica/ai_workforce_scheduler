@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Projects') }}{% endblock %}
+{% block page_title %}{{ _('Projects') }}{% endblock %}
+
+{% block topbar_actions %}
+<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addProjectForm">
+  <i class="bi bi-plus-lg me-1"></i>{{ _('Add Project') }}
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-light border small mb-4">
+  <i class="bi bi-info-circle me-1"></i>
+  {{ _('Each project gets its own fully isolated database — nothing here is shared with any other client. A new project is ready to use immediately, no restart needed. Only global admins/superadmins see this page.') }}
+</div>
+
+<!-- Add project form (collapsed by default) -->
+<div class="collapse mb-4" id="addProjectForm">
+  <div class="card">
+    <div class="card-header"><i class="bi bi-plus-circle me-2 text-primary"></i>{{ _('New Project') }}</div>
+    <div class="card-body">
+      <form method="POST">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold small">{{ _('Project Key') }} <span class="text-danger">*</span></label>
+            <input type="text" name="key" class="form-control form-control-sm"
+                   placeholder="{{ _('e.g. flixbus') }}" pattern="[a-z0-9][a-z0-9_-]*" required>
+            <div class="form-text">{{ _('Lowercase letters, numbers, - or _ only. Used internally, never shown.') }}</div>
+          </div>
+          <div class="col-md-8">
+            <label class="form-label fw-semibold small">{{ _('Display Name') }} <span class="text-danger">*</span></label>
+            <input type="text" name="display_name" class="form-control form-control-sm"
+                   placeholder="{{ _('e.g. FlixBus Germany') }}" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold small">{{ _('Company') }}</label>
+            <input type="text" name="company" class="form-control form-control-sm" value="KiKxxl-evroTarget">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold small">{{ _('Client') }}</label>
+            <input type="text" name="client" class="form-control form-control-sm"
+                   placeholder="{{ _('e.g. FlixBus (mobility)') }}">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold small">{{ _('Site') }}</label>
+            <input type="text" name="site" class="form-control form-control-sm"
+                   placeholder="{{ _('e.g. Kosovo (Prishtina)') }}">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-3">
+          <i class="bi bi-check me-1"></i>{{ _('Create Project') }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Project') }}</th>
+          <th>{{ _('Client') }}</th>
+          <th>{{ _('Site') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in projects %}
+        <tr>
+          <td>
+            <span class="shift-dot" style="background:{{ project_colors.get(p.key, '#64748b') }}"></span>
+            <span class="fw-medium">{{ p.display_name }}</span>
+            <span class="text-muted small">({{ p.key }})</span>
+          </td>
+          <td class="small text-muted">{{ p.client or '—' }}</td>
+          <td class="small text-muted">{{ p.site or '—' }}</td>
+          <td class="text-end">
+            <form action="{{ url_for('switch_project') }}" method="POST" class="d-inline">
+              <input type="hidden" name="project" value="{{ p.key }}">
+              <button type="submit" class="btn btn-xs btn-outline-primary">{{ _('Switch to') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-muted text-center py-3">{{ _('No projects yet.') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

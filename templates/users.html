@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Users') }}{% endblock %}
+{% block page_title %}{{ _('User Management') }}{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#inviteUserModal">
+  <i class="bi bi-envelope-plus me-1"></i>{{ _('Invite User') }}
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-info small">
+  <i class="bi bi-info-circle me-1"></i>
+  {{ _('Showing everyone with access to %(project)s (the project you\'re currently in). Switch projects from the sidebar to manage another project\'s users.', project='<strong>' ~ PROJECT.display_name ~ '</strong>') | safe }}
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-people me-2 text-primary"></i>{{ _('Users with access to %(project)s', project=PROJECT.display_name) }}
+    <span class="badge bg-secondary ms-1">{{ users|length }}</span>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Username') }}</th>
+          <th>{{ _('Role here') }}</th>
+          <th>{{ _('Other projects') }}</th>
+          <th>{{ _('Status') }}</th>
+          <th>{{ _('Created') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td class="fw-medium">
+            {{ u.username }}
+            {% if u.id == current_user.id %}
+            <span class="tag-chip tag-chip--accent ms-1">{{ _('you') }}</span>
+            {% endif %}
+            {% if u.global_role %}
+            <span class="tag-chip ms-1">{{ _('global') }} {{ _(u.global_role|capitalize) }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% set role_here = u.role_for(active_project) %}
+            <span class="role-badge role-badge--{{ role_here }}">{{ _(role_here|capitalize) }}</span>
+          </td>
+          <td class="small text-muted">
+            {% if u.global_role %}
+              {{ _('all projects') }}
+            {% else %}
+              {% for pr in u.project_roles %}
+                {% if pr.project != active_project %}{{ pr.project }}{% if not loop.last %}, {% endif %}{% endif %}
+              {% endfor %}
+              {% if u.project_roles|selectattr('project', 'ne', active_project)|list|length == 0 %}—{% endif %}
+            {% endif %}
+          </td>
+          <td>
+            {% if u.is_active %}
+            <span class="status-label"><span class="status-dot status-dot--active"></span>{{ _('Active') }}</span>
+            {% else %}
+            <span class="status-label"><span class="status-dot status-dot--neutral"></span>{{ _('Inactive') }}</span>
+            {% endif %}
+          </td>
+          <td class="text-muted small">{{ u.created_at.strftime('%d %b %Y') }}</td>
+          <td class="text-end">
+            <button class="btn btn-xs btn-outline-secondary me-1"
+                    onclick="openEdit({{ u.id }}, '{{ u.username }}', '{{ role_here or '' }}', {{ '1' if u.is_active else '0' }}, {{ 'true' if u.global_role else 'false' }}, '{{ u.email or '' }}')">
+              {{ _('Edit') }}
+            </button>
+            {% if not u.global_role and other_projects %}
+            <button class="btn btn-xs btn-outline-primary me-1"
+                    onclick="openGrant({{ u.id }}, '{{ u.username }}')">
+              {{ _('Grant Access') }}
+            </button>
+            {% endif %}
+            {% if u.id != current_user.id %}
+            <form action="{{ url_for('user_delete', user_id=u.id) }}" method="POST" class="d-inline"
+                  onsubmit="return confirm({{ (_('Remove %(name)s\'s project-specific role override for %(project)s?', name=u.username, project=PROJECT.display_name) ~ (_(' Their global %(role)s role will still apply.', role=_(u.global_role|capitalize)) if u.global_role else '')) | tojson | forceescape }})">
+              <button type="submit" class="btn btn-xs btn-outline-danger">{{ _('Remove') }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">{{ _('No users found.') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% set all_invites = project_invites + global_invites %}
+{% if all_invites %}
+<!-- ── Pending / recent invitations ─────────────────────────────────────────── -->
+<div class="card mt-3">
+  <div class="card-header">
+    <i class="bi bi-envelope-paper me-2 text-primary"></i>{{ _('Invitations') }}
+    <span class="badge bg-secondary ms-1">{{ all_invites|length }}</span>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Email') }}</th>
+          <th>{{ _('Role') }}</th>
+          <th>{{ _('Scope') }}</th>
+          <th>{{ _('Status') }}</th>
+          <th>{{ _('Sent') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set status_dots = {'pending': 'pending', 'accepted': 'active', 'expired': 'neutral', 'revoked': 'revoked'} %}
+        {% for inv in all_invites %}
+        <tr>
+          <td class="fw-medium">{{ inv.email }}</td>
+          <td>
+            <span class="role-badge role-badge--{{ inv.role }}">{{ _(inv.role|capitalize) }}</span>
+          </td>
+          <td class="small text-muted">{{ _('all projects') if not inv.project else PROJECT.display_name if inv.project == active_project else inv.project }}</td>
+          <td>
+            <span class="status-label"><span class="status-dot status-dot--{{ status_dots[inv.status] }}"></span>{{ _(inv.status|capitalize) }}</span>
+          </td>
+          <td class="text-muted small">{{ inv.created_at.strftime('%d %b %Y') }}</td>
+          <td class="text-end">
+            {% if inv.status in ('pending', 'expired') %}
+            <form action="{{ url_for('invitation_resend', invite_id=inv.id) }}" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-xs btn-outline-secondary me-1">{{ _('Resend') }}</button>
+            </form>
+            {% endif %}
+            {% if not inv.accepted_at and not inv.revoked_at %}
+            <form action="{{ url_for('invitation_revoke', invite_id=inv.id) }}" method="POST" class="d-inline"
+                  onsubmit="return confirm({{ _('Revoke the invite to %(email)s?', email=inv.email) | tojson | forceescape }})">
+              <button type="submit" class="btn btn-xs btn-outline-danger">{{ _('Revoke') }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if mail_dry_run %}
+  <div class="card-footer small text-muted">
+    <i class="bi bi-info-circle me-1"></i>{{ _('Email is in dry-run mode — invite links are printed to the server log, not actually emailed.') }}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if current_user.is_technical_admin %}
+<!-- ── Global roles (technical admin only) ─────────────────────────────────── -->
+<div class="card mt-3">
+  <div class="card-header">
+    <i class="bi bi-globe2 me-2 text-primary"></i>{{ _('Global Roles') }}
+    <span class="tag-chip tag-chip--accent ms-1" style="font-size:.65rem">{{ _('global superadmin only') }}</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="px-3 pt-3 small text-muted">
+      {{ _('A global role applies to <strong>every project</strong>, present and future — not just %(project)s. Only a global superadmin can grant or change these.', project=PROJECT.display_name) | safe }}
+    </div>
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Username') }}</th>
+          <th>{{ _('Global role') }}</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in all_identities %}
+        <tr>
+          <td class="fw-medium">
+            {{ u.username }}
+            {% if u.id == current_user.id %}
+            <span class="tag-chip tag-chip--accent ms-1">{{ _('you') }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <form action="{{ url_for('user_set_global_role', user_id=u.id) }}" method="POST" class="d-flex gap-2">
+              <select name="global_role" class="form-select form-select-sm" style="max-width:220px">
+                <option value="">{{ _('— none —') }}</option>
+                {% for r in roles %}
+                <option value="{{ r }}" {% if u.global_role == r %}selected{% endif %}>{{ _(r|capitalize) }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-xs btn-outline-primary">{{ _('Save') }}</button>
+            </form>
+          </td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Role reference -->
+<div class="card mt-3">
+  <div class="card-header small fw-bold text-muted text-uppercase">
+    <i class="bi bi-shield me-2"></i>{{ _('Role Reference') }}
+  </div>
+  <div class="card-body">
+    <div class="row g-2">
+      {% for role, desc in [
+        ('viewer',     _('Read-only access. Cannot make any changes.')),
+        ('editor',     _('Full operational access: employees, forecasts, schedules, documents, AI chat.')),
+        ('admin',      _('Editor + Settings, teams, and managing who has access to this project.')),
+        ('superadmin', _('Reserved for the global tier — see below. Not grantable per-project.')),
+      ] %}
+      <div class="col-md-6 col-xl-4">
+        <div class="d-flex align-items-start gap-2">
+          <span class="role-badge role-badge--{{ role }} mt-1" style="min-width:90px; text-align:center">{{ _(role|capitalize) }}</span>
+          <span class="small text-muted">{{ desc }}</span>
+        </div>
+      </div>
+      {% endfor %}
+      <div class="col-12 mt-2 small text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        {% trans %}<strong>Global roles</strong> (viewer/editor/admin/superadmin) apply to every project automatically,
+        present and future, instead of one specific project. Only <strong>global superadmin</strong>
+        additionally unlocks AI/technical settings. Someone's effective role in a project is always the
+        higher of their global role and any project-specific grant.{% endtrans %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Invite user modal -->
+<div class="modal fade" id="inviteUserModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title"><i class="bi bi-envelope-plus me-2"></i>{{ _('Invite to %(project)s', project=PROJECT.display_name) }}</h6>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ url_for('user_invite') }}" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('Email') }}</label>
+            <input type="email" name="email" class="form-control form-control-sm" required>
+            <div class="form-text">
+              {{ _("We'll email them a link to choose their own username and password. If this email already has an account, access is granted immediately instead.") }}
+            </div>
+          </div>
+          {% if current_user.is_technical_admin %}
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('Scope') }}</label>
+            <select name="scope" class="form-select form-select-sm" id="invite-scope" onchange="onInviteScopeChange()">
+              <option value="project">{{ _('This project (%(project)s) only', project=PROJECT.display_name) }}</option>
+              <option value="global">{{ _('Global — every project, present and future') }}</option>
+            </select>
+          </div>
+          {% else %}
+          <input type="hidden" name="scope" value="project">
+          {% endif %}
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('Role') }}</label>
+            <select name="role" class="form-select form-select-sm" id="invite-role">
+              {% for r in roles if r != 'superadmin' %}
+              <option value="{{ r }}" {% if r == 'editor' %}selected{% endif %}>{{ _(r|capitalize) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+          <button type="submit" class="btn btn-sm btn-primary">{{ _('Send Invite') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit user modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title"><i class="bi bi-pencil me-2"></i>{{ _('Edit') }} <span id="edit-uname"></span></h6>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="edit-form" method="POST">
+        <div class="modal-body">
+          <div class="mb-3" id="edit-role-wrap">
+            <label class="form-label small fw-semibold">{{ _('Role in %(project)s', project=PROJECT.display_name) }}</label>
+            <select name="role" id="edit-role" class="form-select form-select-sm">
+              {% for r in roles if r != 'superadmin' %}
+              <option value="{{ r }}">{{ _(r|capitalize) }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text" id="edit-role-hint"></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('Email') }}</label>
+            <input type="email" name="email" id="edit-email" class="form-control form-control-sm">
+            <div class="form-text">{{ _('Needed for "forgot password" to work for this account.') }}</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('New Password') }} <span class="text-muted">({{ _('leave blank to keep') }})</span></label>
+            <input type="password" name="password" class="form-control form-control-sm"
+                   placeholder="{{ _('Leave blank to keep current') }}">
+          </div>
+          <div class="mb-1">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="is_active" value="1" id="edit-active">
+              <label class="form-check-label small" for="edit-active">{{ _('Active account') }}</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+          <button type="submit" class="btn btn-sm btn-primary">{{ _('Save') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Grant access to another project modal -->
+{% if other_projects %}
+<div class="modal fade" id="grantModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title"><i class="bi bi-globe me-2"></i>{{ _('Grant') }} <span id="grant-uname"></span> {{ _('access') }}</h6>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="grant-form" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('Project') }}</label>
+            <select name="project" class="form-select form-select-sm">
+              {% for p in other_projects %}
+              <option value="{{ p }}">{{ p }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('Role there') }}</label>
+            <select name="role" class="form-select form-select-sm">
+              {% for r in roles if r != 'superadmin' %}
+              <option value="{{ r }}" {% if r == 'editor' %}selected{% endif %}>{{ _(r|capitalize) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+          <button type="submit" class="btn btn-sm btn-primary">{{ _('Grant') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function onInviteScopeChange() {
+  const scope = document.getElementById('invite-scope').value;
+  const roleSelect = document.getElementById('invite-role');
+  const hasSuperadmin = [...roleSelect.options].some(o => o.value === 'superadmin');
+  if (scope === 'global' && !hasSuperadmin) {
+    const opt = document.createElement('option');
+    opt.value = 'superadmin';
+    opt.textContent = {{ _('Superadmin') | tojson }};
+    roleSelect.appendChild(opt);
+  } else if (scope !== 'global' && hasSuperadmin) {
+    roleSelect.querySelector('option[value="superadmin"]').remove();
+    if (roleSelect.value === 'superadmin') roleSelect.value = 'editor';
+  }
+}
+
+const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+function openEdit(id, username, role, isActive, hasGlobalRole, email) {
+  document.getElementById('edit-uname').textContent = username;
+  document.getElementById('edit-form').action = '/users/' + id + '/edit';
+  document.getElementById('edit-role').value = role;
+  document.getElementById('edit-role-hint').textContent = hasGlobalRole
+    ? {{ _('This sets a project-specific override on top of their global role — leave it matching their effective role above to change nothing.') | tojson }}
+    : '';
+  document.getElementById('edit-email').value = email || '';
+  document.getElementById('edit-active').checked = isActive === 1 || isActive === '1';
+  document.querySelector('#editUserModal input[type="password"]').value = '';
+  editModal.show();
+}
+
+{% if other_projects %}
+const grantModal = new bootstrap.Modal(document.getElementById('grantModal'));
+function openGrant(id, username) {
+  document.getElementById('grant-uname').textContent = username;
+  document.getElementById('grant-form').action = '/users/' + id + '/grant';
+  grantModal.show();
+}
+{% endif %}
+</script>
+{% endblock %}

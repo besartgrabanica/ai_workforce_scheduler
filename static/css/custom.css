@@ -1,0 +1,1145 @@
+/* ── Variables ─────────────────────────────────────────────────────────── */
+/* Sidebar theme decided: Light & Navy (soft off-white sidebar, deep navy
+   accent) — baked in as the real defaults below, no longer a toggle. */
+:root {
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+  --sidebar-bg: #faf9f6;
+  --sidebar-border: #e8e5dc;
+  --sidebar-text: #6b7280;
+  --sidebar-active-bg: #f1efe9;
+  --sidebar-active-text: #1e2a4a;
+  --sidebar-eyebrow: #3f5578;
+  --primary: #1e2a4a;
+  --primary-rgb: 30, 42, 74;
+  --primary-light: #e7ebf3;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+
+  /* Content canvas deepened + navy-tinted so it reads as a distinct layer
+     from the near-white sidebar, with cards lifting off it in turn. */
+  --content-bg: #e1e7f1;
+  --topbar-bg: #ffffff;
+  --topbar-border: #d2dae8;
+  --card-bg: #ffffff;
+  --card-border: #ccd5e6;
+  --card-shadow: 0 2px 10px rgba(30, 42, 74, .10);
+  --body-text: #1e293b;
+  --heading-text: #0f172a;
+  --muted-text: #64748b;
+  --nav-label-color: #9a9488;
+  --logo-chip-bg: transparent;
+
+  /* Let Bootstrap's own components (btn-primary, links, focus rings, etc.)
+     follow the same accent color as the rest of the app instead of
+     Bootstrap's stock blue — Bootstrap 5.3's component CSS reads --bs-primary. */
+  --bs-primary: var(--primary);
+  --bs-primary-rgb: var(--primary-rgb);
+  --bs-link-color: var(--primary);
+  --bs-link-color-rgb: var(--primary-rgb);
+  --bs-link-hover-color: var(--primary);
+  /* Bootstrap 5.3 derives --bs-table-color (and other "emphasis" text) from
+     THIS var, fixed at #000 by default — it re-declares --bs-table-color
+     locally on .table itself, so our --bs-table-color override below gets
+     silently beaten by this one unless it's also fixed. This was the actual
+     cause of the near-black, hard-to-read table text in dark mode. */
+  --bs-emphasis-color: var(--heading-text);
+
+  /* Bootstrap components that set their own text color from --bs-body-color
+     (card headers/footers, etc. via --bs-card-cap-color) or --bs-heading-color
+     don't inherit our `body { color: var(--body-text) }` — they read these
+     vars directly, so they need to track the same theme value explicitly. */
+  --bs-body-color: var(--body-text);
+  --bs-heading-color: var(--heading-text);
+  /* Generic Bootstrap "surface" var — read directly (not inherited) by
+     forms, modals, dropdowns, and table default backgrounds. Our own
+     `body { background: var(--content-bg) }` rule below is a literal
+     property, so it still wins for the actual page canvas regardless of
+     this — this only affects everything ELSE that reads --bs-body-bg. */
+  --bs-body-bg: var(--card-bg);
+  --bs-border-color: var(--card-border);
+  --bs-secondary-color: var(--muted-text);
+  --bs-tertiary-color: var(--muted-text);
+  --bs-tertiary-bg: var(--content-bg);
+  --bs-secondary-bg: var(--content-bg);
+
+  /* Same story for components with their own bg/color/border vars
+     independent of --bs-body-bg/color: accordion (dashboard Teams card),
+     list-group (Recent Schedules), tables, dropdowns, modals. */
+  --bs-accordion-bg: var(--card-bg);
+  --bs-accordion-color: var(--body-text);
+  --bs-accordion-border-color: var(--card-border);
+  --bs-accordion-active-bg: var(--content-bg);
+  --bs-accordion-active-color: var(--body-text);
+
+  --bs-list-group-bg: var(--card-bg);
+  --bs-list-group-color: var(--body-text);
+  --bs-list-group-border-color: var(--card-border);
+  --bs-list-group-action-color: var(--body-text);
+  --bs-list-group-action-hover-color: var(--body-text);
+  --bs-list-group-action-hover-bg: var(--content-bg);
+  --bs-list-group-active-bg: var(--primary);
+  --bs-list-group-active-border-color: var(--primary);
+  --bs-list-group-active-color: #fff;
+
+  --bs-table-bg: var(--card-bg);
+  --bs-table-color: var(--body-text);
+  --bs-table-border-color: var(--card-border);
+
+  --bs-dropdown-bg: var(--card-bg);
+  --bs-dropdown-color: var(--body-text);
+  --bs-dropdown-link-color: var(--body-text);
+  --bs-dropdown-border-color: var(--card-border);
+  --bs-modal-bg: var(--card-bg);
+  --bs-modal-color: var(--body-text);
+}
+
+.nav-section-label { color: var(--nav-label-color); }
+
+/* ── Per-user appearance themes ────────────────────────────────────────────
+   Three choices, persisted per account (IdentityUser.ui_theme, set via the
+   switcher in the sidebar footer) and applied server-side as
+   <html data-theme="...">: 'light' (default — no override block needed,
+   :root above already holds these values); 'navy-canvas' (light sidebar +
+   the "dark" theme's content shell — see below); 'dark' (full dark shell,
+   sidebar included). */
+
+/* dark — decided flavor: Navy Dark. Same navy family as the light default
+   just inverted (deep navy sidebar/canvas, a lighter steel-blue accent
+   since pure navy would vanish against near-black) so it reads as the same
+   brand, not a different app. Paired with <html data-bs-theme="dark">
+   (set in base.html whenever this is active) so Bootstrap's own built-in
+   dark palette handles badges/alerts/subtle-* utilities we don't
+   hand-theme — those were the "too colorful" pastel badges before. */
+html[data-theme="dark"] {
+  --sidebar-bg: #141b2e;
+  --sidebar-border: #232d47;
+  --sidebar-text: #8b96b3;
+  --sidebar-active-bg: #1e2740;
+  --sidebar-active-text: #f1f4fa;
+  --sidebar-eyebrow: #9db4d8;
+  --nav-label-color: #6d7a9c;
+}
+/* Decided logo treatment for Dark only — Light and Hybrid keep the
+   light sidebar, so the logo band there stays transparent (var(--logo-chip-bg)
+   default) and untouched. Dark's sidebar is actually dark, so instead of a
+   light backdrop patch, the band fades navy-to-sidebar-color (no hard edge)
+   and the logo itself runs through invert+hue-rotate — flips its black
+   elements to white while approximately restoring the original blue instead
+   of the flat invert's orange. */
+html[data-theme="dark"] .brand-logo-band {
+  background: linear-gradient(180deg, #1e2a4a, var(--sidebar-bg));
+}
+html[data-theme="dark"] .brand-logo-full {
+  filter: invert(1) hue-rotate(180deg) brightness(1.1);
+}
+
+/* navy-canvas — hybrid: sidebar stays exactly the light theme's (all
+   sidebar-related vars — background, border, text, nav-label, logo backdrop
+   — are left at their :root defaults, untouched here), while the content
+   shell (topbar, canvas, cards, text, accent) takes on the SAME palette as
+   the "dark" theme above. So: light sidebar + dark content, sharing one
+   accent color between them rather than the old "white cards on a navy
+   field" look. */
+html[data-theme="dark"], html[data-theme="navy-canvas"] {
+  --primary: #4a6fa5;
+  --primary-rgb: 74, 111, 165;
+  --primary-light: #22314f;
+  --content-bg: #0d1220;
+  --topbar-bg: #121a2c;
+  --topbar-border: #232d47;
+  --card-bg: #1b2438;
+  --card-border: #2a3552;
+  --card-shadow: 0 4px 16px rgba(0,0,0,.35);
+  --body-text: #dbe2f0;
+  --heading-text: #f4f6fb;
+  --muted-text: #8b96b3;
+}
+html[data-theme="dark"] .text-dark,
+html[data-theme="navy-canvas"] .text-dark { color: var(--body-text) !important; }
+/* Brighten the jewel stat tiles a touch so they keep contrast against a
+   near-black canvas instead of reading as muddy — same 4 hues, same
+   relationships, just lifted. */
+html[data-theme="dark"] .stat-card--blue, html[data-theme="navy-canvas"] .stat-card--blue     { background: linear-gradient(135deg, #4a6fa0, #35507a); }
+html[data-theme="dark"] .stat-card--green, html[data-theme="navy-canvas"] .stat-card--green   { background: linear-gradient(135deg, #4f7d6b, #3f6355); }
+html[data-theme="dark"] .stat-card--amber, html[data-theme="navy-canvas"] .stat-card--amber   { background: linear-gradient(135deg, #b78c52, #96723f); }
+html[data-theme="dark"] .stat-card--purple, html[data-theme="navy-canvas"] .stat-card--purple { background: linear-gradient(135deg, #75648f, #5c4d72); }
+
+/* ── Appearance switcher (sidebar footer) ─────────────────────────────── */
+.appearance-switcher {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0;
+}
+.appearance-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  border: 1px solid var(--sidebar-border);
+  background: transparent;
+  color: var(--sidebar-text);
+  border-radius: 7px;
+  font-size: .9rem;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.appearance-btn:hover { color: var(--sidebar-active-text); border-color: var(--sidebar-text); }
+.appearance-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* Second row, directly under the theme switcher — same button language,
+   text labels (EN/DE/SQ) instead of icons so it needs a touch less size. */
+.locale-switcher { margin-top: 0; }
+.locale-btn { font-size: .68rem; font-weight: 700; letter-spacing: .02em; }
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+body {
+  background: var(--content-bg);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.875rem;
+  color: var(--body-text);
+}
+
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.main-wrapper {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Sidebar brand ─────────────────────────────────────────────────────── */
+/* Title on top, full-bleed logo band below — both centered. On Light and
+   Hybrid (light sidebar) the band stays transparent — the logo already
+   sits on a light surface. Dark gets its own treatment (navy-to-sidebar
+   gradient band + invert/hue-rotate on the logo) defined in its theme block
+   above, not through var(--logo-chip-bg) — that var is unused now but left
+   in place as the default/fallback for any future theme. */
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 18px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.brand-name {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  color: var(--sidebar-active-text);
+  font-size: .92rem;
+  letter-spacing: .01em;
+  margin-bottom: 14px;
+  padding: 0 16px;
+}
+
+.brand-logo-band {
+  width: 100%;
+  background: var(--logo-chip-bg);
+  padding: 8px 20px 16px;
+  box-sizing: border-box;
+}
+
+.brand-logo-full {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+
+/* ── Sidebar nav ───────────────────────────────────────────────────────── */
+.sidebar-nav {
+  list-style: none;
+  padding: 12px 8px;
+  margin: 0;
+  flex: 1;
+}
+
+.nav-section-label {
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #475569;
+  padding: 12px 8px 4px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: .84rem;
+  transition: background .15s, color .15s;
+  margin-bottom: 2px;
+}
+
+.sidebar-link i { font-size: 1rem; width: 18px; text-align: center; }
+
+.sidebar-link:hover {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+}
+
+.sidebar-link.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ── FTE mode toggle (Days/Hours/Combined) — same active navy as the sidebar ── */
+.btn-check:checked + .btn-outline-secondary,
+.btn-check:active + .btn-outline-secondary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: rgba(var(--primary-rgb),.25);
+  color: var(--sidebar-eyebrow);
+  font-size: .7rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+/* Bootstrap's .text-muted is a light-theme gray — unreadable on the dark
+   sidebar background. Use this instead anywhere text sits directly on
+   --sidebar-bg (matches the same light slate already used for nav labels). */
+.sidebar-muted { color: var(--sidebar-text) !important; }
+
+.sidebar-avatar {
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+}
+
+/* ── Project switcher ──────────────────────────────────────────────────── */
+/* Inline expand/collapse, not a floating overlay — deliberately, so opening
+   it pushes the nav below down in normal document flow instead of overlaying
+   on top of it (a floating dropdown here previously had a rounded-corner vs.
+   square-nav-pill overlap bug that no z-index fix could reliably solve). */
+.project-switcher-wrap {
+  padding: 16px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.project-switcher-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--sidebar-border);
+  background: linear-gradient(135deg, rgba(var(--primary-rgb),.16), rgba(255,255,255,.03));
+  color: var(--sidebar-active-text);
+  text-align: left;
+  transition: background .15s, border-color .15s;
+}
+
+.project-switcher-btn:hover,
+.project-switcher-btn:focus,
+.project-switcher-btn[aria-expanded="true"] {
+  background: linear-gradient(135deg, rgba(var(--primary-rgb),.26), rgba(255,255,255,.05));
+  border-color: var(--sidebar-text);
+}
+
+.project-switcher-static { cursor: default; }
+
+.project-avatar {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+
+.project-avatar-img { object-fit: cover; background: white; }
+
+.project-avatar-sm { width: 30px; height: 30px; font-size: .8rem; border-radius: 8px; }
+
+.project-switcher-text {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.project-switcher-eyebrow {
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--sidebar-eyebrow);
+}
+
+.project-switcher-name {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--sidebar-active-text);
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-switcher-caret {
+  flex-shrink: 0;
+  font-size: .85rem;
+  color: var(--sidebar-text);
+  transition: transform .2s;
+}
+
+.project-switcher-btn[aria-expanded="true"] .project-switcher-caret { transform: rotate(180deg); }
+
+.project-switcher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 8px;
+}
+
+.project-switcher-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--sidebar-text);
+  font-size: .84rem;
+  font-weight: 500;
+  transition: background .12s, color .12s;
+}
+
+.project-switcher-item:hover {
+  background: rgba(255,255,255,.06);
+  color: var(--sidebar-active-text);
+}
+
+.project-switcher-item.active {
+  background: rgba(var(--primary-rgb),.2);
+  color: var(--sidebar-eyebrow);
+  font-weight: 600;
+}
+
+.project-switcher-item i { font-size: .85rem; }
+
+/* ── Topbar ────────────────────────────────────────────────────────────── */
+.topbar {
+  height: var(--topbar-height);
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--topbar-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--heading-text);
+  flex: 1;
+}
+
+.main-content {
+  padding: 24px;
+  flex: 1;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+}
+
+.card-header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--topbar-border);
+  padding: 12px 16px;
+  font-weight: 600;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+/* ── Stat cards ─────────────────────────────────────────────────────────── */
+.stat-card {
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.stat-card__icon {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,.2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.stat-card__value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.stat-card__label { font-size: .75rem; opacity: .85; margin-top: 2px; }
+
+/* Muted Jewel Tones — decided stat-tile palette: same 4-hue structure as the
+   original bright set, desaturated and deepened so tiles stay distinct
+   without reading as "candy". */
+.stat-card--blue   { background: linear-gradient(135deg, #35507a, #263c5c); }
+.stat-card--green  { background: linear-gradient(135deg, #3f6355, #2c4a3f); }
+.stat-card--amber  { background: linear-gradient(135deg, #96723f, #785a30); }
+.stat-card--purple { background: linear-gradient(135deg, #5c4d72, #473d59); }
+
+.stat-card--link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.stat-card--link:hover,
+.stat-card--link:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.2);
+  color: white;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.btn-xs {
+  padding: 2px 8px;
+  font-size: .75rem;
+  border-radius: 4px;
+  line-height: 1.6;
+}
+
+/* ── Alerts ─────────────────────────────────────────────────────────────── */
+.alert-toast {
+  border-radius: 8px;
+  font-size: .85rem;
+  margin-bottom: 12px;
+}
+
+/* Neutral surface + a thin colored left edge instead of Bootstrap's full
+   bright-pastel fill — same information (info/warning/danger/success),
+   far less "loud", and consistent across all three themes since it's
+   built from theme vars rather than fixed Bootstrap colors. */
+.alert-info, .alert-warning, .alert-danger, .alert-success {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--body-text);
+}
+.alert-info    { border-left: 3px solid var(--primary); }
+.alert-warning { border-left: 3px solid var(--warning); }
+.alert-danger  { border-left: 3px solid var(--danger); }
+.alert-success { border-left: 3px solid var(--success); }
+.alert-info > i.bi    { color: var(--primary); }
+.alert-warning > i.bi { color: var(--warning); }
+.alert-danger > i.bi  { color: var(--danger); }
+.alert-success > i.bi { color: var(--success); }
+
+/* ── Neutral role/status badges ────────────────────────────────────────────
+   Replaces Bootstrap's bg-{color}-subtle badges (one loud, distinct hue per
+   role — secondary/info/warning/danger) with a single restrained scale:
+   outline only, getting bolder toward the accent color as privilege rises,
+   solid fill only for the top tier. Uses theme vars, so it's automatically
+   consistent (and equally muted) across light, navy-canvas, and dark. */
+.role-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--muted-text);
+}
+.role-badge--editor { color: var(--body-text); }
+.role-badge--admin { color: var(--primary); border-color: var(--primary); }
+.role-badge--superadmin { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.status-label { font-size: .72rem; font-weight: 600; color: var(--muted-text); display: inline-flex; align-items: center; white-space: nowrap; }
+.status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; flex-shrink: 0; }
+.status-dot--active  { background: var(--success); }
+.status-dot--pending { background: var(--warning); }
+.status-dot--revoked { background: var(--danger); }
+.status-dot--neutral { background: var(--muted-text); }
+
+.tag-chip {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 600;
+  border: 1px solid var(--card-border);
+  color: var(--muted-text);
+  background: transparent;
+}
+.tag-chip--accent { color: var(--primary); border-color: var(--primary); }
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.table { --bs-table-color: var(--body-text); }
+.table th {
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted-text);
+  background: var(--content-bg);
+  border-bottom: 2px solid var(--card-border);
+  padding: 10px 12px;
+}
+
+.table td { padding: 10px 12px; vertical-align: middle; border-color: var(--card-border); }
+.table-hover tbody tr:hover { background: var(--content-bg); }
+
+.team-separator td {
+  background: var(--content-bg) !important;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted-text);
+  padding: 6px 12px !important;
+}
+
+/* ── Upload zone ────────────────────────────────────────────────────────── */
+.upload-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+
+.upload-zone:hover { border-color: var(--primary); background: #f0f6ff; }
+.upload-zone--selected { border-color: var(--success); background: #f0fdf4; }
+
+/* ── Mode badge ─────────────────────────────────────────────────────────── */
+.mode-badge {
+  font-size: .7rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.mode-days     { background: #dbeafe; color: #1d4ed8; }
+.mode-hours    { background: #dcfce7; color: #15803d; }
+.mode-combined { background: #fef3c7; color: #92400e; }
+
+/* ── Shift dots ─────────────────────────────────────────────────────────── */
+.shift-dot    { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.shift-dot-lg { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+
+/* ── Shift picker (custom dropdown — a native <select> can't color just the
+   dot and leave the name/time plain, so this is a hand-built combobox) ───── */
+.shift-picker { position: relative; display: inline-block; width: 100%; }
+
+.shift-picker-toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 4px;
+  width: 100%; text-align: left; cursor: pointer;
+  background-color: var(--card-bg); color: var(--body-text);
+}
+.shift-picker-toggle:disabled { cursor: default; opacity: 1; }
+
+.shift-picker-caret { font-size: .65rem; color: var(--muted-text); flex-shrink: 0; }
+
+.shift-picker-menu {
+  position: absolute; top: 100%; left: 0; z-index: 30; margin-top: 2px;
+  min-width: 100%; width: max-content; max-width: 280px;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: .375rem; box-shadow: var(--card-shadow);
+  max-height: 260px; overflow-y: auto; padding: 4px 0;
+}
+
+.shift-picker-option {
+  padding: 6px 12px; font-size: .85rem; cursor: pointer;
+  color: var(--body-text); white-space: nowrap;
+}
+.shift-picker-option:hover { background: var(--content-bg); }
+
+/* ── Excluded-dates calendar ────────────────────────────────────────────── */
+.excluded-dates-calendar {
+  max-width: 300px; border: 1px solid var(--card-border); border-radius: .375rem;
+  padding: 10px; background: var(--card-bg);
+}
+
+.exd-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.exd-cal-label { font-weight: 600; font-size: .85rem; color: var(--body-text); }
+
+.exd-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+
+.exd-cal-dow {
+  font-size: .68rem; text-align: center; color: var(--muted-text);
+  font-weight: 600; padding: 2px 0;
+}
+
+.exd-cal-day {
+  text-align: center; font-size: .8rem; padding: 6px 0; border-radius: 4px;
+  cursor: pointer; color: var(--body-text);
+}
+.exd-cal-day:hover { background: var(--content-bg); }
+.exd-cal-day.excluded { background: var(--danger); color: #fff; }
+.exd-cal-day.today { box-shadow: inset 0 0 0 1px var(--primary); }
+.exd-cal-empty { cursor: default; }
+
+/* ── Day restriction grid ───────────────────────────────────────────────── */
+.day-restriction-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-restriction-item .day-label {
+  font-size: .7rem;
+  font-weight: 600;
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 3px;
+}
+
+/* ── Import review ──────────────────────────────────────────────────────── */
+.import-card-body { padding: 12px 16px; }
+
+/* ── Schedule grid ──────────────────────────────────────────────────────── */
+.schedule-grid-wrapper {
+  overflow-x: auto;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+}
+
+.schedule-grid {
+  border-collapse: collapse;
+  font-size: .75rem;
+  width: max-content;
+  min-width: 100%;
+}
+
+.schedule-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #1e293b;
+  color: white;
+  text-align: center;
+  padding: 4px 2px;
+  font-size: .7rem;
+  font-weight: 600;
+  border: 1px solid #334155;
+  white-space: nowrap;
+}
+
+.sg-name-col  { min-width: 160px; text-align: left !important; padding-left: 12px !important; }
+.sg-team-col  { min-width: 100px; }
+.sg-fte-col   { min-width: 40px; }
+.sg-day-col   { min-width: 42px; width: 42px; }
+.sg-weekend   { background: #334155 !important; }
+
+.sg-day-num  { font-size: .75rem; font-weight: 700; }
+.sg-day-name { font-size: .6rem; opacity: .75; }
+
+.sg-team-row td {
+  background: #1e3a5f;
+  color: #93c5fd;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 5px 12px !important;
+}
+
+.sg-emp-row td {
+  border: 1px solid #f1f5f9;
+  padding: 2px 4px;
+  height: 28px;
+}
+
+.sg-emp-row:hover td { background-tint: rgba(0,0,0,.03); filter: brightness(0.97); }
+
+.sg-cell {
+  text-align: center;
+  cursor: pointer;
+  transition: filter .1s;
+  padding: 0 !important;
+  height: 28px !important;
+}
+
+.sg-cell:hover { filter: brightness(0.92); }
+
+.sg-cell-text {
+  display: block;
+  font-size: .65rem;
+  font-weight: 600;
+  padding: 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 42px;
+}
+
+/* ── Legend ─────────────────────────────────────────────────────────────── */
+.legend-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.shift-legend-item {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: .72rem;
+  font-weight: 600;
+  color: white;
+  display: inline-block;
+}
+
+/* ── Team accordion ─────────────────────────────────────────────────────── */
+.team-accordion-btn {
+  background: var(--card-bg) !important;
+  color: var(--body-text);
+  box-shadow: none !important;
+  font-size: .85rem;
+}
+
+.team-accordion-btn:not(.collapsed) {
+  background: var(--content-bg) !important;
+  color: var(--primary);
+}
+
+.team-accordion-btn::after {
+  width: 14px; height: 14px;
+  background-size: 14px;
+  margin-left: 4px;
+}
+
+.team-member-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.team-member-row:last-child { border-bottom: none; }
+
+.team-member-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  text-decoration: none;
+  color: #1e293b;
+  transition: background .1s;
+  font-size: .8rem;
+}
+
+.team-member-link:hover {
+  background: #f8fafc;
+  color: var(--primary);
+}
+
+.team-member-name { font-weight: 500; }
+
+.team-member-meta {
+  color: #94a3b8;
+  font-size: .72rem;
+  white-space: nowrap;
+}
+
+/* ── Employees bulk edit mode ───────────────────────────────────────────── */
+.cell-input.plain {
+  border: none !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  appearance: none;
+  -webkit-appearance: none;
+  color: inherit;
+  font-size: inherit;
+  width: auto;
+}
+
+.cell-input.plain:disabled { opacity: 1; }
+
+.employees-edit-toolbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: var(--card-bg);
+  border-top: 1px solid var(--card-border);
+  box-shadow: 0 -4px 12px rgba(0,0,0,.06);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .sidebar { transform: translateX(-100%); transition: transform .25s; }
+  .sidebar.open { transform: translateX(0); }
+  .main-wrapper { margin-left: 0; }
+  .sidebar-toggle { background: none; border: none; font-size: 1.2rem; color: #475569; }
+}
+
+@media (min-width: 992px) {
+  .sidebar-toggle { display: none; }
+}
+
+/* ── AI sidebar badge ───────────────────────────────────────────────────── */
+.ai-badge { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; }
+.ai-link.active { background: linear-gradient(135deg, #7c3aed, #2563eb) !important; }
+
+/* ── AI layout ───────────────────────────────────────────────────────────── */
+.ai-layout {
+  display: flex;
+  height: calc(100vh - var(--topbar-height) - 48px);
+  gap: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+}
+
+/* ── Session sidebar ─────────────────────────────────────────────────────── */
+.ai-sessions {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  background: var(--content-bg);
+}
+
+.ai-sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.ai-sessions-list { overflow-y: auto; flex: 1; }
+
+.ai-session-item {
+  display: block;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--card-border);
+  text-decoration: none;
+  color: var(--body-text);
+  transition: background .12s;
+}
+
+.ai-session-item:hover { background: var(--primary-light); color: var(--body-text); }
+.ai-session-item.active { background: var(--primary-light); border-left: 3px solid var(--primary); }
+
+.ai-session-title { font-size: .82rem; font-weight: 500; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-session-meta  { font-size: .7rem; color: var(--muted-text); margin-top: 2px;
+  display: flex; justify-content: space-between; align-items: center; }
+
+.ai-session-del {
+  background: none; border: none; padding: 0 2px; color: var(--muted-text);
+  font-size: .8rem; line-height: 1; cursor: pointer;
+}
+.ai-session-del:hover { color: #ef4444; }
+
+/* ── Main area ───────────────────────────────────────────────────────────── */
+.ai-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Welcome screen ─────────────────────────────────────────────────────── */
+.ai-welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.ai-welcome-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: white; margin-bottom: 16px;
+}
+
+/* ── Provider chips ──────────────────────────────────────────────────────── */
+.ai-provider-bar {
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+}
+
+.ai-provider-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--card-border); background: var(--card-bg);
+  font-size: .78rem; font-weight: 500; cursor: pointer;
+  transition: all .15s; color: var(--muted-text);
+}
+
+.ai-provider-chip input { display: none; }
+.ai-provider-chip:hover { border-color: var(--primary); color: var(--primary); }
+.ai-provider-chip.selected {
+  background: var(--primary); color: white; border-color: var(--primary);
+}
+
+/* ── Suggestion buttons ──────────────────────────────────────────────────── */
+.ai-suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; max-width: 540px; }
+
+.ai-suggestion-btn {
+  padding: 7px 14px; border-radius: 8px;
+  border: 1px solid var(--card-border); background: var(--card-bg);
+  font-size: .8rem; cursor: pointer; color: var(--body-text);
+  transition: all .15s;
+}
+.ai-suggestion-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+.ai-suggestions-inline { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 16px; }
+
+.ai-suggestion-btn-sm {
+  padding: 4px 10px; border-radius: 6px; border: 1px solid var(--card-border);
+  background: var(--card-bg); font-size: .75rem; cursor: pointer; color: var(--muted-text);
+  transition: all .15s;
+}
+.ai-suggestion-btn-sm:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ── Chat header ─────────────────────────────────────────────────────────── */
+.ai-chat-header {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--card-bg);
+}
+
+.ai-chat-title { font-weight: 600; font-size: .9rem; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Messages area ───────────────────────────────────────────────────────── */
+.ai-messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.ai-message { display: flex; gap: 10px; align-items: flex-start; max-width: 85%; }
+.ai-message--user { align-self: flex-end; flex-direction: row-reverse; }
+.ai-message--assistant { align-self: flex-start; }
+
+.ai-message-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: .8rem; flex-shrink: 0;
+}
+
+.ai-message-icon--user {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+}
+
+.ai-message-bubble {
+  background: var(--content-bg); border-radius: 12px;
+  padding: 10px 14px; font-size: .85rem; line-height: 1.6;
+  color: var(--body-text); max-width: 100%;
+}
+
+.ai-message--user .ai-message-bubble {
+  background: var(--primary); color: white;
+}
+
+.ai-message-meta { font-size: .65rem; color: var(--muted-text); margin-top: 4px; text-align: right; }
+
+.ai-cursor { animation: blink .8s infinite; }
+@keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0 } }
+
+/* ── Typing dots ─────────────────────────────────────────────────────────── */
+.ai-typing-dots { display: inline-flex; gap: 3px; align-items: center; height: 20px; }
+.ai-typing-dots span {
+  width: 6px; height: 6px; background: var(--muted-text); border-radius: 50%;
+  animation: bounce .9s infinite;
+}
+.ai-typing-dots span:nth-child(2) { animation-delay: .15s; }
+.ai-typing-dots span:nth-child(3) { animation-delay: .30s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+/* ── Input bar ───────────────────────────────────────────────────────────── */
+.ai-input-bar { padding: 10px 16px 14px; border-top: 1px solid var(--card-border); background: var(--card-bg); }
+
+.ai-input-wrap {
+  display: flex; align-items: flex-end; gap: 8px;
+  border: 1px solid var(--card-border); border-radius: 12px;
+  padding: 8px 8px 8px 14px; background: var(--content-bg);
+  transition: border-color .15s;
+}
+.ai-input-wrap:focus-within { border-color: var(--primary); background: var(--card-bg); }
+
+.ai-input {
+  flex: 1; border: none; background: transparent; resize: none;
+  font-size: .875rem; line-height: 1.5; outline: none;
+  max-height: 140px; overflow-y: auto; font-family: inherit;
+  color: var(--body-text);
+}
+
+.ai-send-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--primary); color: white; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: background .15s;
+}
+.ai-send-btn:hover { filter: brightness(1.1); }
+.ai-send-btn:disabled { background: var(--card-border); cursor: not-allowed; }
+
+.ai-input-footer { font-size: .7rem; color: var(--muted-text); margin-top: 6px; padding-left: 2px; }
+
+/* ── Document icons ──────────────────────────────────────────────────────── */
+.doc-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; flex-shrink: 0;
+}
+.doc-icon--xlsx, .doc-icon--xls { background: #dcfce7; color: #16a34a; }
+.doc-icon--pdf  { background: #fee2e2; color: #dc2626; }
+.doc-icon--doc, .doc-icon--docx { background: #dbeafe; color: #2563eb; }
+.doc-icon       { background: #f1f5f9; color: #64748b; }

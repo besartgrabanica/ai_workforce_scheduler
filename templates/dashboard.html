@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Dashboard') }}{% endblock %}
+{% block page_title %}{{ _('Dashboard') }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('schedule_list') }}" class="btn btn-primary btn-sm">
+  <i class="bi bi-plus-lg me-1"></i>{{ _('New Schedule') }}
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- ── Stat cards ───────────────────────────────────────────────────────── -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <a href="{{ url_for('employees_list') }}" class="stat-card stat-card--blue stat-card--link">
+      <div class="stat-card__icon"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ employee_count }}</div>
+        <div class="stat-card__label">{{ _('Active Employees') }}</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{{ url_for('forecast_list') }}" class="stat-card stat-card--green stat-card--link">
+      <div class="stat-card__icon"><i class="bi bi-graph-up"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ recent_periods|length }}</div>
+        <div class="stat-card__label">{{ _('Forecast Periods') }}</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{{ url_for('schedule_list') }}" class="stat-card stat-card--amber stat-card--link">
+      <div class="stat-card__icon"><i class="bi bi-calendar-week-fill"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ recent_schedules|length }}</div>
+        <div class="stat-card__label">{{ _('Schedules Generated') }}</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-lg-3">
+    <a href="{{ url_for('teams_list') }}" class="stat-card stat-card--purple stat-card--link">
+      <div class="stat-card__icon"><i class="bi bi-diagram-3-fill"></i></div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ teams_data|length }}</div>
+        <div class="stat-card__label">{{ _('Active Teams') }}</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ── Forecast trend ──────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span><i class="bi bi-graph-up-arrow me-2 text-primary"></i>{{ _('Forecast Trend') }}</span>
+    {% if all_periods %}
+    <div class="d-flex gap-2 flex-wrap">
+      <select id="trendVariable" class="form-select form-select-sm" style="width:auto">
+        <option value="required_agents">{{ _('Required KS Agents') }}</option>
+        <option value="total_contacts">{{ _('Total Contacts') }}</option>
+        <option value="total_sync">{{ _('Synchron Contacts') }}</option>
+        <option value="total_async">{{ _('Asynchron Contacts') }}</option>
+        <option value="total_chat">{{ _('Chat Contacts') }}</option>
+        <option value="germany_contribution">{{ _('Germany Contribution') }}</option>
+      </select>
+      <select id="trendPeriod" class="form-select form-select-sm" style="width:auto">
+        {% for p in all_periods %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {% if all_periods %}
+    <canvas id="trendChart" height="85"></canvas>
+    {% else %}
+    <div class="text-center text-muted py-5">
+      {{ _('No forecast data yet.') }}
+      <a href="{{ url_for('forecast_new') }}">{{ _('Upload a forecast') }}</a> {{ _('to see trends here.') }}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- ── Team breakdown ─────────────────────────────────────────────────── -->
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-diagram-3 me-2 text-primary"></i>{{ _('Teams') }}
+          <span class="badge bg-secondary ms-1">{{ teams_data|length }}</span>
+        </span>
+        <a href="{{ url_for('employees_list') }}" class="btn btn-sm btn-outline-primary">{{ _('View all') }}</a>
+      </div>
+      <div class="card-body p-0" style="max-height:420px;overflow-y:auto">
+        <div class="accordion accordion-flush" id="teamsAccordion">
+          {% for t in teams_data %}
+          {% set tid = 'team_' ~ loop.index %}
+          <div class="accordion-item border-0 border-bottom">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed py-2 px-3 team-accordion-btn"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#{{ tid }}"
+                      aria-expanded="false">
+                <span class="fw-semibold flex-grow-1" style="font-size:.85rem">{{ t.name }}</span>
+                <span class="badge bg-primary rounded-pill me-2">{{ t.count }}</span>
+              </button>
+            </h2>
+            <div id="{{ tid }}" class="accordion-collapse collapse"
+                 data-bs-parent="#teamsAccordion">
+              <div class="accordion-body py-1 px-0">
+                <ul class="list-unstyled mb-0">
+                  {% for emp in t.members %}
+                  <li class="team-member-row">
+                    <a href="{{ url_for('employee_detail', emp_id=emp.id) }}"
+                       class="team-member-link">
+                      <span class="team-member-name">{{ emp.name }}</span>
+                      <span class="team-member-meta">
+                        {{ emp.fte_percent }}%
+                        {% if emp.shift_template %}· {{ emp.shift_template.name }}{% endif %}
+                        {% if emp.status == 'trainee' %}
+                        <span class="badge bg-info ms-1" style="font-size:.6rem">{{ _('trainee') }}</span>
+                        {% endif %}
+                      </span>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="p-3 text-muted small">{{ _('No employees yet.') }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="{{ url_for('employees_import') }}" class="btn btn-sm btn-outline-secondary w-100">
+          <i class="bi bi-upload me-1"></i>{{ _('Import from Excel') }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quick actions ──────────────────────────────────────────────────── -->
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="bi bi-lightning-fill me-2 text-warning"></i>{{ _('Quick Actions') }}
+      </div>
+      <div class="card-body d-flex flex-column gap-2">
+        <a href="{{ url_for('forecast_new') }}" class="btn btn-outline-primary text-start">
+          <i class="bi bi-upload me-2"></i>{{ _('Upload New Forecast') }}
+        </a>
+        <a href="{{ url_for('employees_import') }}" class="btn btn-outline-primary text-start">
+          <i class="bi bi-person-plus me-2"></i>{{ _('Import Employees') }}
+        </a>
+        <a href="{{ url_for('employee_new') }}" class="btn btn-outline-primary text-start">
+          <i class="bi bi-person-add me-2"></i>{{ _('Add Employee Manually') }}
+        </a>
+        <hr class="my-1">
+        <form action="{{ url_for('schedule_generate') }}" method="POST" class="d-flex gap-2 flex-wrap">
+          <select name="month" class="form-select form-select-sm" style="width:auto">
+            {% for i in range(1,13) %}
+            <option value="{{ i }}" {% if i == current_month %}selected{% endif %}>{{ _(month_names[i]) }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" name="year" value="{{ current_year }}" class="form-control form-control-sm" style="width:80px">
+          <input type="hidden" name="name" value="">
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-play-fill me-1"></i>{{ _('Generate') }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Recent schedules ───────────────────────────────────────────────── -->
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-clock-history me-2 text-success"></i>{{ _('Recent Schedules') }}</span>
+        <a href="{{ url_for('schedule_list') }}" class="btn btn-sm btn-outline-success">{{ _('All') }}</a>
+      </div>
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for s in recent_schedules %}
+          <li class="list-group-item px-4 py-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-medium small">{{ s.name }}</div>
+                <div class="text-muted" style="font-size:.75rem">
+                  {{ _(month_names[s.month]) }} {{ s.year }} &bull;
+                  {{ s.generated_at.strftime('%d %b %H:%M') }}
+                </div>
+              </div>
+              <a href="{{ url_for('schedule_detail', schedule_id=s.id) }}"
+                 class="btn btn-xs btn-outline-secondary">{{ _('View') }}</a>
+            </div>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted px-4 py-3">{{ _('No schedules yet.') }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if all_periods %}
+<script>
+(function () {
+  const isDark = ['dark', 'navy-canvas'].includes(document.documentElement.getAttribute('data-theme'));
+  const canvas = document.getElementById('trendChart');
+  const ctx = canvas.getContext('2d');
+  const variableSelect = document.getElementById('trendVariable');
+  const periodSelect = document.getElementById('trendPeriod');
+
+  function makeGradient(color) {
+    const g = ctx.createLinearGradient(0, 0, 0, canvas.height || 260);
+    g.addColorStop(0, color + '55');
+    g.addColorStop(1, color + '03');
+    return g;
+  }
+
+  let chart = null;
+
+  function render(data) {
+    const color = isDark ? data.dark_color : data.color;
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: data.label,
+          data: data.values,
+          borderColor: color,
+          backgroundColor: makeGradient(color),
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: color,
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2,
+          tension: 0.35,
+          fill: true,
+        }],
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            padding: 10,
+            titleFont: { size: 11 },
+            bodyFont: { size: 13, weight: 'bold' },
+            callbacks: {
+              label: (item) => `${data.label}: ${item.formattedValue}`,
+            },
+          },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true } },
+          y: { grid: { color: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)' }, ticks: { font: { size: 10 } } },
+        },
+      },
+    });
+  }
+
+  function fetchAndRender() {
+    const params = new URLSearchParams({
+      variable: variableSelect.value,
+      period_id: periodSelect.value,
+    });
+    fetch(`{{ url_for('dashboard_forecast_trend') }}?${params}`)
+      .then(r => r.json())
+      .then(render);
+  }
+
+  variableSelect.addEventListener('change', fetchAndRender);
+  periodSelect.addEventListener('change', fetchAndRender);
+  fetchAndRender();
+})();
+</script>
+{% endif %}
+{% endblock %}

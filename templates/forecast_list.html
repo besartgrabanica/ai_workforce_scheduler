@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Forecast Periods') }}{% endblock %}
+{% block page_title %}{{ _('Forecast Periods') }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('forecast_new') }}" class="btn btn-primary btn-sm">
+  <i class="bi bi-upload me-1"></i>{{ _('Upload New Forecast') }}
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Period Name') }}</th>
+          <th>{{ _('Start') }}</th>
+          <th>{{ _('End') }}</th>
+          <th>{{ _('Days') }}</th>
+          <th>{{ _('Imported') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in periods %}
+        <tr>
+          <td class="fw-medium">{{ p.name }}</td>
+          <td>{{ p.start_date.strftime('%d.%m.%Y') }}</td>
+          <td>{{ p.end_date.strftime('%d.%m.%Y') }}</td>
+          <td>{{ p.daily_forecasts|length }}</td>
+          <td class="text-muted small">{{ p.created_at.strftime('%d %b %Y %H:%M') }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('forecast_detail', period_id=p.id) }}"
+               class="btn btn-xs btn-outline-primary me-1">{{ _('View') }}</a>
+            <form action="{{ url_for('forecast_delete', period_id=p.id) }}"
+                  method="POST" class="d-inline"
+                  onsubmit="return confirm('{{ _('Delete this forecast period?') }}')">
+              <button type="submit" class="btn btn-xs btn-outline-danger">{{ _('Delete') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-muted text-center py-4">
+          {{ _('No forecast periods yet.') }} <a href="{{ url_for('forecast_new') }}">{{ _('Upload one') }}</a>.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
