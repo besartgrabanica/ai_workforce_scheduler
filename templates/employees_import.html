@@ -8,6 +8,12 @@
 <div class="card">
   <div class="card-header"><i class="bi bi-upload me-2 text-primary"></i>{{ _('Import Employee Specifications') }}</div>
   <div class="card-body">
+    <div class="alert alert-secondary mb-4">
+      <i class="bi bi-info-circle me-2"></i>
+      {% trans %}<strong>Optional.</strong> Employee data lives in the app and can always be
+      added or edited directly — this is just a shortcut for bulk-onboarding a new client's
+      staff list in one pass.{% endtrans %}
+    </div>
     <div class="alert alert-info mb-4">
       <i class="bi bi-info-circle me-2"></i>
       {% trans %}Upload the <strong>Specifikat e punetoreve</strong> Excel file.
@@ -21,6 +27,7 @@
           <i class="bi bi-file-earmark-person text-primary" style="font-size:2.5rem"></i>
           <div class="fw-semibold mt-2">Specifikat e punetoreve - E.ON.xlsx</div>
           <div class="text-muted small">{{ _('or any employee spec file with the same format') }}</div>
+          <div class="badge bg-secondary mt-1">{{ _('Optional') }}</div>
           <div class="file-name mt-2 text-success" id="emp_filename"></div>
         </div>
         <input type="file" id="employee_file" name="employee_file" accept=".xlsx"

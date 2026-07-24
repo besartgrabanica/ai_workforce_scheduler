@@ -14,7 +14,7 @@ from datetime import date, timedelta
 from math import sqrt
 
 from .models import (db, BusinessParam, Employee, DailyForecast, ExcludedDate,
-                      ShiftAssignment, ShiftTemplate)
+                      ShiftAssignment, ShiftTemplate, RotationPattern)
 
 # Fallback only — used if the 'max_coverage_pct' BusinessParam row is missing.
 # The client only reimburses coverage up to this % of the required daily
@@ -59,14 +59,34 @@ def _add_hours(start: str, hours: float) -> str:
     return f'{total_mins // 60:02d}:{total_mins % 60:02d}'
 
 
+def _week_start(d: date) -> date:
+    """Monday of the calendar week containing d."""
+    return d - timedelta(days=d.weekday())
+
+
+def _rotation_shift_for_date(pattern: RotationPattern, target_date: date) -> ShiftTemplate:
+    """Which ShiftTemplate a rotation pattern prescribes for the ISO week containing
+    target_date. Purely a function of the pattern's anchor_date and target_date — never
+    depends on which month is currently being generated, so a rotation's week doesn't
+    reset just because a new month's schedule happens to start mid-week."""
+    weeks_elapsed = (_week_start(target_date) - _week_start(pattern.anchor_date)).days // 7
+    position = weeks_elapsed % pattern.cycle_length
+    return pattern.cycle_weeks[position].shift_template
+
+
 def _shift_details(emp: Employee, is_saturday: bool, is_sunday: bool,
-                    sat_hours: float, sun_hours: float) -> tuple[str, str, float]:
+                    sat_hours: float, sun_hours: float, target_date: date) -> tuple[str, str, float]:
     """Return (shift_start, shift_end, hours)."""
     if is_saturday:
         return '08:00', _add_hours('08:00', sat_hours), sat_hours
 
     if is_sunday:
         return '08:00', _add_hours('08:00', sun_hours), sun_hours
+
+    rotation = emp.effective_rotation_pattern
+    if rotation:
+        tpl = _rotation_shift_for_date(rotation, target_date)
+        return tpl.start_time, tpl.end_time, tpl.hours
 
     if emp.custom_start and emp.custom_end:
         if emp.custom_hours is not None:
@@ -198,10 +218,12 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
         return len(elig_list) - bisect.bisect_left(elig_list, day)
 
     def _urgency(emp_id, day_type, day):
-        """None if this employee no longer needs to work this day-type this month.
-        Otherwise, how "at risk" they are of falling short of their monthly target —
-        remaining shifts still owed divided by remaining chances to work them.
-        Rises automatically the more days they get deferred, which is what lets a
+        """None if this employee isn't a work candidate today — either they no longer
+        need this day-type this month, or (see below) they have slack and are already
+        on/ahead of an even pace, so today is deliberately their day off. Otherwise,
+        how "at risk" they are of falling short of their monthly target — remaining
+        shifts still owed divided by remaining chances to work them. Rises
+        automatically the more days they get deferred, which is what lets a
         capped-out day self-correct on a later one instead of permanently shorting
         someone's hours."""
         t = targets[emp_id]
@@ -211,20 +233,43 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
         remaining_opps = _remaining_opportunities(emp_id, day_type, day)
         if remaining_opps <= 0:
             return float('inf')
+        if remaining_needed >= remaining_opps:
+            # Zero or negative slack left — must work every remaining eligible day
+            # to hit target, no exceptions. Made explicit (rather than relying on
+            # the ratio below happening to reach 1.0) because the pace gate right
+            # after this must never be allowed to override it.
+            return float('inf')
+
+        # There's slack. With a coverage cap that's rarely tight, nothing else here
+        # holds anyone back — so without this gate, slack always gets spent
+        # immediately, which is exactly what front-loads a part-time employee's
+        # whole month into an early work streak and dumps every day off at the end
+        # instead of spreading them out. If this employee is already at or ahead of
+        # an even pace through the month, take today off and revisit tomorrow.
+        elig_list = emp_elig[emp_id][day_type]
+        opportunities_so_far = bisect.bisect_right(elig_list, day)  # today, inclusive
+        expected_by_now = t[f'target_{day_type}'] * opportunities_so_far / len(elig_list)
+        if t[f'assigned_{day_type}'] >= expected_by_now:
+            return None
+
         return remaining_needed / remaining_opps
 
-    def _unit_shift(representative, dow, is_saturday, is_sunday):
+    def _unit_shift(representative, dow, is_saturday, is_sunday, day):
         """The single shift/hours a schedule-group unit shares, computed from
         whichever member represents the group today (same idea as before: one
         member's eligibility/settings decide the shared outcome)."""
         shift_start, shift_end, base_hours = _shift_details(
-            representative, is_saturday, is_sunday, sat_hours, sun_hours
+            representative, is_saturday, is_sunday, sat_hours, sun_hours, day
         )
         t = targets[representative.id]
         if t['hours_factor'] < 1.0 and not is_saturday and not is_sunday:
             shift_end, base_hours = _adjust_shift_for_hours_mode(
                 shift_start, base_hours, t['hours_factor']
             )
+        rotation = representative.effective_rotation_pattern
+        default_tpl_id = (_rotation_shift_for_date(rotation, day).id if rotation
+                           else representative.shift_template_id)
+
         dow_restriction = restriction_map[representative.id].get(dow)
         if dow_restriction and dow_restriction.shift_type:
             tpl = ShiftTemplate.query.filter_by(name=dow_restriction.shift_type.capitalize()).first()
@@ -232,9 +277,9 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
                 shift_start, shift_end, base_hours = tpl.start_time, tpl.end_time, tpl.hours
                 emp_tpl_id = tpl.id
             else:
-                emp_tpl_id = representative.shift_template_id
+                emp_tpl_id = default_tpl_id
         else:
-            emp_tpl_id = representative.shift_template_id
+            emp_tpl_id = default_tpl_id
         return shift_start, shift_end, round(base_hours, 2), emp_tpl_id
 
     for day in all_days:
@@ -341,7 +386,7 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
                 continue
             representative = u['members'][0]
             shift_start, shift_end, base_hours, emp_tpl_id = _unit_shift(
-                representative, dow, is_saturday, is_sunday
+                representative, dow, is_saturday, is_sunday, day
             )
             for m in u['members']:
                 _record(m, 'work', shift_start=shift_start, shift_end=shift_end,
@@ -369,7 +414,15 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
     emp_summary = []
     for emp in employees:
         t = targets[emp.id]
-        std_start, std_end, std_h = _shift_details(emp, False, False, sat_hours, sun_hours)
+        rotation = emp.effective_rotation_pattern
+        elig_wd = emp_elig[emp.id]['wd']
+        if rotation and elig_wd:
+            # Weekday hours vary by rotation week — average across this employee's
+            # actual eligible weekdays this month rather than one fixed snapshot.
+            std_h = sum(_shift_details(emp, False, False, sat_hours, sun_hours, d)[2]
+                        for d in elig_wd) / len(elig_wd)
+        else:
+            std_h = _shift_details(emp, False, False, sat_hours, sun_hours, all_days[0])[2]
         target_hours = (t['target_wd'] * std_h * t['hours_factor'] +
                         t['target_sat'] * sat_hours + t['target_sun'] * sun_hours)
         emp_summary.append({

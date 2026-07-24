@@ -1,0 +1,35 @@
+[Unit]
+Description=AI Workforce Scheduler (gunicorn, behind nginx)
+After=network.target
+
+[Service]
+Type=simple
+User=scheduler
+Group=scheduler
+WorkingDirectory=/opt/ai_workforce_scheduler
+
+# app.py calls load_dotenv() itself and finds /opt/ai_workforce_scheduler/.env
+# next to it. Do NOT also set EnvironmentFile= here — systemd's own env-file
+# parser doesn't handle quoted/spaced values the same way python-dotenv does
+# (e.g. MAIL_FROM="Name <addr>" would break), so let the app load it instead.
+
+# 1 worker + threads, not multiple worker processes: the app uses per-project
+# SQLite files with no WAL mode configured, so concurrent writes from
+# separate processes risk "database is locked" errors that don't happen
+# today under the single-process dev server. Threads give request
+# concurrency without that risk.
+# --timeout 120: the AI assistant streams responses over SSE; gunicorn's
+# default 30s worker timeout would kill a long-running reply mid-stream.
+ExecStart=/opt/ai_workforce_scheduler/venv/bin/gunicorn \
+    --workers 1 \
+    --worker-class gthread \
+    --threads 4 \
+    --timeout 120 \
+    --bind 127.0.0.1:8000 \
+    app:app
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

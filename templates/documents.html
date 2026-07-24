@@ -91,6 +91,11 @@
       </div>
       <form action="{{ url_for('documents_upload') }}" method="POST" enctype="multipart/form-data">
         <div class="modal-body">
+          <div class="alert alert-secondary small mb-3">
+            <i class="bi bi-info-circle me-1"></i>
+            {% trans %}This is reference material for the AI assistant only — it isn't parsed into the schedule.
+            For the monthly client forecast and Germany coverage files, use <strong>Upload Forecast</strong> instead.{% endtrans %}
+          </div>
           <div class="mb-3">
             <div class="upload-zone" onclick="document.getElementById('doc_file').click()">
               <i class="bi bi-file-earmark-arrow-up text-primary" style="font-size:2rem"></i>
@@ -112,7 +117,7 @@
           <div class="mb-3">
             <label class="form-label fw-semibold">{{ _('Description') }} <span class="text-muted small">({{ _('optional') }})</span></label>
             <input type="text" name="description" class="form-control"
-                   placeholder="{{ _('e.g. E.ON TFC forecast June–August 2026') }}">
+                   placeholder="{{ _('e.g. E.ON service contract 2026') }}">
           </div>
         </div>
         <div class="modal-footer">

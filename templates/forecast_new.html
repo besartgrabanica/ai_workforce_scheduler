@@ -8,15 +8,16 @@
 
 <div class="card">
   <div class="card-header">
-    <i class="bi bi-upload me-2 text-primary"></i>{{ _('Import E.ON Forecast Data') }}
+    <i class="bi bi-upload me-2 text-primary"></i>{{ _('Import Forecast Data') }}
   </div>
   <div class="card-body">
     <div class="alert alert-info">
       <i class="bi bi-info-circle me-2"></i>
       <strong>{{ _('Upload workflow:') }}</strong>
-      {% trans %}Upload the <strong>TFC forecast</strong> (required) and optionally the
-      <strong>German Abnahmemenge</strong> and <strong>Forecast Calculation</strong> files.
-      The system calculates Kosovo's required agents automatically.{% endtrans %}
+      {% trans %}Two files come in from the client engagement every month: the
+      <strong>Client Forecast</strong> (required) and <strong>Germany Coverage</strong>
+      (expected monthly). The system calculates the local required agents automatically.
+      <strong>Forecast Override</strong> is an advanced, occasional-use option.{% endtrans %}
     </div>
 
     <form action="{{ url_for('forecast_new') }}" method="POST" enctype="multipart/form-data">
@@ -27,12 +28,12 @@
       </div>
 
       <div class="row g-3 mb-4">
-        <!-- TFC File -->
+        <!-- Client Forecast (TFC) -->
         <div class="col-md-4">
           <div class="upload-zone" id="zone-tfc" onclick="document.getElementById('tfc_file').click()">
             <i class="bi bi-file-earmark-spreadsheet text-primary" style="font-size:2rem"></i>
-            <div class="fw-semibold mt-2">{{ _('TFC Forecast') }}</div>
-            <div class="text-muted small">TFC_Juni-August_*.xlsx</div>
+            <div class="fw-semibold mt-2">{{ _('Client Forecast') }}</div>
+            <div class="text-muted small">{{ _('Contact forecast from the client (e.g. TFC)') }}</div>
             <div class="badge bg-danger mt-1">{{ _('Required') }}</div>
             <div class="file-name mt-2 text-success small" id="name-tfc"></div>
           </div>
@@ -40,25 +41,25 @@
                  class="d-none" onchange="showFileName(this,'name-tfc','zone-tfc')">
         </div>
 
-        <!-- Abnahmemenge DE -->
+        <!-- Germany Coverage (Abnahmemenge DE) -->
         <div class="col-md-4">
           <div class="upload-zone" id="zone-abnahme" onclick="document.getElementById('abnahme_file').click()">
             <i class="bi bi-file-earmark-spreadsheet text-success" style="font-size:2rem"></i>
-            <div class="fw-semibold mt-2">{{ _('Abnahmemenge DE') }}</div>
-            <div class="text-muted small">{{ _('German offices contribution') }}</div>
-            <div class="badge bg-secondary mt-1">{{ _('Optional') }}</div>
+            <div class="fw-semibold mt-2">{{ _('Germany Coverage') }}</div>
+            <div class="text-muted small">{{ _('What KiKxxl DE will cover (Abnahmemenge)') }}</div>
+            <div class="badge bg-secondary mt-1">{{ _('Optional — expected monthly') }}</div>
             <div class="file-name mt-2 text-success small" id="name-abnahme"></div>
           </div>
           <input type="file" id="abnahme_file" name="abnahme_file" accept=".xlsx"
                  class="d-none" onchange="showFileName(this,'name-abnahme','zone-abnahme')">
         </div>
 
-        <!-- Forecast Calculation -->
+        <!-- Forecast Override (Forecast Calculation) -->
         <div class="col-md-4">
           <div class="upload-zone" id="zone-fccalc" onclick="document.getElementById('fc_calc_file').click()">
             <i class="bi bi-file-earmark-spreadsheet text-warning" style="font-size:2rem"></i>
-            <div class="fw-semibold mt-2">{{ _('Forecast Calculation') }}</div>
-            <div class="text-muted small">{{ _('Kosovo FTE override') }}</div>
+            <div class="fw-semibold mt-2">{{ _('Forecast Override') }}</div>
+            <div class="text-muted small">{{ _('Manual required-agents override (advanced)') }}</div>
             <div class="badge bg-secondary mt-1">{{ _('Optional') }}</div>
             <div class="file-name mt-2 text-success small" id="name-fccalc"></div>
           </div>

@@ -67,6 +67,13 @@ class Team(db.Model):
         return f'<Team {self.name}>'
 
 
+class PublicHoliday(db.Model):
+    __tablename__ = 'public_holiday'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False)
+
+
 class ShiftTemplate(db.Model):
     __tablename__ = 'shift_template'
     id = db.Column(db.Integer, primary_key=True)
@@ -83,6 +90,31 @@ class ShiftTemplate(db.Model):
             'start_time': self.start_time, 'end_time': self.end_time,
             'hours': self.hours, 'color': self.color,
         }
+
+
+class RotationPattern(db.Model):
+    __tablename__ = 'rotation_pattern'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    anchor_date = db.Column(db.Date, nullable=False)   # any date in "week 0" of the cycle
+
+    cycle_weeks = db.relationship('RotationCycleWeek', backref='pattern',
+                                   cascade='all, delete-orphan',
+                                   order_by='RotationCycleWeek.position')
+
+    @property
+    def cycle_length(self):
+        return len(self.cycle_weeks)
+
+
+class RotationCycleWeek(db.Model):
+    __tablename__ = 'rotation_cycle_week'
+    id = db.Column(db.Integer, primary_key=True)
+    rotation_pattern_id = db.Column(db.Integer, db.ForeignKey('rotation_pattern.id', ondelete='CASCADE'), nullable=False)
+    position = db.Column(db.Integer, nullable=False)   # 0-indexed slot in the cycle
+    shift_template_id = db.Column(db.Integer, db.ForeignKey('shift_template.id'), nullable=False)
+
+    shift_template = db.relationship('ShiftTemplate')
 
 
 class BusinessParam(db.Model):
@@ -116,6 +148,7 @@ class Employee(db.Model):
     raw_notes = db.Column(db.Text)
     contract_notes = db.Column(db.Text)
     schedule_group_id = db.Column(db.Integer, db.ForeignKey('schedule_group.id'))
+    rotation_pattern_id = db.Column(db.Integer, db.ForeignKey('rotation_pattern.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -123,12 +156,23 @@ class Employee(db.Model):
     day_restrictions = db.relationship('DayRestriction', backref='employee', cascade='all, delete-orphan')
     excluded_dates = db.relationship('ExcludedDate', backref='employee', cascade='all, delete-orphan')
     schedule_group = db.relationship('ScheduleGroup', backref='members')
+    rotation_pattern = db.relationship('RotationPattern', backref='employees')
 
     @property
     def effective_shift_template(self):
         """The template that actually governs this employee's shift: their own
         assignment if set, otherwise whichever ShiftTemplate is the project default."""
         return self.shift_template or ShiftTemplate.query.filter_by(is_default=True).first()
+
+    @property
+    def effective_rotation_pattern(self):
+        """The rotation pattern governing this employee's weekday shift, if any:
+        their own individual override, else their schedule group's shared rotation."""
+        if self.rotation_pattern_id:
+            return self.rotation_pattern
+        if self.schedule_group and self.schedule_group.rotation_pattern_id:
+            return self.schedule_group.rotation_pattern
+        return None
 
     @property
     def effective_shift_start(self):
@@ -192,6 +236,9 @@ class ScheduleGroup(db.Model):
     __tablename__ = 'schedule_group'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
+    rotation_pattern_id = db.Column(db.Integer, db.ForeignKey('rotation_pattern.id'))
+
+    rotation_pattern = db.relationship('RotationPattern', backref='schedule_groups')
 
     @property
     def member_count(self):

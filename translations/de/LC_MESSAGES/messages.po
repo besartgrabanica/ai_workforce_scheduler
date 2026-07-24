@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-14 12:10+0200\n"
+"POT-Creation-Date: 2026-07-23 15:16+0200\n"
 "PO-Revision-Date: 2026-07-13 15:59+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -18,125 +18,125 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:194
+#: app.py:159
 msgid "You do not have permission to perform this action."
 msgstr "Sie haben keine Berechtigung, diese Aktion durchzuführen."
 
-#: app.py:209
+#: app.py:174
 msgid "Only a global superadmin can do that."
 msgstr "Nur ein globaler Superadministrator kann das tun."
 
-#: app.py:224
+#: app.py:189
 msgid "Only a global admin or superadmin can do that."
 msgstr "Nur ein globaler Admin oder Superadmin kann das tun."
 
-#: app.py:252 templates/_i18n_registry.html:34
+#: app.py:217 templates/_i18n_registry.html:34
 msgid "January"
 msgstr "Januar"
 
-#: app.py:252 templates/_i18n_registry.html:34
+#: app.py:217 templates/_i18n_registry.html:34
 msgid "February"
 msgstr "Februar"
 
-#: app.py:252 templates/_i18n_registry.html:34
+#: app.py:217 templates/_i18n_registry.html:34
 msgid "March"
 msgstr "März"
 
-#: app.py:252 templates/_i18n_registry.html:34
+#: app.py:217 templates/_i18n_registry.html:34
 msgid "April"
 msgstr "April"
 
-#: app.py:252 templates/_i18n_registry.html:35
+#: app.py:217 templates/_i18n_registry.html:35
 msgid "May"
 msgstr "Mai"
 
-#: app.py:252 templates/_i18n_registry.html:35
+#: app.py:217 templates/_i18n_registry.html:35
 msgid "June"
 msgstr "Juni"
 
-#: app.py:253 templates/_i18n_registry.html:35
+#: app.py:218 templates/_i18n_registry.html:35
 msgid "July"
 msgstr "Juli"
 
-#: app.py:253 templates/_i18n_registry.html:35
+#: app.py:218 templates/_i18n_registry.html:35
 msgid "August"
 msgstr "August"
 
-#: app.py:253 templates/_i18n_registry.html:36
+#: app.py:218 templates/_i18n_registry.html:36
 msgid "September"
 msgstr "September"
 
-#: app.py:253 templates/_i18n_registry.html:36
+#: app.py:218 templates/_i18n_registry.html:36
 msgid "October"
 msgstr "Oktober"
 
-#: app.py:253 templates/_i18n_registry.html:36
+#: app.py:218 templates/_i18n_registry.html:36
 msgid "November"
 msgstr "November"
 
-#: app.py:253 templates/_i18n_registry.html:36
+#: app.py:218 templates/_i18n_registry.html:36
 msgid "December"
 msgstr "Dezember"
 
-#: app.py:627
+#: app.py:638
 msgid "Viewer accounts cannot make changes."
 msgstr "Betrachter-Konten können keine Änderungen vornehmen."
 
-#: app.py:644
+#: app.py:655
 msgid "Invalid username or password."
 msgstr "Ungültiger Benutzername oder Passwort."
 
-#: app.py:717
+#: app.py:728
 msgid "Profile updated."
 msgstr "Profil aktualisiert."
 
-#: app.py:724
+#: app.py:735
 msgid "Current password is incorrect."
 msgstr "Das aktuelle Passwort ist falsch."
 
-#: app.py:726
+#: app.py:737
 msgid "New password must be at least 6 characters."
 msgstr "Das neue Passwort muss mindestens 6 Zeichen lang sein."
 
-#: app.py:728
+#: app.py:739
 msgid "New passwords do not match."
 msgstr "Die neuen Passwörter stimmen nicht überein."
 
-#: app.py:732
+#: app.py:743
 msgid "Password changed."
 msgstr "Passwort geändert."
 
-#: app.py:746
+#: app.py:757
 #, python-format
 msgid "Password reset email sent to %(email)s."
 msgstr "E-Mail zum Zurücksetzen des Passworts an %(email)s gesendet."
 
-#: app.py:748
+#: app.py:759
 #, python-format
 msgid "Could not send reset email: %(error)s"
 msgstr "Zurücksetzen-E-Mail konnte nicht gesendet werden: %(error)s"
 
-#: app.py:750
+#: app.py:761
 msgid "No email on file for this account."
 msgstr "Für dieses Konto ist keine E-Mail hinterlegt."
 
-#: app.py:755 app.py:2013
+#: app.py:766 app.py:2052
 msgid "Please choose an image file."
 msgstr "Bitte wählen Sie eine Bilddatei aus."
 
-#: app.py:759
+#: app.py:770
 msgid "Photo must be PNG, JPG, or WEBP."
 msgstr "Foto muss PNG, JPG oder WEBP sein."
 
-#: app.py:767
+#: app.py:778
 msgid "Photo updated."
 msgstr "Foto aktualisiert."
 
-#: app.py:774
+#: app.py:785
 msgid "Photo removed."
 msgstr "Foto entfernt."
 
-#: app.py:826
+#: app.py:837
 msgid ""
 "If an account exists for that email, a reset link is on its way. Check your "
 "inbox in the next few minutes."
@@ -145,37 +145,37 @@ msgstr ""
 "Zurücksetzen unterwegs. Prüfen Sie in den nächsten Minuten Ihren "
 "Posteingang."
 
-#: app.py:839
+#: app.py:850
 msgid "Invalid or unknown reset link."
 msgstr "Ungültiger oder unbekannter Link zum Zurücksetzen."
 
-#: app.py:841
+#: app.py:852
 msgid "This reset link has already been used."
 msgstr "Dieser Link wurde bereits verwendet."
 
-#: app.py:843
+#: app.py:854
 msgid "This reset link has expired. Request a new one."
 msgstr "Dieser Link ist abgelaufen. Fordern Sie einen neuen an."
 
-#: app.py:852 app.py:1119
+#: app.py:863 app.py:1129
 msgid "Password must be at least 6 characters."
 msgstr "Das Passwort muss mindestens 6 Zeichen lang sein."
 
-#: app.py:855 app.py:1122
+#: app.py:866 app.py:1132
 msgid "Passwords do not match."
 msgstr "Die Passwörter stimmen nicht überein."
 
-#: app.py:860
+#: app.py:871
 msgid "Password updated. You can now sign in with your new password."
 msgstr ""
 "Passwort aktualisiert. Sie können sich jetzt mit Ihrem neuen Passwort "
 "anmelden."
 
-#: app.py:882
+#: app.py:893
 msgid "You do not have access to that project."
 msgstr "Sie haben keinen Zugriff auf dieses Projekt."
 
-#: app.py:922
+#: app.py:932
 msgid ""
 "Project key must start with a letter/number and contain only lowercase "
 "letters, numbers, - or _."
@@ -183,33 +183,33 @@ msgstr ""
 "Der Projektschlüssel muss mit einem Buchstaben/einer Zahl beginnen und darf "
 "nur Kleinbuchstaben, Zahlen, - oder _ enthalten."
 
-#: app.py:924
+#: app.py:934
 msgid "A project with that key already exists."
 msgstr "Ein Projekt mit diesem Schlüssel existiert bereits."
 
-#: app.py:926
+#: app.py:936
 msgid "Display name is required."
 msgstr "Anzeigename ist erforderlich."
 
-#: app.py:948
+#: app.py:958
 #, python-format
 msgid "Project \"%(name)s\" created and ready to use."
 msgstr "Projekt „%(name)s“ erstellt und einsatzbereit."
 
-#: app.py:1003
+#: app.py:1013
 msgid "A valid email address is required."
 msgstr "Eine gültige E-Mail-Adresse ist erforderlich."
 
-#: app.py:1008
+#: app.py:1018
 msgid "Only a global superadmin can send a global-scope invite."
 msgstr ""
 "Nur ein globaler Superadministrator kann eine globale Einladung versenden."
 
-#: app.py:1011 app.py:1019 app.py:1224
+#: app.py:1021 app.py:1029 app.py:1234
 msgid "Unknown role."
 msgstr "Unbekannte Rolle."
 
-#: app.py:1016
+#: app.py:1026
 msgid ""
 "\"superadmin\" is a global-only role — invite as admin instead, or use a "
 "global invite."
@@ -217,19 +217,19 @@ msgstr ""
 "„Superadmin\" ist eine rein globale Rolle — laden Sie stattdessen als "
 "Administrator ein, oder nutzen Sie eine globale Einladung."
 
-#: app.py:1029
+#: app.py:1039
 #, python-format
 msgid ""
 "\"%(username)s\" already has an account — set their global role to %(role)s."
 msgstr ""
 "„%(username)s\" hat bereits ein Konto — globale Rolle auf %(role)s gesetzt."
 
-#: app.py:1031
+#: app.py:1041
 #, python-format
 msgid "\"%(username)s\" already has access to this project."
 msgstr "„%(username)s\" hat bereits Zugriff auf dieses Projekt."
 
-#: app.py:1035
+#: app.py:1045
 #, python-format
 msgid ""
 "\"%(username)s\" already has an account — granted access to this project as "
@@ -238,82 +238,82 @@ msgstr ""
 "„%(username)s\" hat bereits ein Konto — Zugriff auf dieses Projekt als "
 "%(role)s gewährt."
 
-#: app.py:1039
+#: app.py:1049
 msgid " (dry-run — check the server log for the link)"
 msgstr " (Testlauf — Link im Server-Log prüfen)"
 
-#: app.py:1040
+#: app.py:1050
 #, python-format
 msgid "Invite sent to %(email)s%(note)s."
 msgstr "Einladung an %(email)s%(note)s gesendet."
 
-#: app.py:1049 app.py:1073
+#: app.py:1059 app.py:1083
 msgid "You do not have permission to manage that invite."
 msgstr "Sie haben keine Berechtigung, diese Einladung zu verwalten."
 
-#: app.py:1052
+#: app.py:1062
 msgid "Only pending or expired invites can be resent."
 msgstr ""
 "Nur ausstehende oder abgelaufene Einladungen können erneut gesendet werden."
 
-#: app.py:1064
+#: app.py:1074
 #, python-format
 msgid "Invite resent to %(email)s."
 msgstr "Einladung erneut an %(email)s gesendet."
 
-#: app.py:1076
+#: app.py:1086
 msgid "Cannot revoke an invite that was already accepted."
 msgstr "Eine bereits angenommene Einladung kann nicht widerrufen werden."
 
-#: app.py:1080
+#: app.py:1090
 #, python-format
 msgid "Invite to %(email)s revoked."
 msgstr "Einladung an %(email)s widerrufen."
 
-#: app.py:1092
+#: app.py:1102
 msgid "Invalid or unknown invite link."
 msgstr "Ungültiger oder unbekannter Einladungslink."
 
-#: app.py:1094
+#: app.py:1104
 msgid "This invite has already been used."
 msgstr "Diese Einladung wurde bereits verwendet."
 
-#: app.py:1096
+#: app.py:1106
 msgid "This invite has been revoked."
 msgstr "Diese Einladung wurde widerrufen."
 
-#: app.py:1098
+#: app.py:1108
 msgid "This invite has expired. Ask an admin to resend it."
 msgstr ""
 "Diese Einladung ist abgelaufen. Bitten Sie einen Administrator, sie erneut "
 "zu senden."
 
-#: app.py:1110
+#: app.py:1120
 msgid "Username must be at least 2 characters."
 msgstr "Der Benutzername muss mindestens 2 Zeichen lang sein."
 
-#: app.py:1113
+#: app.py:1123
 msgid "That username is already taken."
 msgstr "Dieser Benutzername ist bereits vergeben."
 
-#: app.py:1116
+#: app.py:1126
 msgid "That email is already in use by another account."
 msgstr "Diese E-Mail-Adresse wird bereits von einem anderen Konto verwendet."
 
-#: app.py:1138
+#: app.py:1148
 msgid "Account activated — welcome!"
 msgstr "Konto aktiviert — willkommen!"
 
-#: app.py:1167
+#: app.py:1177
 #, python-format
 msgid "User \"%(username)s\" updated."
 msgstr "Benutzer „%(username)s\" aktualisiert."
 
-#: app.py:1180
+#: app.py:1190
 msgid "Cannot remove your own access to this project."
 msgstr "Sie können Ihren eigenen Zugriff auf dieses Projekt nicht entfernen."
 
-#: app.py:1185
+#: app.py:1195
 #, python-format
 msgid ""
 "\"%(username)s\" has no project-specific override here — their global role "
@@ -322,7 +322,7 @@ msgstr ""
 "„%(username)s\" hat hier keine projektspezifische Sonderregelung — der "
 "Zugriff ergibt sich (falls vorhanden) aus der globalen Rolle."
 
-#: app.py:1192
+#: app.py:1202
 #, python-format
 msgid ""
 "Removed \"%(username)s\"'s project-specific override — their global %(role)s"
@@ -331,215 +331,313 @@ msgstr ""
 "Projektspezifische Sonderregelung von „%(username)s\" entfernt — die globale"
 " Rolle %(role)s gilt hier weiterhin."
 
-#: app.py:1195
+#: app.py:1205
 #, python-format
 msgid "Removed \"%(username)s\"'s access to this project."
 msgstr "Zugriff von „%(username)s\" auf dieses Projekt entfernt."
 
-#: app.py:1206
+#: app.py:1216
 msgid "Unknown project."
 msgstr "Unbekanntes Projekt."
 
-#: app.py:1208
+#: app.py:1218
 #, python-format
 msgid "\"%(username)s\" already has access to %(project)s."
 msgstr "„%(username)s\" hat bereits Zugriff auf %(project)s."
 
-#: app.py:1212
+#: app.py:1222
 #, python-format
 msgid "Granted \"%(username)s\" access to %(project)s as %(role)s."
 msgstr "„%(username)s\" Zugriff auf %(project)s als %(role)s gewährt."
 
-#: app.py:1222
+#: app.py:1232
 msgid "Cannot remove your own global superadmin access."
 msgstr ""
 "Sie können Ihren eigenen globalen Superadministrator-Zugriff nicht "
 "entfernen."
 
-#: app.py:1228
+#: app.py:1238
 msgid "none"
 msgstr "keine"
 
-#: app.py:1229
+#: app.py:1239
 #, python-format
 msgid "\"%(username)s\"'s global role is now %(role)s."
 msgstr "Die globale Rolle von „%(username)s\" ist jetzt %(role)s."
 
-#: app.py:1314 templates/dashboard.html:59
+#: app.py:1324 templates/dashboard.html:59
 msgid "Required KS Agents"
 msgstr "Benötigte KS-Agenten"
 
-#: app.py:1314 templates/dashboard.html:60
+#: app.py:1324 templates/dashboard.html:60
 msgid "Total Contacts"
 msgstr "Kontakte Gesamt"
 
-#: app.py:1314 templates/dashboard.html:61
+#: app.py:1324 templates/dashboard.html:61
 msgid "Synchron Contacts"
 msgstr "Synchrone Kontakte"
 
-#: app.py:1315 templates/dashboard.html:62
+#: app.py:1325 templates/dashboard.html:62
 msgid "Asynchron Contacts"
 msgstr "Asynchrone Kontakte"
 
-#: app.py:1315 templates/dashboard.html:63
+#: app.py:1325 templates/dashboard.html:63
 msgid "Chat Contacts"
 msgstr "Chat-Kontakte"
 
-#: app.py:1315 templates/dashboard.html:64
+#: app.py:1325 templates/dashboard.html:64
 msgid "Germany Contribution"
 msgstr "Beitrag Deutschland"
 
-#: app.py:1346
+#: app.py:1356
 msgid "label"
 msgstr "label"
 
-#: app.py:1387
+#: app.py:1397
 msgid "Period name is required."
 msgstr "Ein Name für den Zeitraum ist erforderlich."
 
 #: app.py:1403
-msgid "TFC forecast file is required."
-msgstr "Die TFC-Prognosedatei ist erforderlich."
+msgid ""
+"Forecast import isn't set up for this project yet — its file format needs a "
+"parser written for it first."
+msgstr ""
+"Der Forecast-Import ist für dieses Projekt noch nicht eingerichtet — für "
+"sein Dateiformat muss zuerst ein Parser geschrieben werden."
 
-#: app.py:1416
+#: app.py:1420
+msgid "Client Forecast file is required."
+msgstr "Die Kundenprognose-Datei ist erforderlich."
+
+#: app.py:1433
+msgid ""
+"This project's parser doesn't support an Abnahme DE file — it was ignored."
+msgstr ""
+"Der Parser dieses Projekts unterstützt keine Abnahme-DE-Datei — sie wurde "
+"ignoriert."
+
+#: app.py:1439
+msgid ""
+"This project's parser doesn't support a Forecast Calculation file — it was "
+"ignored."
+msgstr ""
+"Der Parser dieses Projekts unterstützt keine Forecast-Calculation-Datei — "
+"sie wurde ignoriert."
+
+#: app.py:1443
 #, python-format
 msgid "Error parsing files: %(error)s"
 msgstr "Fehler beim Verarbeiten der Dateien: %(error)s"
 
-#: app.py:1420
-msgid "No data found in TFC file."
-msgstr "Keine Daten in der TFC-Datei gefunden."
+#: app.py:1447
+msgid "No data found in Client Forecast file."
+msgstr "Keine Daten in der Kundenprognose-Datei gefunden."
 
-#: app.py:1433 app.py:1586
+#: app.py:1460 app.py:1621
 #, python-format
 msgid "Format warning: %(msg)s"
 msgstr "Formatwarnung: %(msg)s"
 
-#: app.py:1498
+#: app.py:1525
 #, python-format
 msgid "Forecast period \"%(name)s\" imported successfully (%(n)s days)."
 msgstr "Prognosezeitraum „%(name)s\" erfolgreich importiert (%(n)s Tage)."
 
-#: app.py:1531
+#: app.py:1558
 msgid "Forecast period deleted."
 msgstr "Prognosezeitraum gelöscht."
 
-#: app.py:1575
+#: app.py:1604
 msgid "Please select a file."
 msgstr "Bitte wählen Sie eine Datei aus."
 
-#: app.py:1594
+#: app.py:1610
+msgid ""
+"Employee import isn't set up for this project yet — its file format needs a "
+"parser written for it first."
+msgstr ""
+"Der Mitarbeiter-Import ist für dieses Projekt noch nicht eingerichtet — für "
+"sein Dateiformat muss zuerst ein Parser geschrieben werden."
+
+#: app.py:1629
 #, python-format
 msgid "AI parsed %(n)s employees."
 msgstr "KI hat %(n)s Mitarbeiter ausgewertet."
 
-#: app.py:1596
+#: app.py:1631
 msgid "ANTHROPIC_API_KEY not set — using defaults."
 msgstr "ANTHROPIC_API_KEY nicht gesetzt — Standardwerte werden verwendet."
 
-#: app.py:1710
+#: app.py:1745
 #, python-format
 msgid "%(n)s employees imported/updated."
 msgstr "%(n)s Mitarbeiter importiert/aktualisiert."
 
-#: app.py:1793
+#: app.py:1832
 msgid "created"
 msgstr "erstellt"
 
-#: app.py:1793
+#: app.py:1832
 msgid "updated"
 msgstr "aktualisiert"
 
-#: app.py:1794
+#: app.py:1833
 #, python-format
 msgid "Employee %(name)s %(action)s."
 msgstr "Mitarbeiter %(name)s %(action)s."
 
-#: app.py:1806
+#: app.py:1845
 #, python-format
 msgid "%(name)s deleted."
 msgstr "%(name)s gelöscht."
 
-#: app.py:1856
+#: app.py:1895
 #, python-format
 msgid "%(n)s employees updated."
 msgstr "%(n)s Mitarbeiter aktualisiert."
 
-#: app.py:1892
+#: app.py:1931
 #, python-format
 msgid "Schedule generated: %(n)s employees, %(pct)s%% avg coverage."
 msgstr ""
 "Dienstplan erstellt: %(n)s Mitarbeiter, %(pct)s%% durchschnittliche "
 "Abdeckung."
 
-#: app.py:1968
+#: app.py:2007
 msgid "Schedule deleted."
 msgstr "Dienstplan gelöscht."
 
-#: app.py:2017
+#: app.py:2056
 msgid "Logo must be PNG, JPG, SVG, or WEBP."
 msgstr "Das Logo muss PNG, JPG, SVG oder WEBP sein."
 
-#: app.py:2024
+#: app.py:2063
 msgid "Logo updated."
 msgstr "Logo aktualisiert."
 
-#: app.py:2030
+#: app.py:2069
 msgid "Logo removed."
 msgstr "Logo entfernt."
 
-#: app.py:2050
+#: app.py:2089
 msgid "Business parameters saved."
 msgstr "Geschäftsparameter gespeichert."
 
-#: app.py:2070
+#: app.py:2109
 msgid "AI settings saved (applies to every project)."
 msgstr "KI-Einstellungen gespeichert (gilt für alle Projekte)."
 
-#: app.py:2109
+#: app.py:2148
 #, python-format
 msgid "Shift template \"%(name)s\" added."
 msgstr "Schichtvorlage „%(name)s\" hinzugefügt."
 
-#: app.py:2128
+#: app.py:2167
 #, python-format
 msgid "Shift \"%(name)s\" updated."
 msgstr "Schicht „%(name)s\" aktualisiert."
 
-#: app.py:2139
+#: app.py:2178
 #, python-format
 msgid "Shift \"%(name)s\" deleted."
 msgstr "Schicht „%(name)s\" gelöscht."
 
-#: app.py:2141
+#: app.py:2180
 msgid "Cannot delete a default shift template."
 msgstr "Eine Standard-Schichtvorlage kann nicht gelöscht werden."
 
-#: app.py:2152
+#: app.py:2191
 #, python-format
 msgid "\"%(name)s\" is now the default shift template."
 msgstr "„%(name)s“ ist jetzt die Standardschicht."
 
-#: app.py:2180 app.py:2196
+#: app.py:2219 app.py:2246
+msgid "Rotation pattern name cannot be empty."
+msgstr "Der Name des Rotationsmusters darf nicht leer sein."
+
+#: app.py:2221 app.py:2248
+#, python-format
+msgid "A rotation pattern named \"%(name)s\" already exists."
+msgstr "Ein Rotationsmuster namens „%(name)s“ existiert bereits."
+
+#: app.py:2223 app.py:2250
+msgid "Please choose a start date for the rotation."
+msgstr "Bitte wählen Sie ein Startdatum für die Rotation."
+
+#: app.py:2225 app.py:2252
+msgid "A rotation needs at least one week in its cycle."
+msgstr "Eine Rotation benötigt mindestens eine Woche in ihrem Zyklus."
+
+#: app.py:2234
+#, python-format
+msgid "Rotation pattern \"%(name)s\" created."
+msgstr "Rotationsmuster „%(name)s“ erstellt."
+
+#: app.py:2261
+#, python-format
+msgid "Rotation pattern \"%(name)s\" updated."
+msgstr "Rotationsmuster „%(name)s“ aktualisiert."
+
+#: app.py:2272
+#, python-format
+msgid ""
+"Cannot delete \"%(name)s\" — it is still assigned to %(n)s "
+"employee(s)/group(s). Reassign them first."
+msgstr ""
+"„%(name)s“ kann nicht gelöscht werden — es ist noch %(n)s "
+"Mitarbeiter(n)/Gruppe(n) zugewiesen. Weisen Sie diese zuerst neu zu."
+
+#: app.py:2277
+#, python-format
+msgid "Rotation pattern \"%(name)s\" deleted."
+msgstr "Rotationsmuster „%(name)s“ gelöscht."
+
+#: app.py:2299
+msgid "Holiday name cannot be empty."
+msgstr "Der Name des Feiertags darf nicht leer sein."
+
+#: app.py:2301
+msgid "Please choose a date."
+msgstr "Bitte wählen Sie ein Datum."
+
+#: app.py:2306
+msgid "Invalid date."
+msgstr "Ungültiges Datum."
+
+#: app.py:2309
+msgid "A holiday is already set for that date."
+msgstr "Für dieses Datum ist bereits ein Feiertag eingetragen."
+
+#: app.py:2314
+#, python-format
+msgid "Holiday \"%(name)s\" added."
+msgstr "Feiertag „%(name)s“ hinzugefügt."
+
+#: app.py:2325
+#, python-format
+msgid "Holiday \"%(name)s\" removed."
+msgstr "Feiertag „%(name)s“ entfernt."
+
+#: app.py:2353 app.py:2369
 msgid "Team name cannot be empty."
 msgstr "Der Teamname darf nicht leer sein."
 
-#: app.py:2182 app.py:2198
+#: app.py:2355 app.py:2371
 #, python-format
 msgid "A team named \"%(name)s\" already exists."
 msgstr "Ein Team namens „%(name)s\" existiert bereits."
 
-#: app.py:2186
+#: app.py:2359
 #, python-format
 msgid "Team \"%(name)s\" created."
 msgstr "Team „%(name)s\" erstellt."
 
-#: app.py:2205
+#: app.py:2378
 #, python-format
 msgid "Team renamed from \"%(old)s\" to \"%(new)s\"."
 msgstr "Team von „%(old)s\" in „%(new)s\" umbenannt."
 
-#: app.py:2215 app.py:2266
+#: app.py:2388 app.py:2451
 #, python-format
 msgid ""
 "Cannot delete \"%(name)s\" — it has %(n)s employees. Reassign or move them "
@@ -548,85 +646,90 @@ msgstr ""
 "„%(name)s\" kann nicht gelöscht werden — es hat %(n)s Mitarbeiter. Weisen "
 "Sie diese zuerst neu zu oder verschieben Sie sie."
 
-#: app.py:2220
+#: app.py:2393
 #, python-format
 msgid "Team \"%(name)s\" deleted."
 msgstr "Team „%(name)s\" gelöscht."
 
-#: app.py:2233 app.py:2249
+#: app.py:2407 app.py:2434
 msgid "Group name cannot be empty."
 msgstr "Der Gruppenname darf nicht leer sein."
 
-#: app.py:2235 app.py:2251
+#: app.py:2409 app.py:2436
 #, python-format
 msgid "A schedule group named \"%(name)s\" already exists."
 msgstr "Eine Planungsgruppe namens „%(name)s\" existiert bereits."
 
-#: app.py:2239
+#: app.py:2413
 #, python-format
 msgid "Schedule group \"%(name)s\" created."
 msgstr "Planungsgruppe „%(name)s\" erstellt."
 
-#: app.py:2256
+#: app.py:2424
+#, python-format
+msgid "Rotation updated for \"%(name)s\"."
+msgstr "Rotation für „%(name)s“ aktualisiert."
+
+#: app.py:2441
 #, python-format
 msgid "Schedule group renamed from \"%(old)s\" to \"%(new)s\"."
 msgstr "Planungsgruppe von „%(old)s\" in „%(new)s\" umbenannt."
 
-#: app.py:2271
+#: app.py:2456
 #, python-format
 msgid "Schedule group \"%(name)s\" deleted."
 msgstr "Planungsgruppe „%(name)s\" gelöscht."
 
-#: app.py:2326
-msgid "Client Forecast"
-msgstr "Kundenprognose"
+#: app.py:2511
+msgid "Contract"
+msgstr "Vertrag"
 
-#: app.py:2326
-msgid "KiKxxl Commitment"
-msgstr "KiKxxl-Zusage"
+#: app.py:2511
+msgid "Correspondence"
+msgstr "Korrespondenz"
 
-#: app.py:2326
-msgid "Employee Specification"
-msgstr "Mitarbeiterspezifikation"
+#: app.py:2511
+msgid "Reference Data"
+msgstr "Referenzdaten"
 
-#: app.py:2326
+#: app.py:2511
 msgid "Miscellaneous"
 msgstr "Sonstiges"
 
-#: app.py:2332
+#: app.py:2517
 msgid "Workforce Management"
 msgstr "Personaleinsatzplanung"
 
-#: app.py:2332
+#: app.py:2517
 msgid "Human Resources"
 msgstr "Personalwesen"
 
-#: app.py:2332
+#: app.py:2517
 msgid "Executive"
 msgstr "Geschäftsführung"
 
-#: app.py:2333
+#: app.py:2518
 msgid "Quality Management"
 msgstr "Qualitätsmanagement"
 
-#: app.py:2333
+#: app.py:2518
 msgid "Learning & Development"
 msgstr "Aus- & Weiterbildung"
 
-#: app.py:2333
+#: app.py:2518
 msgid "AI & Automation"
 msgstr "KI & Automatisierung"
 
-#: app.py:2349
+#: app.py:2534
 msgid "No file selected."
 msgstr "Keine Datei ausgewählt."
 
-#: app.py:2368
+#: app.py:2553
 #, python-format
 msgid "\"%(name)s\" uploaded successfully."
 msgstr "„%(name)s\" erfolgreich hochgeladen."
 
-#: app.py:2387
+#: app.py:2572
 #, python-format
 msgid "\"%(name)s\" deleted."
 msgstr "„%(name)s\" gelöscht."
@@ -639,7 +742,7 @@ msgstr "Betrachter"
 msgid "Editor"
 msgstr "Bearbeiter"
 
-#: templates/_i18n_registry.html:21 templates/base.html:144
+#: templates/_i18n_registry.html:21 templates/base.html:156
 msgid "Admin"
 msgstr "Administrator"
 
@@ -775,7 +878,7 @@ msgstr "Passwort bestätigen"
 msgid "Activate Account"
 msgstr "Konto aktivieren"
 
-#: templates/account.html:2 templates/account.html:3 templates/base.html:171
+#: templates/account.html:2 templates/account.html:3 templates/base.html:183
 msgid "My Account"
 msgstr "Mein Konto"
 
@@ -791,7 +894,7 @@ msgstr "Aktuelles Foto"
 msgid "PNG, JPG, or WEBP."
 msgstr "PNG, JPG oder WEBP."
 
-#: templates/account.html:29 templates/documents.html:121
+#: templates/account.html:29 templates/documents.html:126
 #: templates/settings.html:31
 msgid "Upload"
 msgstr "Hochladen"
@@ -868,15 +971,15 @@ msgstr "Erscheinungsbild & Sprache"
 msgid "Theme"
 msgstr "Design"
 
-#: templates/account.html:111 templates/base.html:193
+#: templates/account.html:111 templates/base.html:205
 msgid "Light"
 msgstr "Hell"
 
-#: templates/account.html:111 templates/base.html:193
+#: templates/account.html:111 templates/base.html:205
 msgid "Hybrid"
 msgstr "Hybrid"
 
-#: templates/account.html:111 templates/base.html:193
+#: templates/account.html:111 templates/base.html:205
 msgid "Dark"
 msgstr "Dunkel"
 
@@ -934,7 +1037,7 @@ msgstr "Einen Link zum Zurücksetzen des Passworts an deine E-Mail senden?"
 msgid "Email Me a Reset Link"
 msgstr "Link zum Zurücksetzen zusenden"
 
-#: templates/ai_chat.html:2 templates/ai_chat.html:3 templates/base.html:130
+#: templates/ai_chat.html:2 templates/ai_chat.html:3 templates/base.html:142
 msgid "AI Assistant"
 msgstr "KI-Assistent"
 
@@ -948,6 +1051,7 @@ msgstr "Diese Unterhaltung löschen?"
 
 #: templates/ai_chat.html:27 templates/employee_detail.html:11
 #: templates/forecast_detail.html:9 templates/forecast_list.html:39
+#: templates/public_holidays.html:65 templates/rotation_patterns.html:102
 #: templates/schedule_detail.html:13 templates/shift_templates.html:98
 msgid "Delete"
 msgstr "Löschen"
@@ -1016,7 +1120,7 @@ msgid "⚠️ Network error: "
 msgstr "⚠️ Netzwerkfehler: "
 
 #: templates/ai_settings.html:2 templates/ai_settings.html:3
-#: templates/ai_settings.html:10 templates/base.html:138
+#: templates/ai_settings.html:10 templates/base.html:150
 msgid "AI Settings"
 msgstr "KI-Einstellungen"
 
@@ -1094,46 +1198,56 @@ msgstr "Dienstpläne"
 msgid "Shift Templates"
 msgstr "Schichtvorlagen"
 
-#: templates/base.html:116 templates/business_parameters.html:2
+#: templates/base.html:116 templates/rotation_patterns.html:2
+#: templates/rotation_patterns.html:3
+msgid "Rotation Patterns"
+msgstr "Rotationsmuster"
+
+#: templates/base.html:122 templates/public_holidays.html:2
+#: templates/public_holidays.html:3
+msgid "Public Holidays"
+msgstr "Feiertage"
+
+#: templates/base.html:128 templates/business_parameters.html:2
 #: templates/business_parameters.html:3 templates/business_parameters.html:9
 msgid "Business Parameters"
 msgstr "Geschäftsparameter"
 
-#: templates/base.html:122 templates/documents.html:2
+#: templates/base.html:134 templates/documents.html:2
 #: templates/documents.html:3
 msgid "Documents"
 msgstr "Dokumente"
 
-#: templates/base.html:126
+#: templates/base.html:138
 msgid "Intelligence"
 msgstr "Intelligenz"
 
-#: templates/base.html:131
+#: templates/base.html:143
 msgid "Beta"
 msgstr "Beta"
 
-#: templates/base.html:148 templates/settings.html:2 templates/settings.html:3
+#: templates/base.html:160 templates/settings.html:2 templates/settings.html:3
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: templates/base.html:154 templates/users.html:2
+#: templates/base.html:166 templates/users.html:2
 msgid "Users"
 msgstr "Benutzer"
 
-#: templates/base.html:161 templates/projects_admin.html:2
+#: templates/base.html:173 templates/projects_admin.html:2
 #: templates/projects_admin.html:3
 msgid "Projects"
 msgstr "Projekte"
 
-#: templates/base.html:181 templates/users.html:43
+#: templates/base.html:193 templates/users.html:43
 msgid "global"
 msgstr "global"
 
-#: templates/base.html:181
+#: templates/base.html:193
 msgid "this project"
 msgstr "dieses Projekt"
 
-#: templates/base.html:186 templates/no_access.html:46
+#: templates/base.html:198 templates/no_access.html:46
 msgid "Sign out"
 msgstr "Abmelden"
 
@@ -1258,38 +1372,49 @@ msgid "Download"
 msgstr "Herunterladen"
 
 #: templates/documents.html:72 templates/employee_detail.html:9
+#: templates/public_holidays.html:64 templates/rotation_patterns.html:101
 #: templates/shift_templates.html:97
 #, python-format
 msgid "Delete %(name)s?"
 msgstr "%(name)s löschen?"
 
-#: templates/documents.html:97
+#: templates/documents.html:96
+msgid ""
+"This is reference material for the AI assistant only — it isn't parsed into the schedule.\n"
+"            For the monthly client forecast and Germany coverage files, use <strong>Upload Forecast</strong> instead."
+msgstr ""
+"Dies ist nur Referenzmaterial für den KI-Assistenten – es wird nicht in den "
+"Dienstplan übernommen. Für die monatliche Kundenprognose und die "
+"Deutschland-Abnahmedatei nutzen Sie bitte stattdessen <strong>Prognose "
+"hochladen</strong>."
+
+#: templates/documents.html:102
 msgid "Click to select a file"
 msgstr "Klicken, um eine Datei auszuwählen"
 
-#: templates/documents.html:98
+#: templates/documents.html:103
 msgid "Excel, PDF, Word, or any format"
 msgstr "Excel, PDF, Word oder ein beliebiges Format"
 
-#: templates/documents.html:105
+#: templates/documents.html:110
 msgid "Category"
 msgstr "Kategorie"
 
-#: templates/documents.html:113
+#: templates/documents.html:118
 msgid "Description"
 msgstr "Beschreibung"
 
-#: templates/documents.html:113 templates/schedule_list.html:36
+#: templates/documents.html:118 templates/schedule_list.html:36
 msgid "optional"
 msgstr "optional"
 
-#: templates/documents.html:115
-msgid "e.g. E.ON TFC forecast June–August 2026"
-msgstr "z. B. E.ON TFC-Prognose Juni–August 2026"
+#: templates/documents.html:120
+msgid "e.g. E.ON service contract 2026"
+msgstr "z. B. E.ON Dienstleistungsvertrag 2026"
 
-#: templates/documents.html:119 templates/employee_detail.html:262
-#: templates/employee_groups.html:67 templates/employees_import.html:46
-#: templates/employees_list.html:221 templates/forecast_new.html:71
+#: templates/documents.html:124 templates/employee_detail.html:278
+#: templates/employee_groups.html:76 templates/employees_import.html:53
+#: templates/employees_list.html:221 templates/forecast_new.html:72
 #: templates/schedule_detail.html:137 templates/shift_templates.html:147
 #: templates/teams_list.html:59 templates/users.html:271
 #: templates/users.html:316 templates/users.html:353
@@ -1320,7 +1445,9 @@ msgstr "Status"
 msgid "Scheduled Together With"
 msgstr "Gemeinsam eingeplant mit"
 
-#: templates/employee_detail.html:62 templates/users.html:185
+#: templates/employee_detail.html:62 templates/employee_groups.html:43
+#: templates/employee_groups.html:101 templates/employee_groups.html:108
+#: templates/users.html:185
 msgid "— none —"
 msgstr "— keine —"
 
@@ -1372,32 +1499,53 @@ msgstr "Schichtvorlage"
 msgid "— Custom hours —"
 msgstr "— Individuelle Stunden —"
 
-#: templates/employee_detail.html:145
+#: templates/employee_detail.html:145 templates/employee_groups.html:41
+#: templates/employee_groups.html:96
+msgid "Weekly Rotation"
+msgstr "Wöchentliche Rotation"
+
+#: templates/employee_detail.html:147
+msgid "— none (fixed shift above) —"
+msgstr "— keine (feste Schicht oben) —"
+
+#: templates/employee_detail.html:154
+msgid ""
+"Alternates shifts week to week; overrides the fixed Shift Template above "
+"while set."
+msgstr ""
+"Wechselt die Schicht wöchentlich; überschreibt die feste Schichtvorlage "
+"oben, solange sie gesetzt ist."
+
+#: templates/employee_detail.html:155
+msgid "Manage rotations"
+msgstr "Rotationen verwalten"
+
+#: templates/employee_detail.html:161
 msgid "Custom Start"
 msgstr "Individueller Beginn"
 
-#: templates/employee_detail.html:150
+#: templates/employee_detail.html:166
 msgid "Custom End"
 msgstr "Individuelles Ende"
 
-#: templates/employee_detail.html:155
+#: templates/employee_detail.html:171
 msgid "Actual Duration"
 msgstr "Tatsächliche Dauer"
 
-#: templates/employee_detail.html:158
+#: templates/employee_detail.html:174
 msgid "Net hours worked (e.g. accounting for a break)."
 msgstr "Netto-Arbeitsstunden (z. B. abzüglich einer Pause)."
 
-#: templates/employee_detail.html:166
+#: templates/employee_detail.html:182
 msgid "Availability"
 msgstr "Verfügbarkeit"
 
-#: templates/employee_detail.html:170
+#: templates/employee_detail.html:186
 msgid "Works Saturday"
 msgstr "Arbeitet samstags"
 
-#: templates/employee_detail.html:172 templates/employee_detail.html:182
-#: templates/employee_detail.html:192
+#: templates/employee_detail.html:188 templates/employee_detail.html:198
+#: templates/employee_detail.html:208
 #: templates/employees_import_review.html:84
 #: templates/employees_import_review.html:92
 #: templates/employees_import_review.html:100
@@ -1407,8 +1555,8 @@ msgstr "Arbeitet samstags"
 msgid "No"
 msgstr "Nein"
 
-#: templates/employee_detail.html:172 templates/employee_detail.html:182
-#: templates/employee_detail.html:192
+#: templates/employee_detail.html:188 templates/employee_detail.html:198
+#: templates/employee_detail.html:208
 #: templates/employees_import_review.html:84
 #: templates/employees_import_review.html:92
 #: templates/employees_import_review.html:100
@@ -1418,67 +1566,67 @@ msgstr "Nein"
 msgid "Yes"
 msgstr "Ja"
 
-#: templates/employee_detail.html:180
+#: templates/employee_detail.html:196
 msgid "Works Sunday"
 msgstr "Arbeitet sonntags"
 
-#: templates/employee_detail.html:190
+#: templates/employee_detail.html:206
 msgid "Works Holidays"
 msgstr "Arbeitet an Feiertagen"
 
-#: templates/employee_detail.html:202
+#: templates/employee_detail.html:218
 msgid "Day-specific Restrictions"
 msgstr "Tagesspezifische Einschränkungen"
 
-#: templates/employee_detail.html:214
+#: templates/employee_detail.html:230
 #: templates/employees_import_review.html:131
 msgid "Any"
 msgstr "Beliebig"
 
-#: templates/employee_detail.html:215
+#: templates/employee_detail.html:231
 msgid "Off (not scheduled)"
 msgstr "Frei (nicht eingeplant)"
 
-#: templates/employee_detail.html:229
+#: templates/employee_detail.html:245
 #: templates/employees_import_review.html:109
 msgid "Excluded Dates"
 msgstr "Ausgeschlossene Termine"
 
-#: templates/employee_detail.html:233
+#: templates/employee_detail.html:249
 msgid ""
 "Comma-separated dates (YYYY-MM-DD), or click them on the calendar below."
 msgstr ""
 "Durch Kommas getrennte Daten (JJJJ-MM-TT), oder unten im Kalender anklicken."
 
-#: templates/employee_detail.html:241
+#: templates/employee_detail.html:257
 msgid "Notes & Contract"
 msgstr "Notizen & Vertrag"
 
-#: templates/employee_detail.html:245
+#: templates/employee_detail.html:261
 msgid "Original Notes (from Excel)"
 msgstr "Originalnotizen (aus Excel)"
 
-#: templates/employee_detail.html:248
+#: templates/employee_detail.html:264
 msgid "Preserved for reference — original Albanian/German text."
 msgstr "Zur Referenz aufbewahrt — Original-Text auf Albanisch/Deutsch."
 
-#: templates/employee_detail.html:252
+#: templates/employee_detail.html:268
 msgid "Contract / Scheduling Notes"
 msgstr "Vertrags-/Planungsnotizen"
 
-#: templates/employee_detail.html:255
+#: templates/employee_detail.html:271
 msgid "Internal scheduling notes, written by whoever manages this employee."
 msgstr "Interne Planungsnotizen, verfasst von der zuständigen Person."
 
-#: templates/employee_detail.html:260
+#: templates/employee_detail.html:276
 msgid "Create"
 msgstr "Erstellen"
 
-#: templates/employee_detail.html:260
+#: templates/employee_detail.html:276 templates/rotation_patterns.html:150
 msgid "Save Changes"
 msgstr "Änderungen speichern"
 
-#: templates/employee_detail.html:274
+#: templates/employee_detail.html:290
 #, python-format
 msgid ""
 "Works <strong>N%% of eligible days</strong> each month, with a full shift on"
@@ -1487,7 +1635,7 @@ msgstr ""
 "Arbeitet <strong>N%% der möglichen Tage</strong> im Monat, jeweils mit "
 "voller Schicht."
 
-#: templates/employee_detail.html:275
+#: templates/employee_detail.html:291
 #, python-format
 msgid ""
 "Works <strong>every eligible day</strong> but only N%% of standard daily "
@@ -1496,7 +1644,7 @@ msgstr ""
 "Arbeitet an <strong>jedem möglichen Tag</strong>, aber nur N%% der Standard-"
 "Tagesstunden (kürzere Schichten)."
 
-#: templates/employee_detail.html:276
+#: templates/employee_detail.html:292
 #, python-format
 msgid ""
 "Reduces <strong>both</strong> working days and shift length proportionally "
@@ -1518,7 +1666,7 @@ msgstr "Alle Mitarbeiter"
 msgid "Add Group"
 msgstr "Gruppe hinzufügen"
 
-#: templates/employee_groups.html:16 templates/employee_groups.html:117
+#: templates/employee_groups.html:16 templates/employee_groups.html:142
 msgid "Manage Groups"
 msgstr "Gruppen verwalten"
 
@@ -1548,35 +1696,35 @@ msgstr "Neuer Gruppenname"
 msgid "e.g. Kaltrina + Rozana"
 msgstr "z. B. Kaltrina + Rozana"
 
-#: templates/employee_groups.html:42
+#: templates/employee_groups.html:51
 msgid "Create Group"
 msgstr "Gruppe erstellen"
 
-#: templates/employee_groups.html:79 templates/teams_list.html:70
+#: templates/employee_groups.html:88 templates/teams_list.html:70
 #, python-format
 msgid "Delete %(name)s? Only possible if it has no members."
 msgstr "%(name)s löschen? Nur möglich, wenn es keine Mitglieder hat."
 
-#: templates/employee_groups.html:91 templates/employees_list.html:72
+#: templates/employee_groups.html:116 templates/employees_list.html:72
 msgid "No Team"
 msgstr "Kein Team"
 
-#: templates/employee_groups.html:96
+#: templates/employee_groups.html:121
 msgid ""
 "No members yet — assign employees to this group from their profile page."
 msgstr ""
 "Noch keine Mitglieder — weise Mitarbeitende über deren Profilseite dieser "
 "Gruppe zu."
 
-#: templates/employee_groups.html:105
+#: templates/employee_groups.html:130
 msgid "No schedule groups yet."
 msgstr "Noch keine Planungsgruppen."
 
-#: templates/employee_groups.html:106
+#: templates/employee_groups.html:131
 msgid "Use \"Add Group\" above to create one."
 msgstr "Nutze oben „Gruppe hinzufügen“, um eine zu erstellen."
 
-#: templates/employee_groups.html:118 templates/teams_list.html:149
+#: templates/employee_groups.html:143 templates/teams_list.html:149
 msgid "Done"
 msgstr "Fertig"
 
@@ -1586,6 +1734,17 @@ msgstr "Mitarbeiterspezifikationen importieren"
 
 #: templates/employees_import.html:13
 msgid ""
+"<strong>Optional.</strong> Employee data lives in the app and can always be\n"
+"      added or edited directly — this is just a shortcut for bulk-onboarding a new client's\n"
+"      staff list in one pass."
+msgstr ""
+"<strong>Optional.</strong> Mitarbeiterdaten werden in der App verwaltet und "
+"können jederzeit direkt hinzugefügt oder bearbeitet werden – dies ist "
+"lediglich eine Abkürzung, um die Mitarbeiterliste eines neuen Kunden auf "
+"einmal zu importieren."
+
+#: templates/employees_import.html:19
+msgid ""
 "Upload the <strong>Specifikat e punetoreve</strong> Excel file.\n"
 "      Optionally enable <strong>AI parsing</strong> to automatically interpret Albanian/German notes\n"
 "      into structured shift constraints."
@@ -1594,15 +1753,19 @@ msgstr ""
 "      Aktivieren Sie optional die <strong>KI-Auswertung</strong>, um albanische/deutsche Notizen\n"
 "      automatisch in strukturierte Schichtbedingungen umzuwandeln."
 
-#: templates/employees_import.html:23
+#: templates/employees_import.html:29
 msgid "or any employee spec file with the same format"
 msgstr "oder jede Mitarbeiter-Spezifikationsdatei im gleichen Format"
 
-#: templates/employees_import.html:35
+#: templates/employees_import.html:30 templates/forecast_new.html:63
+msgid "Optional"
+msgstr "Optional"
+
+#: templates/employees_import.html:42
 msgid "Use AI to parse employee notes"
 msgstr "KI zur Auswertung der Mitarbeiternotizen verwenden"
 
-#: templates/employees_import.html:39
+#: templates/employees_import.html:46
 msgid ""
 "Sends employee notes to <strong>Claude Opus</strong> to extract shift type, hours, excluded dates,\n"
 "          and day-of-week restrictions from Albanian/German text.\n"
@@ -1612,7 +1775,7 @@ msgstr ""
 "          und Wochentagsbeschränkungen aus albanischem/deutschem Text zu extrahieren.\n"
 "          Erfordert <code>ANTHROPIC_API_KEY</code> in Ihrer <code>.env</code>-Datei."
 
-#: templates/employees_import.html:48
+#: templates/employees_import.html:55
 msgid "Parse & Review"
 msgstr "Auswerten & Prüfen"
 
@@ -1759,7 +1922,9 @@ msgstr "Zurücksetzen"
 msgid "%(n)s employees"
 msgstr "%(n)s Mitarbeiter"
 
-#: templates/employees_list.html:83 templates/schedule_detail.html:53
+#: templates/employees_list.html:83 templates/public_holidays.html:33
+#: templates/public_holidays.html:52 templates/rotation_patterns.html:29
+#: templates/rotation_patterns.html:114 templates/schedule_detail.html:53
 #: templates/schedule_list.html:60 templates/shift_templates.html:25
 #: templates/shift_templates.html:68 templates/shift_templates.html:123
 #: templates/team_detail.html:74
@@ -1784,9 +1949,9 @@ msgstr "Gemeinsam eingeplant: %(name)s"
 msgid "— No team —"
 msgstr "— Kein Team —"
 
-#: templates/employees_list.html:195 templates/shift_templates.html:93
-#: templates/team_detail.html:117 templates/users.html:71
-#: templates/users.html:284
+#: templates/employees_list.html:195 templates/rotation_patterns.html:98
+#: templates/shift_templates.html:93 templates/team_detail.html:117
+#: templates/users.html:71 templates/users.html:284
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -1843,7 +2008,8 @@ msgstr "Tägliches Kontaktaufkommen & benötigte KS-Agenten"
 msgid "Daily Breakdown"
 msgstr "Tagesübersicht"
 
-#: templates/forecast_detail.html:78
+#: templates/forecast_detail.html:78 templates/public_holidays.html:29
+#: templates/public_holidays.html:52
 msgid "Date"
 msgstr "Datum"
 
@@ -1896,7 +2062,7 @@ msgstr "Kontakte"
 msgid "Agents"
 msgstr "Agenten"
 
-#: templates/forecast_list.html:17 templates/forecast_new.html:24
+#: templates/forecast_list.html:17 templates/forecast_new.html:25
 msgid "Period Name"
 msgstr "Zeitraumname"
 
@@ -1917,8 +2083,8 @@ msgid "Upload Forecast"
 msgstr "Prognose hochladen"
 
 #: templates/forecast_new.html:11
-msgid "Import E.ON Forecast Data"
-msgstr "E.ON-Prognosedaten importieren"
+msgid "Import Forecast Data"
+msgstr "Prognosedaten importieren"
 
 #: templates/forecast_new.html:16
 msgid "Upload workflow:"
@@ -1926,47 +2092,54 @@ msgstr "Ablauf des Uploads:"
 
 #: templates/forecast_new.html:17
 msgid ""
-"Upload the <strong>TFC forecast</strong> (required) and optionally the\n"
-"      <strong>German Abnahmemenge</strong> and <strong>Forecast Calculation</strong> files.\n"
-"      The system calculates Kosovo's required agents automatically."
+"Two files come in from the client engagement every month: the\n"
+"      <strong>Client Forecast</strong> (required) and <strong>Germany Coverage</strong>\n"
+"      (expected monthly). The system calculates the local required agents automatically.\n"
+"      <strong>Forecast Override</strong> is an advanced, occasional-use option."
 msgstr ""
-"Laden Sie die <strong>TFC-Prognose</strong> (erforderlich) und optional die\n"
-"      Dateien <strong>Abnahmemenge Deutschland</strong> und <strong>Prognoseberechnung</strong> hoch.\n"
-"      Das System berechnet automatisch den Agentenbedarf für den Kosovo."
+"Jeden Monat kommen zwei Dateien vom Kunden: die "
+"<strong>Kundenprognose</strong> (erforderlich) und die <strong>Deutschland-"
+"Abnahme</strong> (monatlich erwartet). Das System berechnet den lokalen "
+"Personalbedarf automatisch. <strong>Prognose-Override</strong> ist eine "
+"erweiterte, selten genutzte Option."
 
-#: templates/forecast_new.html:26
+#: templates/forecast_new.html:27
 msgid "e.g. E.ON June–August 2026"
 msgstr "z. B. E.ON Juni–August 2026"
 
-#: templates/forecast_new.html:34
-msgid "TFC Forecast"
-msgstr "TFC-Prognose"
+#: templates/forecast_new.html:35
+msgid "Client Forecast"
+msgstr "Kundenprognose"
 
-#: templates/forecast_new.html:36 templates/schedule_detail.html:169
+#: templates/forecast_new.html:36
+msgid "Contact forecast from the client (e.g. TFC)"
+msgstr "Kontaktprognose vom Kunden (z. B. TFC)"
+
+#: templates/forecast_new.html:37 templates/schedule_detail.html:169
 msgid "Required"
 msgstr "Erforderlich"
 
-#: templates/forecast_new.html:47
-msgid "Abnahmemenge DE"
-msgstr "Abnahmemenge DE"
-
 #: templates/forecast_new.html:48
-msgid "German offices contribution"
-msgstr "Beitrag der deutschen Standorte"
+msgid "Germany Coverage"
+msgstr "Deutschland-Abnahme"
 
-#: templates/forecast_new.html:49 templates/forecast_new.html:62
-msgid "Optional"
-msgstr "Optional"
+#: templates/forecast_new.html:49
+msgid "What KiKxxl DE will cover (Abnahmemenge)"
+msgstr "Was KiKxxl DE übernimmt (Abnahmemenge)"
 
-#: templates/forecast_new.html:60
-msgid "Forecast Calculation"
-msgstr "Prognoseberechnung"
+#: templates/forecast_new.html:50
+msgid "Optional — expected monthly"
+msgstr "Optional – monatlich erwartet"
 
 #: templates/forecast_new.html:61
-msgid "Kosovo FTE override"
-msgstr "Kosovo-FTE-Override"
+msgid "Forecast Override"
+msgstr "Prognose-Override"
 
-#: templates/forecast_new.html:73
+#: templates/forecast_new.html:62
+msgid "Manual required-agents override (advanced)"
+msgstr "Manueller Override des Personalbedarfs (erweitert)"
+
+#: templates/forecast_new.html:74
 msgid "Import Forecast"
 msgstr "Prognose importieren"
 
@@ -2086,6 +2259,33 @@ msgstr "Wechseln zu"
 msgid "No projects yet."
 msgstr "Noch keine Projekte."
 
+#: templates/public_holidays.html:10
+msgid "Add Holiday"
+msgstr "Feiertag hinzufügen"
+
+#: templates/public_holidays.html:18
+msgid ""
+"Days the scheduler treats as public holidays for this project — employees "
+"who don't work holidays are excluded automatically. Add next year's dates "
+"here whenever they're announced; no code change needed."
+msgstr ""
+"Tage, die der Planer für dieses Projekt als gesetzliche Feiertage behandelt "
+"— Mitarbeiter, die an Feiertagen nicht arbeiten, werden automatisch "
+"ausgeschlossen. Tragen Sie die Termine des nächsten Jahres hier ein, sobald "
+"sie bekannt gegeben werden; keine Codeänderung nötig."
+
+#: templates/public_holidays.html:35
+msgid "e.g. Independence Day"
+msgstr "z. B. Unabhängigkeitstag"
+
+#: templates/public_holidays.html:38
+msgid "Save Holiday"
+msgstr "Feiertag speichern"
+
+#: templates/public_holidays.html:73
+msgid "No public holidays configured yet."
+msgstr "Noch keine Feiertage eingerichtet."
+
 #: templates/reset_password.html:6 templates/reset_password.html:42
 msgid "Reset Password"
 msgstr "Passwort zurücksetzen"
@@ -2110,6 +2310,74 @@ msgstr "Neues Passwort bestätigen"
 #: templates/reset_password.html:77
 msgid "Update Password"
 msgstr "Passwort aktualisieren"
+
+#: templates/rotation_patterns.html:10
+msgid "Add Rotation"
+msgstr "Rotation hinzufügen"
+
+#: templates/rotation_patterns.html:18
+msgid ""
+"An employee or a whole schedule group can rotate between shifts week by week"
+" (e.g. Morning one week, Afternoon the next). The rotation is anchored to a "
+"fixed start date and real calendar weeks, so it keeps running in sync even "
+"when a month ends mid-week — it never resets on the 1st."
+msgstr ""
+"Ein Mitarbeiter oder eine ganze Dienstplangruppe kann wöchentlich zwischen "
+"Schichten wechseln (z. B. eine Woche Frühschicht, die nächste Spätschicht). "
+"Die Rotation ist an ein festes Startdatum und echte Kalenderwochen gebunden,"
+" sodass sie auch dann synchron weiterläuft, wenn ein Monat mitten in der "
+"Woche endet — sie wird nie am 1. zurückgesetzt."
+
+#: templates/rotation_patterns.html:31
+msgid "e.g. Morning/Afternoon 2-week"
+msgstr "z. B. Vormittag/Nachmittag, 2-wöchig"
+
+#: templates/rotation_patterns.html:34 templates/rotation_patterns.html:118
+msgid "Week 1 starts on"
+msgstr "Woche 1 beginnt am"
+
+#: templates/rotation_patterns.html:36
+msgid ""
+"Any date in the first week of the cycle — a Monday is easiest to reason "
+"about."
+msgstr ""
+"Ein beliebiges Datum in der ersten Woche des Zyklus — ein Montag lässt sich "
+"am einfachsten nachvollziehen."
+
+#: templates/rotation_patterns.html:40 templates/rotation_patterns.html:124
+msgid "Cycle"
+msgstr "Zyklus"
+
+#: templates/rotation_patterns.html:44 templates/rotation_patterns.html:89
+#: templates/rotation_patterns.html:128 templates/rotation_patterns.html:167
+msgid "Week"
+msgstr "Woche"
+
+#: templates/rotation_patterns.html:53 templates/rotation_patterns.html:139
+#: templates/rotation_patterns.html:182 templates/users.html:82
+msgid "Remove"
+msgstr "Entfernen"
+
+#: templates/rotation_patterns.html:60 templates/rotation_patterns.html:146
+msgid "Add Week"
+msgstr "Woche hinzufügen"
+
+#: templates/rotation_patterns.html:64
+msgid "Save Rotation"
+msgstr "Rotation speichern"
+
+#: templates/rotation_patterns.html:73
+msgid "No rotation patterns yet."
+msgstr "Noch keine Rotationsmuster."
+
+#: templates/rotation_patterns.html:83
+msgid "Week 1 starts"
+msgstr "Woche 1 beginnt"
+
+#: templates/rotation_patterns.html:84
+#, python-format
+msgid "%(n)s employee(s), %(g)s group(s) using this rotation"
+msgstr "%(n)s Mitarbeiter, %(g)s Gruppe(n) verwenden diese Rotation"
 
 #: templates/schedule_detail.html:8
 msgid "Export Excel"
@@ -2439,10 +2707,6 @@ msgstr ""
 msgid " Their global %(role)s role will still apply."
 msgstr " Ihre globale Rolle %(role)s gilt weiterhin."
 
-#: templates/users.html:82
-msgid "Remove"
-msgstr "Entfernen"
-
 #: templates/users.html:88
 msgid "No users found."
 msgstr "Keine Benutzer gefunden."
@@ -2685,3 +2949,36 @@ msgstr ""
 
 #~ msgid "Only a global superadmin can change AI settings."
 #~ msgstr "Nur ein globaler Superadministrator kann die KI-Einstellungen ändern."
+
+#~ msgid "KiKxxl Commitment"
+#~ msgstr "KiKxxl-Zusage"
+
+#~ msgid "Employee Specification"
+#~ msgstr "Mitarbeiterspezifikation"
+
+#~ msgid "e.g. E.ON TFC forecast June–August 2026"
+#~ msgstr "z. B. E.ON TFC-Prognose Juni–August 2026"
+
+#~ msgid ""
+#~ "Upload the <strong>TFC forecast</strong> (required) and optionally the\n"
+#~ "      <strong>German Abnahmemenge</strong> and <strong>Forecast Calculation</strong> files.\n"
+#~ "      The system calculates Kosovo's required agents automatically."
+#~ msgstr ""
+#~ "Laden Sie die <strong>TFC-Prognose</strong> (erforderlich) und optional die\n"
+#~ "      Dateien <strong>Abnahmemenge Deutschland</strong> und <strong>Prognoseberechnung</strong> hoch.\n"
+#~ "      Das System berechnet automatisch den Agentenbedarf für den Kosovo."
+
+#~ msgid "TFC Forecast"
+#~ msgstr "TFC-Prognose"
+
+#~ msgid "Abnahmemenge DE"
+#~ msgstr "Abnahmemenge DE"
+
+#~ msgid "German offices contribution"
+#~ msgstr "Beitrag der deutschen Standorte"
+
+#~ msgid "Forecast Calculation"
+#~ msgstr "Prognoseberechnung"
+
+#~ msgid "Kosovo FTE override"
+#~ msgstr "Kosovo-FTE-Override"

@@ -22,69 +22,36 @@ from scheduler.models import (BusinessParam, ChatMessage, ChatSession,
                                Employee, ExcludedDate, ForecastPeriod,
                                GlobalSetting, HalfHourlyForecast, IdentityUser,
                                ImportLog, Invitation, PasswordReset, ProjectMeta,
-                               ProjectRole, Schedule, ScheduleGroup,
+                               ProjectRole, PublicHoliday, RotationCycleWeek,
+                               RotationPattern, Schedule, ScheduleGroup,
                                ShiftAssignment, ShiftTemplate, Team, db)
 from scheduler.algorithm import set_holidays
 from scheduler import mailer
 
 # ────────────────────────────────────────────────────────────────────────────
 # Project registry — one running app now serves every client engagement, each
-# still fully isolated in its own database (never a shared schema). See
-# PROJECTS for the EON team list / holidays / branding that used to be
-# hardcoded assumptions; a project not listed here gets safe generic
-# defaults. Identity (who can log in, which projects they can access) lives
-# on its own permanently-fixed database, entirely separate from business
-# data — see scheduler/models.py's ProjectScopedSession for how a single
-# running process safely serves many databases per request.
+# still fully isolated in its own database (never a shared schema). All
+# per-project config is real data now: branding lives in ProjectMeta (identity
+# bind, editable via the /projects admin page), public holidays live in each
+# project's own PublicHoliday table (editable via /public-holidays). A
+# project with no ProjectMeta row yet gets safe generic branding defaults.
+# Identity (who can log in, which projects they can access) lives on its own
+# permanently-fixed database, entirely separate from business data — see
+# scheduler/models.py's ProjectScopedSession for how a single running process
+# safely serves many databases per request.
 # ────────────────────────────────────────────────────────────────────────────
 
-_EON_INITIAL_TEAMS = [
-    'Team Agon', 'Team Blerona', 'Team Drini', 'Team Flamur',
-    'Team Jetmir', 'Team Kastriot', 'Team Valbona',
-    'Team Agim', 'Team Drita', 'Team Liridon', 'Team Mirlinda', 'Team Petrit',
-]
-
-_EON_HOLIDAYS_2026 = {
-    date(2026, 1, 1), date(2026, 1, 2),   # New Year
-    date(2026, 1, 7),                       # Orthodox Christmas
-    date(2026, 2, 17),                      # Independence Day
-    date(2026, 4, 9),                       # Constitution Day
-    date(2026, 5, 1),                       # Labour Day
-    date(2026, 5, 9),                       # Europe Day
-    date(2026, 11, 28),                     # Albania Flag Day
-    date(2026, 11, 29),                     # Liberation Day
-    date(2026, 12, 25),                     # Christmas
-}
-
-PROJECTS = {
-    'eon': {
-        'display_name': 'E.ON Kosovo',
-        'company': 'KiKxxl-evroTarget',
-        'client': 'E.ON (energy company, Germany/Switzerland)',
-        'site': 'Kosovo (Prishtina)',
-        'param_category': 'Kosovo',
-        'initial_teams': _EON_INITIAL_TEAMS,
-        'holidays': {2026: _EON_HOLIDAYS_2026},
-    },
-    # 'freenet': {...}, 'flixbus': {...} — add each here once actually
-    # onboarded (real team names, holidays, business params). A project not
-    # listed here (but already provisioned on disk, or newly requested) gets
-    # the generic fallback in project_config() below.
-}
-
 _GENERIC_PROJECT_DEFAULTS = {
-    'company': 'KiKxxl-evroTarget', 'client': '', 'site': '',
-    'param_category': 'Operations', 'initial_teams': [], 'holidays': {},
+    'company': 'KiKxxl-evroTarget', 'client': '', 'site': '', 'param_category': 'Operations',
 }
 
 
 def project_config(key):
     base = dict(_GENERIC_PROJECT_DEFAULTS)
     base['display_name'] = key.capitalize()
-    # A project created via the /projects admin page (ProjectMeta) fills in
-    # real values over the generic fallback; a hardcoded PROJECTS entry (the
-    # handful of pre-existing engagements) still wins over both, since it
-    # carries richer config (initial_teams, holidays) ProjectMeta doesn't.
+    # A project created (or backfilled) via the /projects admin page fills in
+    # real values over the generic fallback — the try/except covers the very
+    # first startup call, before the identity DB's tables exist.
     try:
         meta = ProjectMeta.query.filter_by(key=key).first()
     except Exception:
@@ -97,7 +64,6 @@ def project_config(key):
             'site': meta.site or '',
             'param_category': meta.param_category or base['param_category'],
         })
-    base.update(PROJECTS.get(key, {}))
     return base
 
 
@@ -113,10 +79,9 @@ def project_color(key):
 
 def discover_projects():
     """Every project this running app can serve: anything already provisioned
-    on disk (instance/<name>/workforce.db), anything named in PROJECTS that
-    hasn't been provisioned yet (auto-created at startup, below), plus anything
-    registered via the /projects admin page (ProjectMeta) — the try/except
-    covers the very first startup call, before the identity DB's tables exist."""
+    on disk (instance/<name>/workforce.db) plus anything registered via the
+    /projects admin page (ProjectMeta) — the try/except covers the very first
+    startup call, before the identity DB's tables exist."""
     instance_dir = os.path.join(os.path.dirname(__file__), 'instance')
     on_disk = {
         os.path.basename(os.path.dirname(p))
@@ -126,7 +91,7 @@ def discover_projects():
         db_registered = {p.key for p in ProjectMeta.query.all()}
     except Exception:
         db_registered = set()
-    return sorted(on_disk | set(PROJECTS.keys()) | db_registered)
+    return sorted(on_disk | db_registered)
 
 
 app = Flask(__name__)
@@ -299,14 +264,34 @@ def _seed_defaults(project_key):
         ]
         db.session.add_all(params)
 
-    # Seed teams from this project's initial list + any already assigned to employees
+    # Auto-create a Team row for any team name already referenced by an
+    # employee but missing its own row (e.g. after an import) — not a
+    # pre-seeding mechanism; new projects start with zero teams and an admin
+    # adds them via the Teams page.
     existing_team_names = {t.name for t in Team.query.all()}
-    sources = set(project_config(project_key)['initial_teams']) | {
-        e.team for e in Employee.query.all() if e.team
-    }
+    sources = {e.team for e in Employee.query.all() if e.team}
     for name in sorted(sources):
         if name not in existing_team_names:
             db.session.add(Team(name=name))
+
+    # One-time migration of EON's real 2026 public holidays, from back when
+    # they were hardcoded in this file — every other project starts with zero
+    # holidays and an admin adds their own via /public-holidays. Guarded by
+    # count==0 so this never re-fires or duplicates on later boots, and never
+    # overwrites holidays an admin has since edited/deleted.
+    if project_key == 'eon' and PublicHoliday.query.count() == 0:
+        db.session.add_all([
+            PublicHoliday(date=date(2026, 1, 1), name='New Year'),
+            PublicHoliday(date=date(2026, 1, 2), name='New Year'),
+            PublicHoliday(date=date(2026, 1, 7), name='Orthodox Christmas'),
+            PublicHoliday(date=date(2026, 2, 17), name='Independence Day'),
+            PublicHoliday(date=date(2026, 4, 9), name='Constitution Day'),
+            PublicHoliday(date=date(2026, 5, 1), name='Labour Day'),
+            PublicHoliday(date=date(2026, 5, 9), name='Europe Day'),
+            PublicHoliday(date=date(2026, 11, 28), name='Albania Flag Day'),
+            PublicHoliday(date=date(2026, 11, 29), name='Liberation Day'),
+            PublicHoliday(date=date(2026, 12, 25), name='Christmas'),
+        ])
 
     db.session.commit()
 
@@ -335,6 +320,12 @@ def _migrate_schema(project_key):
             conn.execute(text("ALTER TABLE employee ADD COLUMN schedule_group_id INTEGER"))
         if 'custom_hours' not in emp_cols:
             conn.execute(text("ALTER TABLE employee ADD COLUMN custom_hours FLOAT"))
+        if 'rotation_pattern_id' not in emp_cols:
+            conn.execute(text("ALTER TABLE employee ADD COLUMN rotation_pattern_id INTEGER"))
+
+        sg_cols = existing_columns('schedule_group')
+        if 'rotation_pattern_id' not in sg_cols:
+            conn.execute(text("ALTER TABLE schedule_group ADD COLUMN rotation_pattern_id INTEGER"))
 
         # Saturday/Sunday availability collapsed from yes/no/sometimes to yes/no —
         # 'sometimes' was already treated identically to 'yes' everywhere it was read.
@@ -440,6 +431,17 @@ def _migrate_identity_schema():
             "CREATE UNIQUE INDEX IF NOT EXISTS uq_identity_user_email "
             "ON identity_user(email) WHERE email IS NOT NULL"
         ))
+
+        # One-time backfill of EON's branding into ProjectMeta — this project
+        # predates ProjectMeta and used to be hardcoded in a PROJECTS dict.
+        eon_row = conn.execute(text("SELECT 1 FROM project_meta WHERE key = 'eon'")).fetchone()
+        if not eon_row:
+            conn.execute(text(
+                "INSERT INTO project_meta (key, display_name, company, client, site, param_category, created_at) "
+                "VALUES ('eon', 'E.ON Kosovo', 'KiKxxl-evroTarget', "
+                "'E.ON (energy company, Germany/Switzerland)', 'Kosovo (Prishtina)', 'Kosovo', :now)"
+            ), {'now': datetime.utcnow()})
+
         conn.commit()
 
 
@@ -586,6 +588,15 @@ with app.app_context():
 # Auth
 # ────────────────────────────────────────────────────────────────────────────
 
+def _load_active_holidays():
+    """Feed scheduler/algorithm.py's holiday set from the active project's own
+    PublicHoliday rows (g.active_engine must already be bound)."""
+    by_year = {}
+    for h in PublicHoliday.query.all():
+        by_year.setdefault(h.date.year, set()).add(h.date)
+    set_holidays(by_year)
+
+
 @app.before_request
 def load_user():
     g.current_user = None
@@ -618,7 +629,7 @@ def load_user():
 
     g.active_project = active
     g.active_engine = ENGINES[active]
-    set_holidays(project_config(active)['holidays'])
+    _load_active_holidays()
 
     # Viewers are read-only — except for their own personal account (appearance,
     # name/photo, password), which isn't business data.
@@ -902,9 +913,8 @@ _PROJECT_KEY_RE = re.compile(r'^[a-z0-9][a-z0-9_-]*$')
 
 # ────────────────────────────────────────────────────────────────────────────
 # Projects (global admin / superadmin only) — create new client engagements
-# without touching code. Each still gets its own fully isolated database,
-# provisioned immediately (no restart needed) the same way app.py's own
-# startup loop provisions the hardcoded PROJECTS entries.
+# without touching code. Each gets its own fully isolated database,
+# provisioned immediately (no restart needed).
 # ────────────────────────────────────────────────────────────────────────────
 
 @app.route('/projects', methods=['GET', 'POST'])
@@ -1387,6 +1397,13 @@ def forecast_new():
             flash(_('Period name is required.'), 'danger')
             return redirect(url_for('forecast_new'))
 
+        from scheduler.parsers import get_parser_module
+        parser_mod = get_parser_module(g.active_project)
+        if parser_mod is None or not hasattr(parser_mod, 'parse_tfc_file'):
+            flash(_("Forecast import isn't set up for this project yet — its file format "
+                     "needs a parser written for it first."), 'warning')
+            return redirect(url_for('forecast_new'))
+
         # Save uploaded files
         tfc_path = abnahme_path = fc_path = None
         if tfc_file and tfc_file.filename:
@@ -1400,24 +1417,34 @@ def forecast_new():
             fc_calc_file.save(fc_path)
 
         if not tfc_path:
-            flash(_('TFC forecast file is required.'), 'danger')
+            flash(_('Client Forecast file is required.'), 'danger')
             return redirect(url_for('forecast_new'))
 
-        from scheduler.data_loader import (parse_abnahme_de_file,
-                                           parse_forecast_calculation_file,
-                                           parse_tfc_file)
         from scheduler.algorithm import get_holidays
 
+        parse_abnahme_de_file = getattr(parser_mod, 'parse_abnahme_de_file', None)
+        parse_forecast_calculation_file = getattr(parser_mod, 'parse_forecast_calculation_file', None)
+
         try:
-            tfc_rows, tfc_warnings = parse_tfc_file(tfc_path)
-            de_map, de_warnings = parse_abnahme_de_file(abnahme_path) if abnahme_path else ({}, [])
-            ks_agents_map, fc_warnings = parse_forecast_calculation_file(fc_path) if fc_path else ({}, [])
+            tfc_rows, tfc_warnings = parser_mod.parse_tfc_file(tfc_path)
+            if abnahme_path and parse_abnahme_de_file:
+                de_map, de_warnings = parse_abnahme_de_file(abnahme_path)
+            elif abnahme_path:
+                de_map, de_warnings = {}, [_("This project's parser doesn't support an Abnahme DE file — it was ignored.")]
+            else:
+                de_map, de_warnings = {}, []
+            if fc_path and parse_forecast_calculation_file:
+                ks_agents_map, fc_warnings = parse_forecast_calculation_file(fc_path)
+            elif fc_path:
+                ks_agents_map, fc_warnings = {}, [_("This project's parser doesn't support a Forecast Calculation file — it was ignored.")]
+            else:
+                ks_agents_map, fc_warnings = {}, []
         except Exception as e:
             flash(_('Error parsing files: %(error)s', error=e), 'danger')
             return redirect(url_for('forecast_new'))
 
         if not tfc_rows:
-            flash(_('No data found in TFC file.'), 'danger')
+            flash(_('No data found in Client Forecast file.'), 'danger')
             return redirect(url_for('forecast_new'))
 
         combined_warning = _log_import_warnings(
@@ -1562,7 +1589,9 @@ def employees_list():
 @app.route('/employees/groups')
 def employee_groups():
     schedule_groups = ScheduleGroup.query.order_by(ScheduleGroup.name).all()
-    return render_template('employee_groups.html', schedule_groups=schedule_groups)
+    rotation_patterns = RotationPattern.query.order_by(RotationPattern.name).all()
+    return render_template('employee_groups.html', schedule_groups=schedule_groups,
+                           rotation_patterns=rotation_patterns)
 
 
 @app.route('/employees/import', methods=['GET', 'POST'])
@@ -1575,11 +1604,17 @@ def employees_import():
             flash(_('Please select a file.'), 'danger')
             return redirect(url_for('employees_import'))
 
+        from scheduler.parsers import get_parser_module
+        parser_mod = get_parser_module(g.active_project)
+        if parser_mod is None or not hasattr(parser_mod, 'parse_employee_file'):
+            flash(_("Employee import isn't set up for this project yet — its file format "
+                     "needs a parser written for it first."), 'warning')
+            return redirect(url_for('employees_import'))
+
         path = os.path.join(upload_folder(), f'emp_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx')
         file.save(path)
 
-        from scheduler.data_loader import parse_employee_file
-        raw_employees, emp_warnings = parse_employee_file(path)
+        raw_employees, emp_warnings = parser_mod.parse_employee_file(path)
 
         combined_warning = _log_import_warnings('employee_spec', file.filename, emp_warnings)
         if combined_warning:
@@ -1719,6 +1754,7 @@ def employee_new():
     return render_template('employee_detail.html', employee=None,
                            shift_templates=shift_templates, teams=get_teams(),
                            schedule_groups=ScheduleGroup.query.order_by(ScheduleGroup.name).all(),
+                           rotation_patterns=RotationPattern.query.order_by(RotationPattern.name).all(),
                            day_names=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'])
 
 
@@ -1731,6 +1767,7 @@ def employee_detail(emp_id):
     return render_template('employee_detail.html', employee=emp,
                            shift_templates=shift_templates, teams=get_teams(),
                            schedule_groups=ScheduleGroup.query.order_by(ScheduleGroup.name).all(),
+                           rotation_patterns=RotationPattern.query.order_by(RotationPattern.name).all(),
                            day_names=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'])
 
 
@@ -1763,6 +1800,8 @@ def _save_employee(emp):
     emp.contract_notes = request.form.get('contract_notes', '')
     group_id = request.form.get('schedule_group_id')
     emp.schedule_group_id = int(group_id) if group_id else None
+    rotation_id = request.form.get('rotation_pattern_id')
+    emp.rotation_pattern_id = int(rotation_id) if rotation_id else None
     emp.updated_at = datetime.utcnow()
 
     db.session.flush()
@@ -1940,7 +1979,7 @@ def schedule_detail(schedule_id):
             220 if day.weekday() < 5 else 55 if day.weekday() == 5 else 0
         )
         daily_stats.append({
-            'date': day, 'required': req, 'scheduled': working,
+            'date': day.isoformat(), 'required': req, 'scheduled': working,
             'pct': round(working / req * 100, 1) if req else 100,
         })
 
@@ -2153,6 +2192,140 @@ def shift_template_set_default(tpl_id):
     return redirect(url_for('shift_templates_list'))
 
 
+# ────────────────────────────────────────────────────────────────────────────
+# Rotation patterns (weekly-alternating shifts, e.g. Morning one week / Afternoon
+# the next). The cycle's "current week" is computed purely from anchor_date +
+# real calendar weeks (scheduler/algorithm.py::_rotation_shift_for_date), so it
+# stays continuous across month boundaries without any special-casing here.
+# ────────────────────────────────────────────────────────────────────────────
+
+@app.route('/rotation-patterns')
+def rotation_patterns_list():
+    rotation_patterns = RotationPattern.query.order_by(RotationPattern.name).all()
+    shift_templates = ShiftTemplate.query.order_by(ShiftTemplate.start_time).all()
+    return render_template('rotation_patterns.html',
+                            rotation_patterns=rotation_patterns,
+                            shift_templates=shift_templates,
+                            shift_templates_json=[t.to_dict() for t in shift_templates])
+
+
+@app.route('/rotation-patterns/add', methods=['POST'])
+@require_role('admin')
+def rotation_pattern_add():
+    name = request.form.get('name', '').strip()
+    anchor_date = request.form.get('anchor_date', '')
+    tpl_ids = [t for t in request.form.getlist('week_shift') if t]
+    if not name:
+        flash(_('Rotation pattern name cannot be empty.'), 'danger')
+    elif RotationPattern.query.filter_by(name=name).first():
+        flash(_('A rotation pattern named "%(name)s" already exists.', name=name), 'warning')
+    elif not anchor_date:
+        flash(_('Please choose a start date for the rotation.'), 'danger')
+    elif len(tpl_ids) < 1:
+        flash(_('A rotation needs at least one week in its cycle.'), 'danger')
+    else:
+        pattern = RotationPattern(name=name, anchor_date=date.fromisoformat(anchor_date))
+        db.session.add(pattern)
+        db.session.flush()
+        for i, tid in enumerate(tpl_ids):
+            db.session.add(RotationCycleWeek(rotation_pattern_id=pattern.id, position=i,
+                                              shift_template_id=int(tid)))
+        db.session.commit()
+        flash(_('Rotation pattern "%(name)s" created.', name=name), 'success')
+    return redirect(url_for('rotation_patterns_list'))
+
+
+@app.route('/rotation-patterns/<int:pattern_id>/edit', methods=['POST'])
+@require_role('admin')
+def rotation_pattern_edit(pattern_id):
+    pattern = RotationPattern.query.get_or_404(pattern_id)
+    name = request.form.get('name', '').strip()
+    anchor_date = request.form.get('anchor_date', '')
+    tpl_ids = [t for t in request.form.getlist('week_shift') if t]
+    if not name:
+        flash(_('Rotation pattern name cannot be empty.'), 'danger')
+    elif RotationPattern.query.filter(RotationPattern.name == name, RotationPattern.id != pattern_id).first():
+        flash(_('A rotation pattern named "%(name)s" already exists.', name=name), 'warning')
+    elif not anchor_date:
+        flash(_('Please choose a start date for the rotation.'), 'danger')
+    elif len(tpl_ids) < 1:
+        flash(_('A rotation needs at least one week in its cycle.'), 'danger')
+    else:
+        pattern.name = name
+        pattern.anchor_date = date.fromisoformat(anchor_date)
+        RotationCycleWeek.query.filter_by(rotation_pattern_id=pattern.id).delete()
+        for i, tid in enumerate(tpl_ids):
+            db.session.add(RotationCycleWeek(rotation_pattern_id=pattern.id, position=i,
+                                              shift_template_id=int(tid)))
+        db.session.commit()
+        flash(_('Rotation pattern "%(name)s" updated.', name=pattern.name), 'success')
+    return redirect(url_for('rotation_patterns_list'))
+
+
+@app.route('/rotation-patterns/<int:pattern_id>/delete', methods=['POST'])
+@require_role('admin')
+def rotation_pattern_delete(pattern_id):
+    pattern = RotationPattern.query.get_or_404(pattern_id)
+    in_use = (Employee.query.filter_by(rotation_pattern_id=pattern.id).count() +
+              ScheduleGroup.query.filter_by(rotation_pattern_id=pattern.id).count())
+    if in_use:
+        flash(_('Cannot delete "%(name)s" — it is still assigned to %(n)s employee(s)/group(s). '
+                 'Reassign them first.', name=pattern.name, n=in_use), 'warning')
+    else:
+        db.session.delete(pattern)
+        db.session.commit()
+        flash(_('Rotation pattern "%(name)s" deleted.', name=pattern.name), 'info')
+    return redirect(url_for('rotation_patterns_list'))
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# Public holidays — per-project, feeds scheduler/algorithm.py via
+# _load_active_holidays(). Editable data now instead of a hardcoded dict, so
+# next year's dates are a form submission, not a code deploy.
+# ────────────────────────────────────────────────────────────────────────────
+
+@app.route('/public-holidays')
+def public_holidays_list():
+    holidays = PublicHoliday.query.order_by(PublicHoliday.date).all()
+    return render_template('public_holidays.html', holidays=holidays)
+
+
+@app.route('/public-holidays/add', methods=['POST'])
+@require_role('admin')
+def public_holiday_add():
+    name = request.form.get('name', '').strip()
+    date_str = request.form.get('date', '')
+    if not name:
+        flash(_('Holiday name cannot be empty.'), 'danger')
+    elif not date_str:
+        flash(_('Please choose a date.'), 'danger')
+    else:
+        try:
+            d = date.fromisoformat(date_str)
+        except ValueError:
+            flash(_('Invalid date.'), 'danger')
+            return redirect(url_for('public_holidays_list'))
+        if PublicHoliday.query.filter_by(date=d).first():
+            flash(_('A holiday is already set for that date.'), 'warning')
+        else:
+            db.session.add(PublicHoliday(date=d, name=name))
+            db.session.commit()
+            _load_active_holidays()
+            flash(_('Holiday "%(name)s" added.', name=name), 'success')
+    return redirect(url_for('public_holidays_list'))
+
+
+@app.route('/public-holidays/<int:holiday_id>/delete', methods=['POST'])
+@require_role('admin')
+def public_holiday_delete(holiday_id):
+    holiday = PublicHoliday.query.get_or_404(holiday_id)
+    db.session.delete(holiday)
+    db.session.commit()
+    _load_active_holidays()
+    flash(_('Holiday "%(name)s" removed.', name=holiday.name), 'info')
+    return redirect(url_for('public_holidays_list'))
+
+
 @app.route('/branding/logo')
 @app.route('/branding/logo/<project>')
 def project_logo(project=None):
@@ -2229,15 +2402,27 @@ def team_delete(team_id):
 @require_role('admin')
 def schedule_group_add():
     name = request.form.get('name', '').strip()
+    rotation_id = request.form.get('rotation_pattern_id')
     if not name:
         flash(_('Group name cannot be empty.'), 'danger')
     elif ScheduleGroup.query.filter_by(name=name).first():
         flash(_('A schedule group named "%(name)s" already exists.', name=name), 'warning')
     else:
-        db.session.add(ScheduleGroup(name=name))
+        db.session.add(ScheduleGroup(name=name, rotation_pattern_id=int(rotation_id) if rotation_id else None))
         db.session.commit()
         flash(_('Schedule group "%(name)s" created.', name=name), 'success')
     return redirect(url_for('employee_groups'))
+
+
+@app.route('/settings/schedule-groups/<int:group_id>/set-rotation', methods=['POST'])
+@require_role('admin')
+def schedule_group_set_rotation(group_id):
+    group = ScheduleGroup.query.get_or_404(group_id)
+    rotation_id = request.form.get('rotation_pattern_id')
+    group.rotation_pattern_id = int(rotation_id) if rotation_id else None
+    db.session.commit()
+    flash(_('Rotation updated for "%(name)s".', name=group.name), 'success')
+    return redirect(url_for('employee_groups') + f'#group-card-{group_id}')
 
 
 @app.route('/settings/schedule-groups/<int:group_id>/rename', methods=['POST'])
@@ -2315,7 +2500,7 @@ def team_detail(team_id):
 # Documents
 # ────────────────────────────────────────────────────────────────────────────
 
-DOC_CATEGORIES = ['Client Forecast', 'KiKxxl Commitment', 'Employee Specification', 'Miscellaneous']
+DOC_CATEGORIES = ['Contract', 'Correspondence', 'Reference Data', 'Miscellaneous']
 
 
 def _doc_category_translations():
@@ -2323,7 +2508,7 @@ def _doc_category_translations():
     reasoning as _month_name_translations() above. The stored Document.category
     value stays English (it's a DB value used for filtering); templates call
     _(cat) / _(doc.category) at render time to look up this same msgid."""
-    return [_('Client Forecast'), _('KiKxxl Commitment'), _('Employee Specification'), _('Miscellaneous')]
+    return [_('Contract'), _('Correspondence'), _('Reference Data'), _('Miscellaneous')]
 
 
 def _department_translations():

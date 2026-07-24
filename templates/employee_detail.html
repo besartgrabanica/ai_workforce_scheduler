@@ -140,6 +140,22 @@
             </div>
           </div>
 
+          <!-- Rotation Pattern -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ _('Weekly Rotation') }}</label>
+            <select name="rotation_pattern_id" id="rotation_pattern_id" class="form-select">
+              <option value="">{{ _('— none (fixed shift above) —') }}</option>
+              {% for r in rotation_patterns %}
+              <option value="{{ r.id }}"
+                {% if not is_new and employee.rotation_pattern_id == r.id %}selected{% endif %}>
+                {{ r.name }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">{{ _('Alternates shifts week to week; overrides the fixed Shift Template above while set.') }}
+              <a href="{{ url_for('rotation_patterns_list') }}">{{ _('Manage rotations') }}</a>.
+            </div>
+          </div>
+
           <!-- Custom hours -->
           <div class="col-md-2" id="custom_start_wrap">
             <label class="form-label fw-semibold">{{ _('Custom Start') }}</label>
@@ -293,7 +309,25 @@ function toggleCustomShift() {
   });
 }
 document.getElementById('shift_template').addEventListener('change', toggleCustomShift);
+
+function toggleRotation() {
+  const rotationSet = document.getElementById('rotation_pattern_id').value !== '';
+  const picker = document.querySelector('.shift-picker-toggle');
+  picker.disabled = rotationSet;
+  picker.style.opacity = rotationSet ? '0.4' : '1';
+  if (rotationSet) {
+    ['custom_start_wrap', 'custom_end_wrap', 'custom_hours_wrap'].forEach(id => {
+      document.getElementById(id).style.opacity = '0.4';
+      document.getElementById(id).querySelector('input').disabled = true;
+    });
+  } else {
+    toggleCustomShift();
+  }
+}
+document.getElementById('rotation_pattern_id').addEventListener('change', toggleRotation);
+
 toggleCustomShift();
+toggleRotation();
 
 // Suggest actual duration from the start/end span; still freely editable
 // afterward (e.g. to subtract an unpaid break).

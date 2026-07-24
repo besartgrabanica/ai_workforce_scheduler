@@ -32,10 +32,19 @@
     <div class="card-body">
       <form action="{{ url_for('schedule_group_add') }}" method="POST">
         <div class="row g-2 align-items-end">
-          <div class="col-md-6">
+          <div class="col-md-5">
             <label class="form-label small fw-semibold">{{ _('New Group Name') }}</label>
             <input type="text" name="name" class="form-control form-control-sm"
                    placeholder="{{ _('e.g. Kaltrina + Rozana') }}" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">{{ _('Weekly Rotation') }}</label>
+            <select name="rotation_pattern_id" class="form-select form-select-sm">
+              <option value="">{{ _('— none —') }}</option>
+              {% for r in rotation_patterns %}
+              <option value="{{ r.id }}">{{ r.name }}</option>
+              {% endfor %}
+            </select>
           </div>
           <div class="col-md-3">
             <button type="submit" class="btn btn-primary btn-sm w-100">
@@ -83,6 +92,22 @@
         {% endif %}
       </div>
       <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+          <span class="small text-muted">{{ _('Weekly Rotation') }}</span>
+          {% if can_manage %}
+          <form action="{{ url_for('schedule_group_set_rotation', group_id=group.id) }}" method="POST" class="d-inline">
+            <select name="rotation_pattern_id" class="form-select form-select-sm" style="max-width:180px"
+                    onchange="this.form.submit()">
+              <option value="">{{ _('— none —') }}</option>
+              {% for r in rotation_patterns %}
+              <option value="{{ r.id }}" {% if group.rotation_pattern_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+              {% endfor %}
+            </select>
+          </form>
+          {% else %}
+          <span class="small">{{ group.rotation_pattern.name if group.rotation_pattern else _('— none —') }}</span>
+          {% endif %}
+        </div>
         {% if group.members %}
         <ul class="list-unstyled mb-0">
           {% for emp in group.members %}

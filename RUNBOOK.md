@@ -45,11 +45,21 @@ Switching projects is a dropdown in the sidebar, not a different URL/port.
   (Users page → Grant Access), with whatever role makes sense per project — e.g. project lead in
   EON, viewer in freenet.
 
-**Adding a brand-new project**: add it to the `PROJECTS` dict near the top of `app.py` (branding,
-holidays, initial teams — see the `'eon'` entry as a template), then restart the app. It
-auto-provisions an empty database and uploads folder on that restart. Teams, business parameters,
-and shift templates start empty/generic — add the client's real ones through Settings and
-Employees → Import, same as any fresh engagement. Grant whoever needs it access via the Users page.
+**Adding a brand-new project**: go to Projects (Admin section, global admin/superadmin only) and
+fill in the key/display name/branding — it's provisioned immediately, no restart needed. Public
+holidays start empty; add the client's real ones through the new Public Holidays page. Teams,
+business parameters, and shift templates start empty/generic — add the client's real ones through
+Settings and Employees → Import, same as any fresh engagement. Grant whoever needs it access via
+the Users page.
+
+**Adding a new project's forecast/employee-file parser**: each client sends forecast and employee
+data in their own Excel layout — there's no way to auto-detect an arbitrary spreadsheet format, so
+this is a one-time coding task per client, not something the admin UI can do on its own. Get a real
+sample file from the client, use `scheduler/parsers/eon.py` as the reference shape (its four
+functions and their docstrings are the contract), write `scheduler/parsers/<project_key>.py`
+implementing whichever functions apply to that client's real files, then add one line to
+`_REGISTRY` in `scheduler/parsers/__init__.py`. A project with no parser registered yet shows a
+clear "not set up yet" message on the import pages instead of crashing or silently misparsing.
 
 ---
 
@@ -164,4 +174,27 @@ everything without being re-granted access every time a new client is onboarded.
 
 ---
 
-*Last updated: 12 Jul 2026*
+## 9. Production deployment (always-on server behind nginx)
+
+Config templates live in `deploy/` (`workforce-scheduler.service`, `nginx.conf`) — copy them to
+the server and adjust the IP/paths/user if they ever change. Full one-time setup steps and
+rationale are in the deployment conversation; short version:
+
+1. `python3 -m venv venv && venv/bin/pip install -r requirements.txt`
+2. Create `.env` on the server (never committed) with `SECRET_KEY`, `APP_BASE_URL`, and optionally
+   an AI provider key / SMTP creds (the AI key can also be set later via AI Settings in the UI).
+3. Install `deploy/workforce-scheduler.service` to `/etc/systemd/system/`, `daemon-reload`,
+   `enable --now`. Runs gunicorn on `127.0.0.1:8000`, 1 worker + 4 threads (SQLite has no WAL mode
+   configured — multiple worker *processes* risk "database is locked"; threads avoid that).
+4. Install `deploy/nginx.conf` to `/etc/nginx/sites-available/`, symlink into `sites-enabled`,
+   `nginx -t && systemctl reload nginx`. Proxies everything to gunicorn except `/static/`, which
+   nginx serves directly. `/uploads/` is deliberately proxied too, not served as static files — it
+   holds employee documents behind Flask's own login/role checks.
+5. To deploy new code: `git pull`, `venv/bin/pip install -r requirements.txt` if deps changed,
+   `sudo systemctl restart workforce-scheduler`.
+
+Logs: `journalctl -u workforce-scheduler -f`.
+
+---
+
+*Last updated: 21 Jul 2026*

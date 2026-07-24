@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Public Holidays') }}{% endblock %}
+{% block page_title %}{{ _('Public Holidays') }}{% endblock %}
+
+{% set can_manage = current_role in ('admin', 'superadmin') %}
+
+{% block topbar_actions %}
+{% if can_manage %}
+<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addHolidayForm">
+  <i class="bi bi-plus-lg me-1"></i>{{ _('Add Holiday') }}
+</button>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<p class="text-muted small mb-3">
+  {{ _('Days the scheduler treats as public holidays for this project — employees who don\'t work holidays are excluded automatically. Add next year\'s dates here whenever they\'re announced; no code change needed.') }}
+</p>
+
+{% if can_manage %}
+<!-- Add holiday form (collapsed by default) -->
+<div class="collapse mb-3" id="addHolidayForm">
+  <div class="card">
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('public_holiday_add') }}">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">{{ _('Date') }}</label>
+            <input type="date" name="date" class="form-control form-control-sm" required>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label small fw-semibold">{{ _('Name') }}</label>
+            <input type="text" name="name" class="form-control form-control-sm"
+                   placeholder="{{ _('e.g. Independence Day') }}" required>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-sm w-100">{{ _('Save Holiday') }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>{{ _('Date') }}</th><th>{{ _('Name') }}</th>
+          {% if can_manage %}<th></th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in holidays %}
+        <tr>
+          <td class="fw-medium">{{ h.date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ h.name }}</td>
+          {% if can_manage %}
+          <td class="text-end">
+            <form method="POST" action="{{ url_for('public_holiday_delete', holiday_id=h.id) }}" class="d-inline"
+                  onsubmit="return confirm({{ _('Delete %(name)s?', name=h.name) | tojson | forceescape }})">
+              <button type="submit" class="btn btn-xs btn-outline-danger">{{ _('Delete') }}</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="{{ 3 if can_manage else 2 }}" class="text-center text-muted py-4">
+            {{ _('No public holidays configured yet.') }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

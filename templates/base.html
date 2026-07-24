@@ -111,6 +111,18 @@
       </a>
     </li>
     <li>
+      <a href="{{ url_for('rotation_patterns_list') }}"
+         class="sidebar-link {% if 'rotation_pattern' in request.endpoint %}active{% endif %}">
+        <i class="bi bi-arrow-repeat"></i><span>{{ _('Rotation Patterns') }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('public_holidays_list') }}"
+         class="sidebar-link {% if 'public_holiday' in request.endpoint %}active{% endif %}">
+        <i class="bi bi-calendar-x-fill"></i><span>{{ _('Public Holidays') }}</span>
+      </a>
+    </li>
+    <li>
       <a href="{{ url_for('business_parameters') }}"
          class="sidebar-link {% if request.endpoint == 'business_parameters' %}active{% endif %}">
         <i class="bi bi-sliders"></i><span>{{ _('Business Parameters') }}</span>

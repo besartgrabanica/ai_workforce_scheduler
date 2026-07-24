@@ -1,8 +1,17 @@
 """
-Parsers for the three source Excel files:
+EON's forecast/employee-file parsers — registered for project key 'eon' in
+scheduler/parsers/__init__.py. Parses the three source Excel files:
   1. TFC_Juni-August 2026_KiKxxl.xlsx  – half-hourly E.ON contact forecast
   2. Abnahmemenge DE Juni.xlsx         – German offices daily contribution
   3. Specifikat e punetoreve - E.ON.xlsx – Kosovo employee list
+plus the Forecast Calculation file (Kosovo required-agent counts) below.
+
+These four functions and their docstrings are the interface contract for any
+other project's parser module: onboarding a new client means writing a new
+module in this package that implements whichever of these apply to that
+client's real files (there's no way to auto-detect an arbitrary external
+Excel layout — see scheduler/parsers/__init__.py and RUNBOOK.md for the
+process), not touching this file.
 """
 import openpyxl
 from datetime import datetime, date
