@@ -138,11 +138,38 @@ everything without being re-granted access every time a new client is onboarded.
 
 ---
 
+## 6b. Import Mappings (when a client reformats their forecast file)
+
+The **Client Forecast (TFC)** and **Germany Coverage (Abnahmemenge DE)** imports on the
+Forecast → New Forecast Period page look for specific headers/column positions. If a client
+renames a header, moves a column, or otherwise reformats the file, the import can't find what
+it's looking for — and instead of silently importing wrong numbers, it stops and asks for help:
+
+1. **Deterministic match** (unchanged, no setup needed) — if the file still looks like it always
+   has, it just imports. Nothing below ever runs.
+2. **Cached mapping** — if this exact reformatted layout has already been confirmed once (see
+   below), it's applied automatically from then on. No admin action, no AI call.
+3. **AI-assisted proposal** — first time this new layout is seen, the assistant suggests where
+   the missing columns moved to (needs `ANTHROPIC_API_KEY` set in `.env` — see section 1). It's
+   only a suggestion: **the forecast import is blocked** until an admin reviews and confirms it.
+
+To confirm (or type in the columns yourself, no AI involved): **Admin → Import Mappings**
+(`/import-mappings`, admin role required). Pick the file type, upload the reformatted file, and
+either leave the column fields blank to get an AI suggestion first, or fill them in directly —
+either way, nothing saves until it's checked against the file you uploaded and actually resolves
+cleanly. Once confirmed, re-run the forecast import — it'll go through tier 2 automatically.
+
+If a client reformats the same file *again* later, this whole process repeats for the new layout
+(the old confirmed mapping just stops matching and is quietly ignored, not deleted).
+
+---
+
 ## 7. Quick reference — where things are
 
 | Task | Where |
 |------|-------|
 | Import a new forecast | Forecast → New Forecast Period |
+| Fix a reformatted forecast file's import | Admin → Import Mappings *(admin role required, see 6b)* |
 | Import employees from Excel | Employees → Import |
 | Generate a schedule | Schedules → Generate |
 | Upload a document | Documents → Upload Document |
@@ -172,6 +199,8 @@ everything without being re-granted access every time a new client is onboarded.
     llm.py            ← AI assistant logic
     parsers/           ← one Excel-parser module per project (parsers/eon.py, ...) —
                          see "Adding a new project's forecast/employee parser" above
+    import_mapping.py    ← reformatted-file detection/caching (see 6b) — tiers 1+2
+    ai_import_mapping.py ← the AI suggestion behind tier 3 above
   tests/              ← automated regression suite for scheduler/algorithm.py
 ```
 
