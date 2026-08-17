@@ -19,7 +19,7 @@ load_dotenv()
 
 from scheduler.models import (BusinessParam, ChatMessage, ChatSession,
                                DailyForecast, DayRestriction, Document,
-                               Employee, ExcludedDate, ForecastPeriod,
+                               Employee, EmployeeScheduleSummary, ExcludedDate, ForecastPeriod,
                                GlobalSetting, HalfHourlyForecast, IdentityUser,
                                ImportLog, Invitation, PasswordReset, ProjectMeta,
                                ProjectRole, PublicHoliday, RotationCycleWeek,
@@ -265,6 +265,7 @@ def _seed_defaults(project_key):
             BusinessParam(key='target_service_level', value='0.80', label='Target Service Level (%)', category=cat),
             BusinessParam(key='target_asa',          value='20',   label='Target ASA (seconds)', category=cat),
             BusinessParam(key='max_occupancy',       value='0.85', label='Max Agent Occupancy (%)', category=cat),
+            BusinessParam(key='min_rest_hours',      value='11',   label='Minimum Rest Between Shifts (hours)', category=cat),
         ]
         db.session.add_all(params)
 
@@ -399,6 +400,7 @@ def _migrate_schema(project_key):
             ('target_service_level',  '0.80', 'Target Service Level (%)', cat),
             ('target_asa',            '20',   'Target ASA (seconds)', cat),
             ('max_occupancy',         '0.85', 'Max Agent Occupancy (%)', cat),
+            ('min_rest_hours',        '11',   'Minimum Rest Between Shifts (hours)', cat),
         ]
         for key, value, label, category in extra_params:
             if not BusinessParam.query.filter_by(key=key).first():

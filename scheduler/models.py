@@ -317,6 +317,37 @@ class Schedule(db.Model):
 
     assignments = db.relationship('ShiftAssignment', backref='schedule',
                                   cascade='all, delete-orphan')
+    employee_summaries = db.relationship('EmployeeScheduleSummary', backref='schedule',
+                                         cascade='all, delete-orphan')
+
+
+class EmployeeScheduleSummary(db.Model):
+    """One row per employee per generated Schedule, written by
+    generate_schedule() alongside the ShiftAssignment rows it creates.
+    Mirrors the transient 'employee_summary' entries generate_schedule()
+    already builds in memory — persisted here specifically because the
+    fairness-histogram dashboard chart needs each employee's target
+    day/hour counts (which depend on the scheduler's own FTE/eligibility
+    math) for a schedule that may have been generated in the past, and that
+    math isn't safely re-derivable outside a real generation run. Only
+    populated for schedules generated after this table was introduced —
+    older schedules simply have no rows here until regenerated."""
+    __tablename__ = 'employee_schedule_summary'
+    id = db.Column(db.Integer, primary_key=True)
+    schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id', ondelete='CASCADE'), nullable=False)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id', ondelete='CASCADE'), nullable=False)
+    target_wd = db.Column(db.Integer, default=0)
+    assigned_wd = db.Column(db.Integer, default=0)
+    target_sat = db.Column(db.Integer, default=0)
+    assigned_sat = db.Column(db.Integer, default=0)
+    target_sun = db.Column(db.Integer, default=0)
+    assigned_sun = db.Column(db.Integer, default=0)
+    target_hours = db.Column(db.Float, default=0)
+    actual_hours = db.Column(db.Float, default=0)
+
+    employee = db.relationship('Employee')
+
+    __table_args__ = (db.UniqueConstraint('schedule_id', 'employee_id', name='uq_ess_schedule_employee'),)
 
 
 class ShiftAssignment(db.Model):

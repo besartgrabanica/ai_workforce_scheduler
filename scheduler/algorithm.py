@@ -13,8 +13,16 @@ import calendar
 from datetime import date, timedelta
 from math import sqrt
 
-from .models import (db, BusinessParam, Employee, DailyForecast, ExcludedDate,
-                      ShiftAssignment, ShiftTemplate, RotationPattern)
+from .models import (
+    BusinessParam,
+    DailyForecast,
+    Employee,
+    EmployeeScheduleSummary,
+    RotationPattern,
+    ShiftAssignment,
+    ShiftTemplate,
+    db,
+)
 
 # Fallback only — used if the 'max_coverage_pct' BusinessParam row is missing.
 # The client only reimburses coverage up to this % of the required daily
@@ -35,6 +43,10 @@ _SUNDAY_HOURS = 5.5
 _DEFAULT_AGENTS_WEEKDAY = 220
 _DEFAULT_AGENTS_SATURDAY = 55
 _DEFAULT_AGENTS_SUNDAY = 0
+# EU Working Time Directive daily-rest minimum — relevant given clients'
+# Germany/Switzerland operations. Never knowingly schedule less rest than
+# this between the end of one shift and the start of the next.
+_MIN_REST_HOURS = 11
 
 
 def set_holidays(holidays_by_year: dict) -> None:
@@ -57,6 +69,11 @@ def _add_hours(start: str, hours: float) -> str:
     sh, sm = map(int, start.split(':'))
     total_mins = sh * 60 + sm + int(round(hours * 60))
     return f'{total_mins // 60:02d}:{total_mins % 60:02d}'
+
+
+def _time_to_minutes(hhmm: str) -> int:
+    h, m = map(int, hhmm.split(':'))
+    return h * 60 + m
 
 
 def _week_start(d: date) -> date:
@@ -126,6 +143,7 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
     default_agents_sat = int(float(params.get('default_agents_saturday', _DEFAULT_AGENTS_SATURDAY)))
     default_agents_sun = int(float(params.get('default_agents_sunday', _DEFAULT_AGENTS_SUNDAY)))
     max_coverage_ratio = float(params.get('max_coverage_pct', _MAX_COVERAGE_PCT)) / 100
+    min_rest_hours = float(params.get('min_rest_hours', _MIN_REST_HOURS))
 
     employees = Employee.query.filter_by(status='active').order_by(Employee.team, Employee.name).all()
 
@@ -282,6 +300,43 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
             emp_tpl_id = default_tpl_id
         return shift_start, shift_end, round(base_hours, 2), emp_tpl_id
 
+    # Most recently worked (date, shift_end) per employee, updated at the end
+    # of each day's Pass 4 below — lets the rest-period check compare today's
+    # would-be start against whichever day they actually last worked, even if
+    # that wasn't yesterday (a day off in between naturally clears the risk).
+    last_work_end: dict[int, tuple] = {}
+
+    def _today_shift_start(emp, day, dow, is_saturday, is_sunday):
+        """The shift start this employee would actually get today, including
+        any day-of-week override — mirrors _unit_shift's own resolution
+        order (override wins regardless of weekend/rotation), just returning
+        only the start time. Needed here because the rest-period gate runs
+        in Pass 1, before Pass 2/3 have decided who's actually selected."""
+        dow_restriction = restriction_map[emp.id].get(dow)
+        if dow_restriction and dow_restriction.shift_type:
+            tpl = ShiftTemplate.query.filter_by(name=dow_restriction.shift_type.capitalize()).first()
+            if tpl:
+                return tpl.start_time
+        start, _, _ = _shift_details(emp, is_saturday, is_sunday, sat_hours, sun_hours, day)
+        return start
+
+    def _violates_rest_period(emp, day, dow, is_saturday, is_sunday):
+        """True if today's shift would start less than min_rest_hours after
+        this employee's most recently worked shift ended. Computed in
+        absolute minutes from whichever day they last actually worked (not
+        assumed to be yesterday), so a rest day in between correctly clears
+        it, and a shift crossing midnight is handled the same way — no
+        special-casing needed for either."""
+        prev = last_work_end.get(emp.id)
+        if prev is None:
+            return False
+        prev_date, prev_end = prev
+
+        today_start = _today_shift_start(emp, day, dow, is_saturday, is_sunday)
+        gap_days = (day - prev_date).days
+        gap_minutes = gap_days * 24 * 60 + _time_to_minutes(today_start) - _time_to_minutes(prev_end)
+        return gap_minutes < min_rest_hours * 60
+
     for day in all_days:
         dow = day.weekday()
         is_sunday = dow == 6
@@ -329,6 +384,8 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
                 excluded_today[emp.id] = ('constraint_off', 'Excluded date')
             elif _is_day_off(emp.id, dow):
                 excluded_today[emp.id] = ('constraint_off', 'Recurring day off')
+            elif _violates_rest_period(emp, day, dow, is_saturday, is_sunday):
+                excluded_today[emp.id] = ('constraint_off', 'Minimum rest period')
 
         # ── Pass 2: build work-candidate units among everyone not hard-excluded.
         # A schedule-group's members are one unit — selected or deferred together —
@@ -365,6 +422,16 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
                 selected_ids.update(m.id for m in u['members'])
                 scheduled_count += u['size']
 
+        # Everyone who was actually a live candidate today (had urgency, i.e.
+        # made it into `units`) but didn't fit under the cap — distinct from
+        # anyone who was never a candidate at all today (either genuinely
+        # done for the month, or paced off by _urgency's pacing gate while
+        # still owing days). Both of those still-owing-but-not-competing
+        # cases used to collapse into the same "Coverage cap reached" label
+        # below (both have remaining_needed > 0), which was misleading — a
+        # paced employee was never actually blocked by the cap at all.
+        capped_ids = {m.id for u in units for m in u['members']} - selected_ids
+
         # ── Pass 4: record everything ────────────────────────────────────────
         for emp in employees:
             if emp.id in excluded_today:
@@ -373,9 +440,7 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
                 continue
 
             if emp.id not in selected_ids:
-                t = targets[emp.id]
-                remaining_needed = t[f'target_{day_type}'] - t[f'assigned_{day_type}']
-                notes = 'Coverage cap reached' if remaining_needed > 0 else None
+                notes = 'Coverage cap reached' if emp.id in capped_ids else None
                 _record(emp, 'day_off', notes=notes)
                 continue
 
@@ -391,6 +456,7 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
             for m in u['members']:
                 _record(m, 'work', shift_start=shift_start, shift_end=shift_end,
                         hours_worked=base_hours, shift_template_id=emp_tpl_id)
+                last_work_end[m.id] = (day, shift_end)
                 t = targets[m.id]
                 if is_saturday:
                     t['assigned_sat'] += 1
@@ -409,6 +475,113 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
     # Bulk-insert
     db.session.bulk_save_objects(assignments)
     db.session.commit()
+
+    def _polish_coverage_dips():
+        """Post-hoc improvement pass, run once after the day-by-day build
+        above: some weekdays can still sit below their forecast requirement
+        even though total capacity for the month was enough — typically
+        because several employees who share the same FTE% (and thus
+        identical pace math from _urgency's pacing gate) all land on the
+        same day as their discretionary day off. Look for a discretionary
+        day off (day_off with notes=None — NOT the "wanted to work but
+        capped" case) that can be relocated onto a still-short day from a
+        day with coverage to spare, without changing anyone's total
+        worked-day count (so the "nobody falls short" guarantee holds by
+        construction, not by re-checking it) and without violating the
+        rest-period rule. Never touches schedule-group members — moving one
+        member alone would break "the group always moves together".
+        Weekdays only, matching where this was actually observed. Targets
+        100% of requirement, not the 105% cap — this closes gaps, it
+        doesn't try to maximize coverage further."""
+        by_emp_date: dict[tuple, ShiftAssignment] = {
+            (a.employee_id, a.date): a
+            for a in ShiftAssignment.query.filter_by(schedule_id=schedule_id).all()
+        }
+        emp_by_id = {e.id: e for e in employees}
+        polishable_ids = {e.id for e in employees if not e.schedule_group_id}
+
+        def _rest_ok_to_work(emp_id, day, new_start, new_end):
+            # Only the "moving onto day" direction needs checking — vacating
+            # a day can only improve a neighbor's rest gap, never worsen it.
+            # If the donor day being vacated happens to be an immediate
+            # neighbor of `day`, it's still evaluated here in its pre-swap
+            # (working) state — occasionally overcautious in that narrow
+            # case, never unsafe: worst case a valid move is skipped, an
+            # invalid one is never taken.
+            prev = by_emp_date.get((emp_id, day - timedelta(days=1)))
+            if prev is not None and prev.status == 'work':
+                gap = _time_to_minutes(new_start) + 24 * 60 - _time_to_minutes(prev.shift_end)
+                if gap < min_rest_hours * 60:
+                    return False
+            nxt = by_emp_date.get((emp_id, day + timedelta(days=1)))
+            if nxt is not None and nxt.status == 'work':
+                gap = _time_to_minutes(nxt.shift_start) + 24 * 60 - _time_to_minutes(new_end)
+                if gap < min_rest_hours * 60:
+                    return False
+            return True
+
+        deficit_days = sorted(
+            (d for d in weekdays if daily_coverage[d]['required'] > 0
+             and daily_coverage[d]['scheduled'] < daily_coverage[d]['required']),
+            key=lambda d: daily_coverage[d]['pct']
+        )
+
+        for x in deficit_days:
+            while daily_coverage[x]['scheduled'] < daily_coverage[x]['required']:
+                moved = False
+                for emp_id in polishable_ids:
+                    row_x = by_emp_date.get((emp_id, x))
+                    if row_x is None or row_x.status != 'day_off' or row_x.notes is not None:
+                        continue
+
+                    emp = emp_by_id[emp_id]
+                    new_start, new_end, new_hours, new_tpl_id = _unit_shift(
+                        emp, x.weekday(), False, False, x
+                    )
+                    if not _rest_ok_to_work(emp_id, x, new_start, new_end):
+                        continue
+
+                    donor_day = None
+                    for y in emp_elig[emp_id]['wd']:
+                        if y == x:
+                            continue
+                        row_y = by_emp_date.get((emp_id, y))
+                        if row_y is None or row_y.status != 'work':
+                            continue
+                        if daily_coverage[y]['scheduled'] - 1 < daily_coverage[y]['required']:
+                            continue
+                        donor_day = y
+                        break
+                    if donor_day is None:
+                        continue
+
+                    row_y = by_emp_date[(emp_id, donor_day)]
+                    old_hours = row_y.hours_worked or 0
+
+                    row_x.status, row_x.shift_start, row_x.shift_end = 'work', new_start, new_end
+                    row_x.hours_worked, row_x.shift_template_id, row_x.notes = new_hours, new_tpl_id, None
+
+                    row_y.status, row_y.shift_start, row_y.shift_end = 'day_off', None, None
+                    row_y.hours_worked, row_y.shift_template_id, row_y.notes = 0, None, None
+
+                    daily_coverage[x]['scheduled'] += 1
+                    daily_coverage[x]['pct'] = round(
+                        daily_coverage[x]['scheduled'] / daily_coverage[x]['required'] * 100, 1)
+                    daily_coverage[donor_day]['scheduled'] -= 1
+                    req_y = daily_coverage[donor_day]['required']
+                    daily_coverage[donor_day]['pct'] = (
+                        round(daily_coverage[donor_day]['scheduled'] / req_y * 100, 1) if req_y else 100.0)
+
+                    targets[emp_id]['total_hours'] += new_hours - old_hours
+
+                    moved = True
+                    break
+                if not moved:
+                    break
+
+        db.session.commit()
+
+    _polish_coverage_dips()
 
     # Build summary
     emp_summary = []
@@ -434,6 +607,14 @@ def generate_schedule(schedule_id: int, year: int, month: int) -> dict:
             'target_hours': round(target_hours, 1),
             'actual_hours': round(t['total_hours'], 1),
         })
+        db.session.add(EmployeeScheduleSummary(
+            schedule_id=schedule_id, employee_id=emp.id,
+            target_wd=t['target_wd'], assigned_wd=t['assigned_wd'],
+            target_sat=t['target_sat'], assigned_sat=t['assigned_sat'],
+            target_sun=t['target_sun'], assigned_sun=t['assigned_sun'],
+            target_hours=round(target_hours, 1), actual_hours=round(t['total_hours'], 1),
+        ))
+    db.session.commit()
 
     return {
         'employee_summary': emp_summary,
