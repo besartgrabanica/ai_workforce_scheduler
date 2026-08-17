@@ -2,6 +2,7 @@ import calendar
 import glob
 import hashlib
 import json
+import logging
 import os
 import re
 import secrets
@@ -16,6 +17,8 @@ from flask_babel import Babel, gettext as _, get_locale
 from sqlalchemy import create_engine
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 from scheduler.models import (BusinessParam, ChatMessage, ChatSession,
                                DailyForecast, DayRestriction, Document,
@@ -190,6 +193,47 @@ def require_global_admin(f):
             return redirect(url_for('dashboard'))
         return f(*args, **kwargs)
     return decorated
+
+
+_SHIFTPLANNER_API_KEY = os.environ.get('SHIFTPLANNER_API_KEY', '')
+
+
+def require_api_key(f):
+    """Auth gate for the read-only /api/v1/* routes Cerebro's Shiftplanner
+    adapter calls — a static shared secret (SHIFTPLANNER_API_KEY) via an
+    X-API-Key header, mirroring the pattern Cerebro's own Plane adapter
+    already uses against Plane's API. Deliberately NOT session/cookie based
+    like every other route in this file: this is a machine-to-machine
+    credential for another internal app, not a per-user login. See
+    load_user()'s endpoint.startswith('api_') exemption — these routes skip
+    the cookie-session logic entirely and bind g.active_engine themselves via
+    _bind_project_or_404, scoped to whichever project key is in the URL, not
+    the caller's session (there is no caller session)."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not _SHIFTPLANNER_API_KEY:
+            return jsonify({'error': 'API not configured on this server'}), 503
+        supplied = request.headers.get('X-API-Key', '')
+        if not secrets.compare_digest(supplied, _SHIFTPLANNER_API_KEY):
+            return jsonify({'error': 'unauthorized'}), 401
+        try:
+            return f(*args, **kwargs)
+        except Exception:
+            logger.exception('API error in %s', f.__name__)
+            return jsonify({'error': 'internal error'}), 500
+    return decorated
+
+
+def _bind_project_or_404(project_key):
+    """The API equivalent of what load_user() does from the session for
+    human routes: validate project_key against discover_projects() and bind
+    g.active_project/g.active_engine for this request. Returns a Flask
+    response if invalid, else None."""
+    if project_key not in discover_projects():
+        return jsonify({'error': f'unknown project "{project_key}"'}), 404
+    g.active_project = project_key
+    g.active_engine = ENGINES[project_key]
+    return None
 
 
 def upload_folder():
@@ -619,7 +663,8 @@ def load_user():
     g.active_project = None
     g.active_engine = None
     if request.endpoint in ('login', 'logout', 'static', 'no_access', 'switch_project',
-                             'forgot_password', 'reset_password', 'accept_invite', 'set_locale'):
+                             'forgot_password', 'reset_password', 'accept_invite', 'set_locale') \
+            or (request.endpoint and request.endpoint.startswith('api_')):
         if request.endpoint in ('switch_project', 'set_locale'):
             uid = flask_session.get('user_id')
             g.current_user = IdentityUser.query.get(uid) if uid else None
@@ -976,6 +1021,113 @@ def projects_admin():
 
     projects = [{'key': key, **project_config(key)} for key in discover_projects()]
     return render_template('projects_admin.html', projects=projects)
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# Internal read-only API (Cerebro AI Hub integration) — API-key authenticated,
+# never session/cookie based (see require_api_key/load_user above). Read-only
+# by construction: only GET routes, no route here ever calls db.session.add/
+# delete/commit. Kept as plain routes in this file rather than a Blueprint to
+# minimize footprint, consistent with the rest of this file's style. Every
+# view function name here must start with api_ (see load_user()'s exemption).
+# ────────────────────────────────────────────────────────────────────────────
+
+def _employee_api_dict(e):
+    return {
+        'id': e.id, 'name': e.name, 'team': e.team,
+        'fte_percent': e.fte_percent, 'fte_mode': e.fte_mode,
+        'shift_label': e.shift_label,
+        'works_saturday': e.works_saturday, 'works_sunday': e.works_sunday,
+        'works_holidays': e.works_holidays,
+        'status': e.status,
+    }
+
+
+@app.route('/api/v1/projects')
+@require_api_key
+def api_projects():
+    result = []
+    for key in discover_projects():
+        g.active_engine = ENGINES[key]
+        cfg = project_config(key)
+        result.append({
+            'key': key, **cfg,
+            'employee_count': Employee.query.filter_by(status='active').count(),
+        })
+    g.active_engine = None
+    return jsonify({'projects': result})
+
+
+@app.route('/api/v1/<project_key>/employees')
+@require_api_key
+def api_employees(project_key):
+    err = _bind_project_or_404(project_key)
+    if err:
+        return err
+    status = request.args.get('status', 'active')
+    q = Employee.query if status == 'all' else Employee.query.filter_by(status=status)
+    team = request.args.get('team')
+    if team:
+        q = q.filter_by(team=team)
+    employees = [_employee_api_dict(e) for e in q.order_by(Employee.name).all()]
+    return jsonify({'project': project_key, 'employees': employees})
+
+
+@app.route('/api/v1/<project_key>/teams')
+@require_api_key
+def api_teams(project_key):
+    err = _bind_project_or_404(project_key)
+    if err:
+        return err
+    teams = [{'id': t.id, 'name': t.name, 'member_count': t.member_count}
+             for t in Team.query.order_by(Team.name).all()]
+    return jsonify({'project': project_key, 'teams': teams})
+
+
+@app.route('/api/v1/<project_key>/schedules')
+@require_api_key
+def api_schedules(project_key):
+    err = _bind_project_or_404(project_key)
+    if err:
+        return err
+    q = Schedule.query
+    if request.args.get('year'):
+        q = q.filter_by(year=int(request.args['year']))
+    if request.args.get('month'):
+        q = q.filter_by(month=int(request.args['month']))
+    schedules = [{
+        'id': s.id, 'name': s.name, 'year': s.year, 'month': s.month,
+        'period_id': s.period_id, 'notes': s.notes,
+        'generated_at': s.generated_at.isoformat() if s.generated_at else None,
+        'assignment_count': len(s.assignments),
+    } for s in q.order_by(Schedule.generated_at.desc()).all()]
+    return jsonify({'project': project_key, 'schedules': schedules})
+
+
+@app.route('/api/v1/<project_key>/schedules/<int:schedule_id>/assignments')
+@require_api_key
+def api_assignments(project_key, schedule_id):
+    err = _bind_project_or_404(project_key)
+    if err:
+        return err
+    schedule = Schedule.query.get(schedule_id)
+    if not schedule:
+        return jsonify({'error': 'unknown schedule'}), 404
+    q = ShiftAssignment.query.filter_by(schedule_id=schedule_id)
+    if request.args.get('date_from'):
+        q = q.filter(ShiftAssignment.date >= date.fromisoformat(request.args['date_from']))
+    if request.args.get('date_to'):
+        q = q.filter(ShiftAssignment.date <= date.fromisoformat(request.args['date_to']))
+    if request.args.get('status'):
+        q = q.filter_by(status=request.args['status'])
+    assignments = [{
+        'employee_id': a.employee_id, 'employee_name': a.employee.name if a.employee else None,
+        'team': a.employee.team if a.employee else None,
+        'date': a.date.isoformat(), 'status': a.status,
+        'shift_start': a.shift_start, 'shift_end': a.shift_end,
+        'hours_worked': a.hours_worked, 'display_code': a.display_code,
+    } for a in q.order_by(ShiftAssignment.date).all()]
+    return jsonify({'project': project_key, 'schedule_id': schedule_id, 'assignments': assignments})
 
 
 @app.route('/users')
