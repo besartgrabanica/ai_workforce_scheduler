@@ -1410,6 +1410,7 @@ def forecast_list():
 
 
 @app.route('/forecast/new', methods=['GET', 'POST'])
+@require_role('admin')
 def forecast_new():
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
