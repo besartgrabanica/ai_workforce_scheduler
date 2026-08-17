@@ -327,6 +327,8 @@ def _migrate_schema(project_key):
             conn.execute(text("ALTER TABLE employee ADD COLUMN custom_hours FLOAT"))
         if 'rotation_pattern_id' not in emp_cols:
             conn.execute(text("ALTER TABLE employee ADD COLUMN rotation_pattern_id INTEGER"))
+        if 'employee_number' not in emp_cols:
+            conn.execute(text("ALTER TABLE employee ADD COLUMN employee_number VARCHAR(30)"))
 
         sg_cols = existing_columns('schedule_group')
         if 'rotation_pattern_id' not in sg_cols:
@@ -1855,6 +1857,7 @@ def _save_employee(emp):
     first_name = request.form.get('first_name', '').strip()
     last_name = request.form.get('last_name', '').strip()
     emp.name = f'{first_name} {last_name}'.strip()
+    emp.employee_number = request.form.get('employee_number', '').strip() or None
     emp.team = request.form.get('team', '')
     emp.fte_percent = int(request.form.get('fte_percent', 100))
     emp.fte_mode = request.form.get('fte_mode', 'days')
@@ -1936,6 +1939,7 @@ def employees_bulk_update():
         if not emp:
             continue
 
+        emp.employee_number = request.form.get(f'employee_number_{id_str}', '').strip() or None
         emp.team = request.form.get(f'team_{id_str}', emp.team)
 
         fte = request.form.get(f'fte_percent_{id_str}')

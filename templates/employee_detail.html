@@ -36,7 +36,7 @@
             <input type="text" name="last_name" class="form-control"
                    value="{{ name_parts[1] if name_parts|length > 1 else '' }}" required>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label fw-semibold">{{ _('Team') }} <span class="text-danger">*</span></label>
             <select name="team" class="form-select" required>
               <option value="" disabled {% if is_new or not employee.team %}selected{% endif %}>{{ _('— Choose a team —') }}</option>
@@ -45,6 +45,11 @@
                 {% if not is_new and employee.team == t %}selected{% endif %}>{{ t }}</option>
               {% endfor %}
             </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold">{{ _('Employee ID') }}</label>
+            <input type="text" name="employee_number" class="form-control"
+                   value="{{ employee.employee_number if not is_new and employee.employee_number else '' }}">
           </div>
           <div class="col-md-4">
             <label class="form-label fw-semibold">{{ _('Status') }}</label>

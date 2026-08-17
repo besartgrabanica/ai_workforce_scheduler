@@ -54,6 +54,14 @@
   </div>
 </form>
 
+{% set incomplete_count = employees | selectattr('data_quality_issues') | list | length %}
+{% if incomplete_count %}
+<div class="alert alert-warning py-2 px-3 small mb-3">
+  <i class="bi bi-exclamation-triangle me-1"></i>
+  {{ _('%(n)s employees need attention (see the warning icon on each row).', n=incomplete_count) }}
+</div>
+{% endif %}
+
 <form method="POST" action="{{ url_for('employees_bulk_update') }}" id="bulkEditForm">
   <input type="hidden" name="status_filter" value="{{ status_filter }}">
   <input type="hidden" name="team_filter" value="{{ team_filter }}">
@@ -80,6 +88,7 @@
         <table class="table table-hover mb-0 employee-table">
           <thead>
             <tr>
+              <th>{{ _('ID') }}</th>
               <th>{{ _('Name') }}</th>
               <th>{{ _('Team') }}</th>
               <th>{{ _('FTE') }}</th>
@@ -96,12 +105,22 @@
             {% for emp in members %}
             <tr>
               <input type="hidden" name="emp_ids" value="{{ emp.id }}">
+              <td>
+                <input type="text" name="employee_number_{{ emp.id }}" class="form-control form-control-sm cell-input plainable plain"
+                       value="{{ emp.employee_number or '' }}" disabled>
+              </td>
               <td class="fw-medium">
                 <a href="{{ url_for('employee_detail', emp_id=emp.id) }}" class="text-decoration-none text-dark">
                   {{ emp.name }}
                 </a>
                 {% if emp.schedule_group %}
                 <i class="bi bi-link-45deg text-muted ms-1" title="{{ _('Scheduled together: %(name)s', name=emp.schedule_group.name) }}"></i>
+                {% endif %}
+                {% if emp.has_variable_schedule %}
+                <i class="bi bi-shuffle text-muted ms-1" title="{{ _('Shift or day-off pattern varies by day of week') }}"></i>
+                {% endif %}
+                {% if emp.data_quality_issues %}
+                <i class="bi bi-exclamation-triangle text-warning ms-1" title="{{ emp.data_quality_issues | join(' · ') }}"></i>
                 {% endif %}
               </td>
               <td>

@@ -2,6 +2,7 @@ from datetime import datetime
 
 import sqlalchemy as sa
 from flask import g
+from flask_babel import gettext as _
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.session import Session as _FSASession
 from flask_sqlalchemy.session import _clause_to_engine
@@ -130,6 +131,7 @@ class Employee(db.Model):
     __tablename__ = 'employee'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    employee_number = db.Column(db.String(30))  # optional external/HR identifier, not unique/required
     team = db.Column(db.String(50))
     fte_percent = db.Column(db.Integer, default=100)   # 5–100 in steps of 5
     fte_mode = db.Column(db.String(20), default='days')  # 'days', 'hours', 'combined'
@@ -173,6 +175,33 @@ class Employee(db.Model):
         if self.schedule_group and self.schedule_group.rotation_pattern_id:
             return self.schedule_group.rotation_pattern
         return None
+
+    @property
+    def data_quality_issues(self):
+        """Translated strings describing why this record is incomplete —
+        only flags conditions that are unambiguous and directly affect
+        scheduling correctness (a missing team makes the employee invisible
+        in team-scoped views; a missing shift template/custom hours means
+        they're silently scheduled against the project default rather than
+        what was actually intended for them). Deliberately does NOT flag
+        softer judgment calls like weekend flags left at their default or
+        empty notes — those are legitimate states, not necessarily oversights."""
+        issues = []
+        if not self.team:
+            issues.append(_('No team assigned'))
+        if not self.shift_template_id and not (self.custom_start and self.custom_end):
+            issues.append(_('No shift template or custom hours set'))
+        return issues
+
+    @property
+    def has_variable_schedule(self):
+        """True if this employee's shift/day-off pattern isn't a single fixed
+        shift every working day — either a rotation pattern (own or inherited
+        from their schedule group) or at least one day-specific restriction
+        (a particular weekday off, or on a different shift than usual)."""
+        if self.effective_rotation_pattern is not None:
+            return True
+        return any(r.is_off or r.shift_type for r in self.day_restrictions)
 
     @property
     def effective_shift_start(self):
