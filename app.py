@@ -707,7 +707,11 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
-        user = IdentityUser.query.filter_by(username=username, is_active=True).first()
+        # Accept either the account's username or its email as the identifier.
+        user = IdentityUser.query.filter(
+            (IdentityUser.username == username) | (IdentityUser.email == username),
+            IdentityUser.is_active,
+        ).first()
         if user and user.check_password(password):
             flask_session['user_id'] = user.id
             flask_session.pop('project', None)  # re-resolve default project on next request
