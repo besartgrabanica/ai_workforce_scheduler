@@ -261,6 +261,10 @@ def _seed_defaults(project_key):
             BusinessParam(key='default_agents_sunday',   value='0',   label='Default agents (Sunday)',  category=cat),
             BusinessParam(key='max_coverage_pct', value='105',
                           label='Max Coverage (% of client target)', category=cat),
+            BusinessParam(key='aht_chat',            value='12',   label='AHT Chat (min)', category=cat),
+            BusinessParam(key='target_service_level', value='0.80', label='Target Service Level (%)', category=cat),
+            BusinessParam(key='target_asa',          value='20',   label='Target ASA (seconds)', category=cat),
+            BusinessParam(key='max_occupancy',       value='0.85', label='Max Agent Occupancy (%)', category=cat),
         ]
         db.session.add_all(params)
 
@@ -391,6 +395,10 @@ def _migrate_schema(project_key):
             ('hours_sunday',          '5.5', 'Std./Tag (Sunday)',       cat),
             ('default_agents_sunday', '0',   'Default agents (Sunday)', cat),
             ('max_coverage_pct',      '105', 'Max Coverage (% of client target)', cat),
+            ('aht_chat',              '12',   'AHT Chat (min)', cat),
+            ('target_service_level',  '0.80', 'Target Service Level (%)', cat),
+            ('target_asa',            '20',   'Target ASA (seconds)', cat),
+            ('max_occupancy',         '0.85', 'Max Agent Occupancy (%)', cat),
         ]
         for key, value, label, category in extra_params:
             if not BusinessParam.query.filter_by(key=key).first():
@@ -1493,6 +1501,8 @@ def forecast_new():
         db.session.flush()
 
         # Business params for Kosovo agent calculation
+        from scheduler.erlang import required_agents as erlang_required_agents
+
         params = {p.key: float(p.value) for p in BusinessParam.query.all()}
         stk = params.get('stk_per_hour', 3.5)
         std_tag = params.get('hours_day', 8.0)
@@ -1500,21 +1510,58 @@ def forecast_new():
         default_wd = int(params.get('default_agents_weekday', 220))
         default_sat = int(params.get('default_agents_saturday', 55))
         default_sun = int(params.get('default_agents_sunday', 0))
+        aht_sync = params.get('aht_sync', 10.0)
+        aht_async = params.get('aht_async', 15.0)
+        aht_chat = params.get('aht_chat', 12.0)
+        target_sl = params.get('target_service_level', 0.80)
+        target_asa_min = params.get('target_asa', 20.0) / 60.0
+        max_occ = params.get('max_occupancy', 0.85)
 
         holidays = get_holidays(start_d.year)
+
+        def _erlang_required_for_day(slots, de_frac):
+            """Peak-interval Erlang C requirement across a day's half-hourly
+            slots, prorating Germany's daily contribution evenly across slots
+            by volume share (no half-hourly breakdown of it exists). Returns
+            None if there's no slot data to work with, so the caller falls
+            back to the simpler daily-aggregate formula — some parsers may
+            not supply half-hourly slots at all."""
+            if not slots:
+                return None
+            peak = 0
+            for vals in slots.values():
+                sync_v = vals.get('sync', 0) * (1 - de_frac)
+                async_v = vals.get('async', 0) * (1 - de_frac)
+                chat_v = vals.get('chat', 0) * (1 - de_frac)
+                slot_total = sync_v + async_v + chat_v
+                if slot_total <= 0:
+                    continue
+                blended_aht = (sync_v * aht_sync + async_v * aht_async + chat_v * aht_chat) / slot_total
+                agents = erlang_required_agents(
+                    transactions=slot_total, aht_minutes=blended_aht, asa_minutes=target_asa_min,
+                    interval_minutes=30, shrinkage=absence, service_level=target_sl, max_occupancy=max_occ,
+                )
+                peak = max(peak, agents)
+            return peak
 
         for row in tfc_rows:
             d = row['date']
             total_contacts = row['total_sync'] + row['total_async'] + row['total_chat']
             de_contrib = de_map.get(d, 0)
             ks_contacts = max(0, total_contacts - de_contrib)
+            de_frac = (de_contrib / total_contacts) if total_contacts else 0.0
 
-            # Required agents: from Forecast Calc file (preferred) or derived
+            # Required agents: from Forecast Calc file (preferred); else Erlang C
+            # sized per half-hourly interval, taking the day's peak (falls back
+            # to the simpler daily-aggregate estimate if a parser doesn't supply
+            # half-hourly slots); else the flat default.
             if d in ks_agents_map:
                 required = ks_agents_map[d]
             elif d.weekday() < 5 and d not in holidays:
-                eff_hours = std_tag * (1 - absence)
-                required = int(round(ks_contacts / (stk * eff_hours))) if ks_contacts else default_wd
+                required = _erlang_required_for_day(row.get('slots'), de_frac)
+                if not required:
+                    eff_hours = std_tag * (1 - absence)
+                    required = int(round(ks_contacts / (stk * eff_hours))) if ks_contacts else default_wd
                 required = required or default_wd
             elif d.weekday() == 5:
                 required = default_sat
