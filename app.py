@@ -1295,10 +1295,10 @@ def inject_globals():
 
 @app.route('/')
 def dashboard():
-    today = date.today()
     recent_schedules = Schedule.query.order_by(Schedule.generated_at.desc()).limit(5).all()
     recent_periods = ForecastPeriod.query.order_by(ForecastPeriod.created_at.desc()).limit(3).all()
     all_periods = ForecastPeriod.query.order_by(ForecastPeriod.start_date.desc()).all()
+    all_schedules = Schedule.query.order_by(Schedule.generated_at.desc()).all()
     employee_count = Employee.query.filter_by(status='active').count()
 
     # Team breakdown with employee lists for expandable view
@@ -1320,6 +1320,7 @@ def dashboard():
                            recent_schedules=recent_schedules,
                            recent_periods=recent_periods,
                            all_periods=all_periods,
+                           all_schedules=all_schedules,
                            employee_count=employee_count,
                            teams_data=teams_data)
 
@@ -1373,6 +1374,138 @@ def dashboard_forecast_trend():
         'color': meta['color'],
         'dark_color': meta['dark_color'],
     })
+
+
+@app.route('/dashboard/coverage-trend')
+def dashboard_coverage_trend():
+    """Required vs. scheduled headcount per day, for a given (already
+    generated) Schedule — recomputed on demand from ShiftAssignment +
+    DailyForecast/BusinessParam rather than persisted, using the exact same
+    required-agents fallback scheduler/algorithm.py's generate_schedule()
+    itself uses (BusinessParam defaults, not output.py's older/stale
+    hardcoded 220/55/0 export-time fallback)."""
+    from scheduler.algorithm import get_holidays
+
+    schedule_id = request.args.get('schedule_id', type=int)
+    if schedule_id:
+        sched = Schedule.query.get(schedule_id)
+    else:
+        sched = Schedule.query.order_by(Schedule.generated_at.desc()).first()
+
+    if not sched:
+        return jsonify({'labels': [], 'required': [], 'scheduled': []})
+
+    _, days_in_month = calendar.monthrange(sched.year, sched.month)
+    all_days = [date(sched.year, sched.month, d) for d in range(1, days_in_month + 1)]
+    holidays = get_holidays(sched.year)
+
+    params = {p.key: p.value for p in BusinessParam.query.all()}
+    default_agents_wd = int(float(params.get('default_agents_weekday', 220)))
+    default_agents_sat = int(float(params.get('default_agents_saturday', 55)))
+    default_agents_sun = int(float(params.get('default_agents_sunday', 0)))
+
+    forecasts = {
+        f.date: f for f in DailyForecast.query.filter(
+            DailyForecast.date >= all_days[0], DailyForecast.date <= all_days[-1],
+        ).all()
+    }
+    scheduled_counts = {}
+    for a in ShiftAssignment.query.filter_by(schedule_id=sched.id, status='work').all():
+        scheduled_counts[a.date] = scheduled_counts.get(a.date, 0) + 1
+
+    labels, required, scheduled = [], [], []
+    for day in all_days:
+        dow = day.weekday()
+        is_saturday, is_sunday = dow == 5, dow == 6
+        is_workday = not is_saturday and not is_sunday and day not in holidays
+
+        fc = forecasts.get(day)
+        if fc and fc.required_ks_agents:
+            req = fc.required_ks_agents
+        elif is_workday:
+            req = default_agents_wd
+        elif is_saturday:
+            req = default_agents_sat
+        elif is_sunday:
+            req = default_agents_sun
+        else:
+            req = 0
+
+        labels.append(day.strftime('%d.%m'))
+        required.append(req)
+        scheduled.append(scheduled_counts.get(day, 0))
+
+    return jsonify({'labels': labels, 'required': required, 'scheduled': scheduled})
+
+
+@app.route('/dashboard/intraday-heatmap')
+def dashboard_intraday_heatmap():
+    """Half-hourly demand (from HalfHourlyForecast) vs. scheduled headcount
+    (derived by expanding each work assignment's shift span across that
+    day's half-hour slots) for a single day."""
+    from scheduler.coverage import intraday_coverage
+
+    day_str = request.args.get('date')
+    if day_str:
+        try:
+            day = datetime.strptime(day_str, '%Y-%m-%d').date()
+        except ValueError:
+            day = None
+    else:
+        day = None
+
+    if day is None:
+        latest = (DailyForecast.query
+                  .filter(DailyForecast.half_hourly.any())
+                  .order_by(DailyForecast.date.desc()).first())
+        day = latest.date if latest else None
+
+    if day is None:
+        return jsonify({'date': None, 'slots': [], 'demand': [], 'scheduled': []})
+
+    slots, demand, scheduled = intraday_coverage(day)
+    return jsonify({'date': day.isoformat(), 'slots': slots, 'demand': demand, 'scheduled': scheduled})
+
+
+@app.route('/dashboard/import-health')
+def dashboard_import_health():
+    """Daily count of ImportLog warning/error entries over the last 30 days —
+    surfaces at a glance whether recent imports have been clean or noisy."""
+    since = date.today() - timedelta(days=30)
+    rows = (ImportLog.query
+            .filter(ImportLog.created_at >= datetime.combine(since, datetime.min.time()))
+            .all())
+
+    by_day = {}
+    for r in rows:
+        d = r.created_at.date()
+        bucket = by_day.setdefault(d, {'warning': 0, 'error': 0})
+        bucket[r.level] = bucket.get(r.level, 0) + 1
+
+    days = [since + timedelta(days=i) for i in range((date.today() - since).days + 1)]
+    labels = [d.strftime('%d.%m') for d in days]
+    warnings = [by_day.get(d, {}).get('warning', 0) for d in days]
+    errors = [by_day.get(d, {}).get('error', 0) for d in days]
+
+    return jsonify({'labels': labels, 'warnings': warnings, 'errors': errors})
+
+
+@app.route('/dashboard/fairness/<int:schedule_id>')
+def dashboard_fairness(schedule_id):
+    """Assigned vs. target total days for every employee on this schedule —
+    only populated for schedules generated after EmployeeScheduleSummary was
+    introduced (generate_schedule() writes these rows itself; the target
+    math depends on the scheduler's own FTE/eligibility logic and isn't
+    safely re-derivable after the fact for older schedules)."""
+    rows = (EmployeeScheduleSummary.query
+            .filter_by(schedule_id=schedule_id)
+            .join(Employee).order_by(Employee.name).all())
+
+    names = [r.employee.name for r in rows]
+    target = [r.target_wd + r.target_sat + r.target_sun for r in rows]
+    actual = [r.assigned_wd + r.assigned_sat + r.assigned_sun for r in rows]
+
+    return jsonify({'names': names, 'target': target, 'actual': actual})
 
 
 # ────────────────────────────────────────────────────────────────────────────

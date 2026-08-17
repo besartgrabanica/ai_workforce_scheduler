@@ -83,6 +83,79 @@
   </div>
 </div>
 
+<!-- ── Coverage vs. cap ────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span><i class="bi bi-bar-chart-steps me-2 text-primary"></i>{{ _('Coverage vs. Cap') }}</span>
+    {% if all_schedules %}
+    <select id="coverageSchedule" class="form-select form-select-sm" style="width:auto">
+      {% for s in all_schedules %}
+      <option value="{{ s.id }}">{{ s.name }} — {{ _(month_names[s.month]) }} {{ s.year }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {% if all_schedules %}
+    <canvas id="coverageChart" height="85"></canvas>
+    {% else %}
+    <div class="text-center text-muted py-5">
+      {{ _('No schedules yet.') }}
+      <a href="{{ url_for('schedule_list') }}">{{ _('Generate a schedule') }}</a> {{ _('to see coverage here.') }}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ── Intraday heatmap ────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span><i class="bi bi-clock-history me-2 text-primary"></i>{{ _('Intraday Coverage') }}</span>
+    <input type="date" id="intradayDate" class="form-control form-control-sm" style="width:auto">
+  </div>
+  <div class="card-body">
+    <canvas id="intradayChart" height="70"></canvas>
+    <div id="intradayEmpty" class="text-center text-muted py-5 d-none">
+      {{ _('No half-hourly forecast data for this date.') }}
+    </div>
+  </div>
+</div>
+
+<!-- ── Import health ───────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="bi bi-heart-pulse me-2 text-primary"></i>{{ _('Import Health') }}
+    <span class="text-muted small ms-1">{{ _('last 30 days') }}</span>
+  </div>
+  <div class="card-body">
+    <canvas id="importHealthChart" height="40"></canvas>
+  </div>
+</div>
+
+<!-- ── Fairness ────────────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span><i class="bi bi-people me-2 text-primary"></i>{{ _('Fairness — Assigned vs. Target') }}</span>
+    {% if all_schedules %}
+    <select id="fairnessSchedule" class="form-select form-select-sm" style="width:auto">
+      {% for s in all_schedules %}
+      <option value="{{ s.id }}">{{ s.name }} — {{ _(month_names[s.month]) }} {{ s.year }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {% if all_schedules %}
+    <canvas id="fairnessChart"></canvas>
+    <div id="fairnessEmpty" class="text-center text-muted py-5 d-none">
+      {{ _('No fairness data for this schedule yet — this chart only covers schedules generated after this feature shipped. Regenerate this schedule to populate it.') }}
+    </div>
+    {% else %}
+    <div class="text-center text-muted py-5">{{ _('No schedules yet.') }}</div>
+    {% endif %}
+  </div>
+</div>
+
 <div class="row g-4">
   <!-- ── Team breakdown ─────────────────────────────────────────────────── -->
   <div class="col-lg-4">
@@ -286,6 +359,240 @@
 
   variableSelect.addEventListener('change', fetchAndRender);
   periodSelect.addEventListener('change', fetchAndRender);
+  fetchAndRender();
+})();
+</script>
+{% endif %}
+
+{% if all_schedules %}
+<script>
+(function () {
+  const isDark = ['dark', 'navy-canvas'].includes(document.documentElement.getAttribute('data-theme'));
+  const canvas = document.getElementById('coverageChart');
+  const ctx = canvas.getContext('2d');
+  const scheduleSelect = document.getElementById('coverageSchedule');
+  const gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
+  let chart = null;
+
+  function render(data) {
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            label: {{ _('Required') | tojson }},
+            data: data.required,
+            borderColor: '#e34948',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderDash: [4, 3],
+            pointRadius: 0,
+            tension: 0.2,
+          },
+          {
+            label: {{ _('Scheduled') | tojson }},
+            data: data.scheduled,
+            borderColor: '#1baf7a',
+            backgroundColor: '#1baf7a22',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+            tension: 0.2,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: { padding: 10, bodyFont: { size: 12 } },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true } },
+          y: { grid: { color: gridColor }, ticks: { font: { size: 10 } }, beginAtZero: true },
+        },
+      },
+    });
+  }
+
+  function fetchAndRender() {
+    const params = new URLSearchParams({ schedule_id: scheduleSelect.value });
+    fetch(`{{ url_for('dashboard_coverage_trend') }}?${params}`)
+      .then(r => r.json())
+      .then(render);
+  }
+
+  scheduleSelect.addEventListener('change', fetchAndRender);
+  fetchAndRender();
+})();
+</script>
+{% endif %}
+
+<script>
+(function () {
+  const isDark = ['dark', 'navy-canvas'].includes(document.documentElement.getAttribute('data-theme'));
+  const canvas = document.getElementById('intradayChart');
+  const ctx = canvas.getContext('2d');
+  const dateInput = document.getElementById('intradayDate');
+  const emptyState = document.getElementById('intradayEmpty');
+  const gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
+  let chart = null;
+
+  function render(data) {
+    const hasData = data.slots.length > 0;
+    canvas.classList.toggle('d-none', !hasData);
+    emptyState.classList.toggle('d-none', hasData);
+    if (!hasData) {
+      if (chart) { chart.destroy(); chart = null; }
+      return;
+    }
+    if (data.date) dateInput.value = data.date;
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.slots,
+        datasets: [
+          {
+            label: {{ _('Demand (contacts)') | tojson }},
+            data: data.demand,
+            type: 'line',
+            borderColor: '#eda100',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.3,
+            yAxisID: 'y',
+          },
+          {
+            label: {{ _('Scheduled agents') | tojson }},
+            data: data.scheduled,
+            backgroundColor: '#2a78d688',
+            borderRadius: 3,
+            yAxisID: 'y1',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: { padding: 10, bodyFont: { size: 12 } },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0, autoSkip: true } },
+          y: { position: 'left', grid: { color: gridColor }, ticks: { font: { size: 10 } }, beginAtZero: true },
+          y1: { position: 'right', grid: { display: false }, ticks: { font: { size: 10 } }, beginAtZero: true },
+        },
+      },
+    });
+  }
+
+  function fetchAndRender() {
+    const params = new URLSearchParams();
+    if (dateInput.value) params.set('date', dateInput.value);
+    fetch(`{{ url_for('dashboard_intraday_heatmap') }}?${params}`)
+      .then(r => r.json())
+      .then(render);
+  }
+
+  dateInput.addEventListener('change', fetchAndRender);
+  fetchAndRender();
+})();
+</script>
+
+<script>
+(function () {
+  const isDark = ['dark', 'navy-canvas'].includes(document.documentElement.getAttribute('data-theme'));
+  const canvas = document.getElementById('importHealthChart');
+  const ctx = canvas.getContext('2d');
+
+  fetch('{{ url_for("dashboard_import_health") }}')
+    .then(r => r.json())
+    .then(data => {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [
+            { label: {{ _('Warnings') | tojson }}, data: data.warnings, backgroundColor: '#eda100', stack: 's' },
+            { label: {{ _('Errors') | tojson }}, data: data.errors, backgroundColor: '#e34948', stack: 's' },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+            tooltip: { padding: 8, bodyFont: { size: 11 } },
+          },
+          scales: {
+            x: { display: false, stacked: true },
+            y: { display: false, stacked: true, beginAtZero: true },
+          },
+        },
+      });
+    });
+})();
+</script>
+
+{% if all_schedules %}
+<script>
+(function () {
+  const isDark = ['dark', 'navy-canvas'].includes(document.documentElement.getAttribute('data-theme'));
+  const canvas = document.getElementById('fairnessChart');
+  const ctx = canvas.getContext('2d');
+  const scheduleSelect = document.getElementById('fairnessSchedule');
+  const emptyState = document.getElementById('fairnessEmpty');
+  const gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
+  let chart = null;
+
+  function render(data) {
+    const hasData = data.names.length > 0;
+    canvas.classList.toggle('d-none', !hasData);
+    emptyState.classList.toggle('d-none', hasData);
+    if (!hasData) {
+      if (chart) { chart.destroy(); chart = null; }
+      return;
+    }
+    canvas.height = Math.max(80, data.names.length * 24);
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.names,
+        datasets: [
+          { label: {{ _('Target') | tojson }}, data: data.target, backgroundColor: '#94a3b866' },
+          { label: {{ _('Assigned') | tojson }}, data: data.actual, backgroundColor: '#2a78d6' },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: { padding: 8, bodyFont: { size: 11 } },
+        },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { font: { size: 10 } }, beginAtZero: true },
+          y: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        },
+      },
+    });
+  }
+
+  function fetchAndRender() {
+    fetch(`/dashboard/fairness/${scheduleSelect.value}`)
+      .then(r => r.json())
+      .then(render);
+  }
+
+  scheduleSelect.addEventListener('change', fetchAndRender);
   fetchAndRender();
 })();
 </script>
