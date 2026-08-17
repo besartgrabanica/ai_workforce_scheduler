@@ -292,19 +292,21 @@
 {% block scripts %}
 <script>
 const modeDescs = {
-  days:     {{ _('Works <strong>N%% of eligible days</strong> each month, with a full shift on each working day.') | tojson }},
-  hours:    {{ _('Works <strong>every eligible day</strong> but only N%% of standard daily hours (shorter shifts).') | tojson }},
+  days:     {{ _('Works <strong>%(pct)s%% of eligible days</strong> each month, with a full shift on each working day.', pct='{pct}') | tojson }},
+  hours:    {{ _('Works <strong>every eligible day</strong> but only <strong>%(pct)s%%</strong> of standard daily hours (shorter shifts).', pct='{pct}') | tojson }},
   combined: {{ _('Reduces <strong>both</strong> working days and shift length proportionally (√FTE%% each).') | tojson }},
 };
 
-document.querySelectorAll('[name=fte_mode]').forEach(r => {
-  r.addEventListener('change', () => {
-    document.getElementById('mode_desc').innerHTML = modeDescs[r.value] || '';
-  });
-});
-// Trigger on load
-const checked = document.querySelector('[name=fte_mode]:checked');
-if (checked) document.getElementById('mode_desc').innerHTML = modeDescs[checked.value] || '';
+function renderModeDesc() {
+  const checked = document.querySelector('[name=fte_mode]:checked');
+  const pct = document.getElementById('fte_percent').value;
+  const template = checked ? (modeDescs[checked.value] || '') : '';
+  document.getElementById('mode_desc').innerHTML = template.replace('{pct}', pct);
+}
+
+document.querySelectorAll('[name=fte_mode]').forEach(r => r.addEventListener('change', renderModeDesc));
+document.getElementById('fte_percent').addEventListener('change', renderModeDesc);
+renderModeDesc();
 
 function toggleCustomShift() {
   const isCustom = document.getElementById('shift_template').value === '';
