@@ -3,12 +3,11 @@ Plain-text extraction for uploaded Documents, so the AI assistant can read
 their content on demand (via a tool call) instead of the app needing to
 guess ahead of time which document might be relevant to a question.
 
-Supported: .xlsx/.xls, .csv, .txt, .docx
-Unsupported types (PDF, images, ...) are skipped gracefully — the file is
+Supported: .xlsx/.xls, .csv, .txt, .docx, .pdf
+Unsupported types (images, ...) are skipped gracefully — the file is
 still stored and downloadable, it just isn't readable by the assistant.
 """
 import csv
-import io
 
 import openpyxl
 
@@ -55,6 +54,13 @@ def _extract_docx(filepath: str) -> str:
     return '\n'.join(parts)
 
 
+def _extract_pdf(filepath: str) -> str:
+    import pypdf
+    reader = pypdf.PdfReader(filepath)
+    parts = [page.extract_text() or '' for page in reader.pages]
+    return '\n'.join(parts)
+
+
 _EXTRACTORS = {
     'xlsx': _extract_xlsx,
     'xlsm': _extract_xlsx,
@@ -62,6 +68,7 @@ _EXTRACTORS = {
     'csv': _extract_csv,
     'txt': _extract_txt,
     'docx': _extract_docx,
+    'pdf': _extract_pdf,
 }
 
 
