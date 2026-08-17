@@ -388,8 +388,15 @@ class ImportLog(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     source     = db.Column(db.String(50))    # 'tfc_forecast' | 'abnahme_de' | 'forecast_calc' | 'employee_spec'
     filename   = db.Column(db.String(200))
-    level      = db.Column(db.String(10), default='warning')  # 'warning' | 'error'
+    level      = db.Column(db.String(10), default='warning')  # 'info' | 'warning' | 'error'
     message    = db.Column(db.Text, nullable=False)
+    # Which tier of the 3-tier import resolution (see
+    # docs/specs/2026-08-import-mapping-detection.md) produced this entry's
+    # result: 'deterministic' | 'cached' | 'ai_confirmed' | 'manual'. Only
+    # set for the two ImportMapping-covered file types (tfc_forecast,
+    # abnahme_de) — NULL for sources that predate/aren't part of that
+    # resolution (forecast_calc, employee_spec).
+    tier       = db.Column(db.String(20))
 
 
 class ImportMapping(db.Model):

@@ -63,7 +63,7 @@ def _parse_date_cell(val):
     return None
 
 
-def parse_tfc_file(filepath):
+def parse_tfc_file(filepath, mapping=None):
     """
     Returns (results, warnings).
     results is a list of dicts, one per calendar day:
@@ -79,6 +79,13 @@ def parse_tfc_file(filepath):
     warnings is a list of human-readable strings describing any expected
     structure (sheet name, header row) that wasn't found — signals the source
     file's format may have changed since this parser was written.
+
+    mapping, if given, is a Tier 2 confirmed ImportMapping's mapping_data
+    (see scheduler/import_mapping.py) — {'gesamt_col': int}, the 0-based
+    column where the 'Gesamt' section starts. When present, the row-7 header
+    search below is skipped entirely and this position is trusted directly
+    (a human already confirmed it for this exact file layout), so it never
+    produces the fallback warning.
     """
     warnings = []
     wb = openpyxl.load_workbook(filepath, data_only=True, read_only=True)
@@ -89,15 +96,18 @@ def parse_tfc_file(filepath):
         )
     ws = wb['KiKxxl']
 
-    gesamt_col = _find_section_col(ws, 'Gesamt')
-    if gesamt_col is None:
-        # Fallback: hard-coded 0-indexed position from our file analysis
-        gesamt_col = 336
-        warnings.append(
-            "Expected a 'Gesamt' (total) header in row 7 was not found — fell back to a "
-            "hardcoded column position. Please double-check the imported totals are correct; "
-            "the file's column layout may have changed."
-        )
+    if mapping and mapping.get('gesamt_col') is not None:
+        gesamt_col = mapping['gesamt_col']
+    else:
+        gesamt_col = _find_section_col(ws, 'Gesamt')
+        if gesamt_col is None:
+            # Fallback: hard-coded 0-indexed position from our file analysis
+            gesamt_col = 336
+            warnings.append(
+                "Expected a 'Gesamt' (total) header in row 7 was not found — fell back to a "
+                "hardcoded column position. Please double-check the imported totals are correct; "
+                "the file's column layout may have changed."
+            )
 
     results = []
     for row in ws.iter_rows(min_row=9, values_only=True):
@@ -146,42 +156,53 @@ def parse_tfc_file(filepath):
 
 # ── Abnahmemenge DE (German offices) ────────────────────────────────────────
 
-def parse_abnahme_de_file(filepath):
+def parse_abnahme_de_file(filepath, mapping=None):
     """
     Returns (result, warnings). result is a dict date → germany_daily_contribution
     (Abnahme DE netto). warnings flags if the expected 'Datum' header wasn't found,
     which means the file's format may have changed.
+
+    mapping, if given, is a Tier 2 confirmed ImportMapping's mapping_data —
+    {'date_col': int, 'value_col': int}, 0-based columns. When present, the
+    'Datum' header search below is skipped entirely and these positions are
+    trusted directly (a human already confirmed them for this exact file
+    layout), so it never produces the "header not found" warning.
     """
     warnings = []
     wb = openpyxl.load_workbook(filepath, data_only=True, read_only=True)
     ws = wb.active
 
-    # Find header row (contains 'Datum')
-    header_row = None
-    abnahme_de_col = None
-    for r in ws.iter_rows(values_only=True):
-        for i, v in enumerate(r):
-            if str(v).strip() == 'Datum':
-                header_row = r
-                # 'Abnahme DE netto' is the last non-None column in header
-                for j in range(len(r) - 1, i, -1):
-                    if r[j] is not None:
-                        abnahme_de_col = j
-                        break
+    if mapping and mapping.get('date_col') is not None and mapping.get('value_col') is not None:
+        date_col = mapping['date_col']
+        abnahme_de_col = mapping['value_col']
+    else:
+        date_col = 1
+        # Find header row (contains 'Datum')
+        header_row = None
+        abnahme_de_col = None
+        for r in ws.iter_rows(values_only=True):
+            for i, v in enumerate(r):
+                if str(v).strip() == 'Datum':
+                    header_row = r
+                    # 'Abnahme DE netto' is the last non-None column in header
+                    for j in range(len(r) - 1, i, -1):
+                        if r[j] is not None:
+                            abnahme_de_col = j
+                            break
+                    break
+            if header_row is not None:
                 break
-        if header_row is not None:
-            break
 
-    if abnahme_de_col is None:
-        warnings.append(
-            "Expected a 'Datum' header was not found in this file — no daily contribution "
-            "data was extracted. The file's format may have changed."
-        )
-        return {}, warnings
+        if abnahme_de_col is None:
+            warnings.append(
+                "Expected a 'Datum' header was not found in this file — no daily contribution "
+                "data was extracted. The file's format may have changed."
+            )
+            return {}, warnings
 
     result = {}
     for row in ws.iter_rows(values_only=True):
-        d = _parse_date_cell(row[1]) if len(row) > 1 else None
+        d = _parse_date_cell(row[date_col]) if len(row) > date_col else None
         if d is None:
             continue
         val = row[abnahme_de_col] if abnahme_de_col < len(row) else None

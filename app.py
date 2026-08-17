@@ -375,6 +375,10 @@ def _migrate_schema(project_key):
         if 'extraction_error' not in doc_cols:
             conn.execute(text("ALTER TABLE document ADD COLUMN extraction_error VARCHAR(200)"))
 
+        il_cols = existing_columns('import_log')
+        if 'tier' not in il_cols:
+            conn.execute(text("ALTER TABLE import_log ADD COLUMN tier VARCHAR(20)"))
+
         conn.commit()
 
     # New BusinessParam keys may need adding to a DB that was already seeded
@@ -1375,6 +1379,26 @@ def _log_import_warnings(source, filename, warnings):
     return ' '.join(warnings)
 
 
+def _log_import_result(source, filename, warnings, tier):
+    """Like _log_import_warnings, but for the two file types the 3-tier
+    import resolution covers (tfc_forecast, abnahme_de — see
+    scheduler/import_mapping.py): always records which tier resolved the
+    import, even when there's nothing wrong to warn about, per
+    docs/specs/2026-08-import-mapping-detection.md acceptance criterion 6.
+    Returns a flash-ready warning string, or None if there was nothing to
+    flag to the user."""
+    if warnings:
+        for w in warnings:
+            db.session.add(ImportLog(source=source, filename=filename, level='warning', message=w, tier=tier))
+    else:
+        db.session.add(ImportLog(
+            source=source, filename=filename, level='info',
+            message=f"Resolved via {tier} mapping.", tier=tier,
+        ))
+    db.session.commit()
+    return ' '.join(warnings) if warnings else None
+
+
 # ────────────────────────────────────────────────────────────────────────────
 # Forecast
 # ────────────────────────────────────────────────────────────────────────────
@@ -1421,18 +1445,19 @@ def forecast_new():
             return redirect(url_for('forecast_new'))
 
         from scheduler.algorithm import get_holidays
+        from scheduler.import_mapping import resolve_import
 
         parse_abnahme_de_file = getattr(parser_mod, 'parse_abnahme_de_file', None)
         parse_forecast_calculation_file = getattr(parser_mod, 'parse_forecast_calculation_file', None)
 
         try:
-            tfc_rows, tfc_warnings = parser_mod.parse_tfc_file(tfc_path)
+            tfc_rows, tfc_warnings, tfc_tier = resolve_import('tfc_forecast', tfc_path, parser_mod.parse_tfc_file)
             if abnahme_path and parse_abnahme_de_file:
-                de_map, de_warnings = parse_abnahme_de_file(abnahme_path)
+                de_map, de_warnings, de_tier = resolve_import('abnahme_de', abnahme_path, parse_abnahme_de_file)
             elif abnahme_path:
-                de_map, de_warnings = {}, [_("This project's parser doesn't support an Abnahme DE file — it was ignored.")]
+                de_map, de_warnings, de_tier = {}, [_("This project's parser doesn't support an Abnahme DE file — it was ignored.")], 'deterministic'
             else:
-                de_map, de_warnings = {}, []
+                de_map, de_warnings, de_tier = {}, [], 'deterministic'
             if fc_path and parse_forecast_calculation_file:
                 ks_agents_map, fc_warnings = parse_forecast_calculation_file(fc_path)
             elif fc_path:
@@ -1447,11 +1472,11 @@ def forecast_new():
             flash(_('No data found in Client Forecast file.'), 'danger')
             return redirect(url_for('forecast_new'))
 
-        combined_warning = _log_import_warnings(
-            'tfc_forecast', tfc_file.filename, tfc_warnings
+        combined_warning = _log_import_result(
+            'tfc_forecast', tfc_file.filename, tfc_warnings, tfc_tier
         )
         if abnahme_path:
-            w = _log_import_warnings('abnahme_de', abnahme_file.filename, de_warnings)
+            w = _log_import_result('abnahme_de', abnahme_file.filename, de_warnings, de_tier)
             combined_warning = f'{combined_warning} {w}' if combined_warning and w else (combined_warning or w)
         if fc_path:
             w = _log_import_warnings('forecast_calc', fc_calc_file.filename, fc_warnings)
