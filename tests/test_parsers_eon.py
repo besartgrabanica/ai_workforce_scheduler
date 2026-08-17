@@ -94,6 +94,28 @@ def test_tfc_raises_when_sheet_missing(tmp_path):
         parse_tfc_file(_save(wb, tmp_path))
 
 
+def test_tfc_warns_when_given_mapping_column_has_no_volume(tmp_path):
+    """A wrong-but-plausible gesamt_col (still finds date rows, just at an
+    empty column) must not silently validate as clean — this is what
+    scheduler.import_mapping.save_confirmed_mapping relies on to refuse a
+    fat-fingered manual entry. Only checked when mapping is given; Tier 1
+    (mapping=None) never hits this, so it can't affect the unmodified-file
+    behavior covered by the tests above."""
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'KiKxxl'
+    _set(ws, 9, 0, 'Juni')
+    _set(ws, 9, 1, 23)
+    _set(ws, 9, 2, 'Mo')
+    _set(ws, 9, 3, date(2026, 6, 1))
+    # Deliberately nothing at column 50 — the mapping under test.
+
+    results, warnings = parse_tfc_file(_save(wb, tmp_path), mapping={'gesamt_col': 50})
+
+    assert len(results) == 1
+    assert any('produced no volume' in w for w in warnings)
+
+
 # ── parse_abnahme_de_file ────────────────────────────────────────────────────
 
 def test_abnahme_de_reads_last_column_after_datum_header(tmp_path):
@@ -121,6 +143,23 @@ def test_abnahme_de_warns_when_datum_header_missing(tmp_path):
 
     assert result == {}
     assert any('Datum' in w for w in warnings)
+
+
+def test_abnahme_de_warns_when_given_mapping_columns_produce_no_data(tmp_path):
+    """Mirrors the tfc_forecast 'no volume' check: a wrong-but-plausible
+    date_col/value_col (no exception, just nothing there) must not silently
+    validate as clean. Only checked when mapping is given."""
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    _set(ws, 1, 0, 'unrelated header')
+    _set(ws, 2, 1, date(2026, 6, 1))
+    _set(ws, 2, 4, 250.75)
+    # date_col/value_col point at columns with nothing in them.
+
+    result, warnings = parse_abnahme_de_file(_save(wb, tmp_path), mapping={'date_col': 9, 'value_col': 10})
+
+    assert result == {}
+    assert any('produced no data' in w for w in warnings)
 
 
 # ── parse_forecast_calculation_file ─────────────────────────────────────────

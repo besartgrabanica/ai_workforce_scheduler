@@ -19,10 +19,12 @@ import openpyxl
 
 from app import db
 from scheduler.import_mapping import (
+    InvalidMapping,
     build_layout_snapshot,
     compute_layout_fingerprint,
     resolve_cached_mapping,
     resolve_import,
+    save_confirmed_mapping,
 )
 from scheduler.models import ImportMapping
 from scheduler.parsers.eon import parse_abnahme_de_file, parse_tfc_file
@@ -259,3 +261,83 @@ def test_parse_abnahme_de_file_with_mapping_skips_header_search(tmp_path):
 
     assert warnings == []
     assert result == {date(2026, 6, 1): 300.0}
+
+
+# ── save_confirmed_mapping ───────────────────────────────────────────────────
+
+def test_save_confirmed_mapping_creates_a_new_row(ctx, tmp_path):
+    path = _save(_tfc_workbook_without_gesamt(), tmp_path)
+    wb = openpyxl.load_workbook(path)
+    _set(wb['KiKxxl'], 9, 12, 88.0)
+    wb.save(path)
+
+    row = save_confirmed_mapping(
+        file_type='tfc_forecast', filepath=path, mapping={'gesamt_col': 12},
+        parse_fn=parse_tfc_file, resolution_source='manual', confirmed_by='besart',
+    )
+
+    assert row.id is not None
+    assert row.file_type == 'tfc_forecast'
+    assert row.layout_fingerprint == compute_layout_fingerprint(path)
+    assert json.loads(row.mapping_data) == {'gesamt_col': 12}
+    assert row.resolution_source == 'manual'
+    assert row.confirmed_by == 'besart'
+    assert row.confidence is None
+    assert ImportMapping.query.count() == 1
+
+
+def test_save_confirmed_mapping_stores_ai_confirmed_provenance(ctx, tmp_path):
+    path = _save(_tfc_workbook_without_gesamt(), tmp_path)
+    wb = openpyxl.load_workbook(path)
+    _set(wb['KiKxxl'], 9, 12, 88.0)
+    wb.save(path)
+
+    row = save_confirmed_mapping(
+        file_type='tfc_forecast', filepath=path, mapping={'gesamt_col': 12},
+        parse_fn=parse_tfc_file, resolution_source='ai_confirmed', confirmed_by='besart',
+        confidence=0.87, rationale='label moved right',
+    )
+
+    assert row.resolution_source == 'ai_confirmed'
+    assert row.confidence == 0.87
+    assert row.rationale == 'label moved right'
+
+
+def test_save_confirmed_mapping_upserts_same_file_type_and_fingerprint(ctx, tmp_path):
+    path = _save(_tfc_workbook_without_gesamt(), tmp_path)
+    wb = openpyxl.load_workbook(path)
+    _set(wb['KiKxxl'], 9, 12, 88.0)
+    wb.save(path)
+
+    first = save_confirmed_mapping(
+        file_type='tfc_forecast', filepath=path, mapping={'gesamt_col': 12},
+        parse_fn=parse_tfc_file, resolution_source='manual', confirmed_by='besart',
+    )
+    second = save_confirmed_mapping(
+        file_type='tfc_forecast', filepath=path, mapping={'gesamt_col': 12},
+        parse_fn=parse_tfc_file, resolution_source='manual', confirmed_by='someone-else',
+    )
+
+    assert first.id == second.id
+    assert ImportMapping.query.count() == 1
+    assert ImportMapping.query.first().confirmed_by == 'someone-else'
+
+
+def test_save_confirmed_mapping_rejects_a_mapping_that_still_warns(ctx, tmp_path):
+    # No Monat/date columns at all — parse_tfc_file warns "No daily rows could
+    # be read" regardless of what gesamt_col is given, since row detection
+    # itself (not the mapping) is what fails here.
+    wb = openpyxl.Workbook()
+    wb.active.title = 'KiKxxl'
+    path = _save(wb, tmp_path)
+
+    try:
+        save_confirmed_mapping(
+            file_type='tfc_forecast', filepath=path, mapping={'gesamt_col': 30},
+            parse_fn=parse_tfc_file, resolution_source='manual', confirmed_by='besart',
+        )
+        assert False, 'expected InvalidMapping'
+    except InvalidMapping:
+        pass
+
+    assert ImportMapping.query.count() == 0

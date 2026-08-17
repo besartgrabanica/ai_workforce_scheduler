@@ -150,6 +150,18 @@ def parse_tfc_file(filepath, mapping=None):
             "No daily rows could be read starting at row 9 — the date column may have moved. "
             "The file's row/column layout may have changed."
         )
+    elif mapping is not None and all(
+        r['total_sync'] == 0 and r['total_async'] == 0 and r['total_chat'] == 0 for r in results
+    ):
+        # Only checked when a mapping was explicitly given (Tier 2/manual
+        # validation, never Tier 1 — acceptance criterion 1 keeps Tier 1's
+        # own behavior unchanged). An explicit gesamt_col that resolves zero
+        # volume on every single day almost certainly points at the wrong
+        # column rather than a genuinely quiet file.
+        warnings.append(
+            "The given Gesamt column produced no volume on any day — double-check the "
+            "column position."
+        )
 
     return results, warnings
 
@@ -211,6 +223,16 @@ def parse_abnahme_de_file(filepath, mapping=None):
                 result[d] = float(val)
             except (TypeError, ValueError):
                 pass
+
+    if mapping is not None and not result:
+        # Only checked when a mapping was explicitly given (Tier 2/manual
+        # validation, never Tier 1 — acceptance criterion 1 keeps Tier 1's
+        # own behavior unchanged): dates were found (or this file has none
+        # at all) but not a single date/value pair resolved — the given
+        # columns almost certainly point at the wrong positions.
+        warnings.append(
+            "The given date/value columns produced no data — double-check the column positions."
+        )
 
     return result, warnings
 

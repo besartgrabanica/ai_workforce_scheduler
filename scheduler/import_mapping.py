@@ -1,12 +1,12 @@
 """
-Tier 2 of the 3-tier import resolution
-(docs/specs/2026-08-import-mapping-detection.md): applies a previously
-confirmed ImportMapping when Tier 1 (the existing deterministic parser in
-scheduler/parsers/<project>.py) reports a layout warning, before falling
-back to Tier 1's own existing behavior. Tier 3 (AI-assisted proposal) and
-the confirm/edit UI that creates ImportMapping rows are later slices — this
-module only wires the lookup, so until that UI exists the cache is always
-empty and every import resolves via Tier 1 exactly as it did before.
+The 3-tier import resolution (docs/specs/2026-08-import-mapping-detection.md):
+Tier 1 (the existing deterministic parser in scheduler/parsers/<project>.py,
+untouched), Tier 2 (a previously confirmed ImportMapping applied directly —
+resolve_cached_mapping/resolve_import below), and Tier 3 (an AI-proposed
+mapping via scheduler.ai_import_mapping, never auto-applied). This module
+also owns save_confirmed_mapping(), the only way an ImportMapping row gets
+created or updated — used by app.py's admin-gated /import-mappings route to
+confirm an AI proposal (edited or as-is) or to save a fully manual mapping.
 """
 import hashlib
 import json
@@ -15,7 +15,7 @@ from datetime import date, datetime
 import openpyxl
 
 from scheduler.ai_import_mapping import propose_mapping
-from scheduler.models import ImportMapping
+from scheduler.models import ImportMapping, db
 
 
 def compute_layout_fingerprint(filepath):
@@ -126,3 +126,52 @@ def resolve_import(file_type, filepath, parse_fn):
     if proposal is None:
         return result, warnings, 'deterministic', None
     return result, warnings, 'ai_proposed', proposal
+
+
+class InvalidMapping(ValueError):
+    """Raised by save_confirmed_mapping when the submitted mapping doesn't
+    resolve filepath cleanly — the message is user-facing (flashed as-is)."""
+
+
+def save_confirmed_mapping(file_type, filepath, mapping, parse_fn,
+                            resolution_source, confirmed_by,
+                            confidence=None, rationale=None):
+    """The only way an ImportMapping row is created or updated. Never trusts
+    the caller: re-parses filepath with `mapping` applied and only persists
+    anything if that produces zero warnings (mirrors the same distrust
+    resolve_import applies to a stale Tier 2 hit) — an admin can still
+    submit a wrong mapping, but this refuses to silently save one that
+    provably doesn't work against the very file they uploaded to prove it.
+
+    resolution_source is 'manual' or 'ai_confirmed' (confirming — with or
+    without edits — a Tier 3 proposal); confirmed_by is the admin's
+    username (no FK — see ImportMapping's own docstring on why project-
+    scoped models never reference the identity DB directly).
+
+    Upserts keyed on (file_type, this file's layout_fingerprint) — a second
+    confirm for the exact same layout updates the existing row rather than
+    creating a duplicate; a different fingerprint (reformatted again, or a
+    genuinely different file) always creates its own row.
+
+    Raises InvalidMapping (message is safe to flash to the user) instead of
+    saving when the mapping doesn't resolve cleanly."""
+    _, warnings = parse_fn(filepath, mapping=mapping)
+    if warnings:
+        raise InvalidMapping(
+            "This mapping doesn't produce a clean parse of the uploaded file: "
+            + ' '.join(warnings)
+        )
+
+    fingerprint = compute_layout_fingerprint(filepath)
+    row = ImportMapping.query.filter_by(file_type=file_type, layout_fingerprint=fingerprint).first()
+    if row is None:
+        row = ImportMapping(file_type=file_type, layout_fingerprint=fingerprint)
+        db.session.add(row)
+
+    row.mapping_data = json.dumps(mapping)
+    row.resolution_source = resolution_source
+    row.confidence = confidence
+    row.rationale = rationale
+    row.confirmed_by = confirmed_by
+    db.session.commit()
+    return row

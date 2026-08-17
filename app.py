@@ -38,6 +38,7 @@ from scheduler.models import (  # noqa: E402
     HalfHourlyForecast,
     IdentityUser,
     ImportLog,
+    ImportMapping,
     Invitation,
     PasswordReset,
     ProjectMeta,
@@ -1938,6 +1939,107 @@ def forecast_new():
         return redirect(url_for('forecast_detail', period_id=period.id))
 
     return render_template('forecast_new.html')
+
+
+_MAPPING_FIELDS = {
+    'tfc_forecast': ('gesamt_col',),
+    'abnahme_de': ('date_col', 'value_col'),
+}
+
+
+@app.route('/import-mappings', methods=['GET', 'POST'])
+@require_role('admin')
+def import_mappings():
+    """Confirm/edit a Tier 2 ImportMapping (docs/specs/2026-08-import-mapping-detection.md).
+    One form serves both paths the spec treats as the same action:
+    confirming (optionally edited) an AI-proposed mapping, or entering one
+    fully manually — see scheduler.import_mapping.save_confirmed_mapping,
+    the only place a row actually gets written.
+
+    Plain-HTML-form constraint: a browser won't resubmit a chosen file
+    across two page loads, so getting an AI suggestion and saving it are
+    two separate uploads of the same file. The suggested values (plus their
+    confidence/rationale, carried via hidden fields) come back pre-filled
+    on the review page so the second upload is just "pick the file again,
+    click Save"."""
+    from scheduler.ai_import_mapping import propose_mapping
+    from scheduler.import_mapping import InvalidMapping, build_layout_snapshot, save_confirmed_mapping
+    from scheduler.parsers import get_parser_module
+
+    suggestion = None
+    if request.method == 'POST':
+        file_type = request.form.get('file_type')
+        upload = request.files.get('mapping_file')
+        parser_mod = get_parser_module(g.active_project)
+        fn_name = 'parse_tfc_file' if file_type == 'tfc_forecast' else 'parse_abnahme_de_file'
+        parse_fn = getattr(parser_mod, fn_name, None) if parser_mod else None
+
+        if file_type not in _MAPPING_FIELDS:
+            flash(_('Choose which file type this mapping is for.'), 'danger')
+        elif not upload or not upload.filename:
+            flash(_('Please choose a file to upload.'), 'danger')
+        elif parse_fn is None:
+            flash(_("This project's parser doesn't support that file type."), 'danger')
+        else:
+            temp_path = os.path.join(upload_folder(), f'mapping_{datetime.now().strftime("%Y%m%d%H%M%S%f")}.xlsx')
+            upload.save(temp_path)
+
+            raw_values = [request.form.get(field, '').strip() for field in _MAPPING_FIELDS[file_type]]
+            mapping = None
+            tier1_warnings = parse_fn(temp_path)[1]
+            if not tier1_warnings:
+                flash(_('This file already parses correctly — no mapping is needed for it.'), 'info')
+            elif all(v == '' for v in raw_values):
+                # Nothing entered yet, and Tier 1 genuinely can't resolve this
+                # file — offer an AI suggestion. The only code path in this
+                # route that spends an AI call; manual entry (values filled on
+                # the first submit) never reaches it, and neither does a file
+                # that didn't need a mapping in the first place.
+                snapshot = build_layout_snapshot(temp_path, file_type)
+                proposal = propose_mapping(file_type, snapshot)
+                if proposal is None:
+                    flash(_('No AI suggestion available — enter the mapping values manually '
+                             'and re-upload the file to save.'), 'warning')
+                else:
+                    suggestion = {'file_type': file_type, **proposal}
+                    flash(_('AI suggestion generated below — review it, then choose the same '
+                             'file again and click Save to confirm.'), 'info')
+            elif not all(raw_values):
+                flash(_('Fill in every column field (or leave them all blank for an AI suggestion).'), 'danger')
+            else:
+                try:
+                    mapping = dict(zip(_MAPPING_FIELDS[file_type], (int(v) for v in raw_values)))
+                except ValueError:
+                    flash(_('Column values must be whole numbers.'), 'danger')
+
+            if mapping is not None:
+                ai_assisted = request.form.get('ai_assisted') == '1'
+                raw_confidence = request.form.get('ai_confidence', '')
+                try:
+                    confidence = float(raw_confidence) if ai_assisted and raw_confidence else None
+                except ValueError:
+                    confidence = None
+                rationale = request.form.get('ai_rationale') if ai_assisted else None
+                try:
+                    row = save_confirmed_mapping(
+                        file_type=file_type, filepath=temp_path, mapping=mapping, parse_fn=parse_fn,
+                        resolution_source='ai_confirmed' if ai_assisted else 'manual',
+                        confirmed_by=g.current_user.username,
+                        confidence=confidence, rationale=rationale,
+                    )
+                    db.session.add(ImportLog(
+                        source=file_type, filename=upload.filename, level='info', tier=row.resolution_source,
+                        message=f"Import mapping confirmed by {g.current_user.username}.",
+                    ))
+                    db.session.commit()
+                    flash(_('Mapping saved — future uploads with this exact layout will apply '
+                             'it automatically.'), 'success')
+                    return redirect(url_for('import_mappings'))
+                except InvalidMapping as exc:
+                    flash(str(exc), 'danger')
+
+    mappings = ImportMapping.query.order_by(ImportMapping.updated_at.desc()).all()
+    return render_template('import_mappings.html', mappings=mappings, suggestion=suggestion)
 
 
 @app.route('/forecast/<int:period_id>')

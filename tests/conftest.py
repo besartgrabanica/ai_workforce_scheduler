@@ -8,10 +8,12 @@ duration of the test, using the exact same routing mechanism
 gives full test isolation while exercising the real ORM models and the real
 generate_schedule() code path, not a mock of it.
 """
+import contextlib
 import os
 import tempfile
 
 import pytest
+from flask import has_app_context
 from sqlalchemy import create_engine
 
 from app import app as flask_app
@@ -49,13 +51,20 @@ def identity_ctx():
     __bind_key__='identity', so ProjectScopedSession routes them straight to
     db.engines['identity'] regardless of g.active_engine/g.active_project —
     unlike `ctx`, this fixture doesn't need either of those set. Does not
-    depend on `ctx` and can be combined with it freely in the same test."""
+    depend on `ctx` and can be combined with it freely in the same test —
+    if an app context is already active (e.g. `ctx`'s), this reuses it
+    instead of pushing a new one, since flask_app.app_context() always
+    pushes a fresh context regardless (unlike test_request_context, which
+    only pushes one when none of the same app is already active) — an
+    unconditional push here would shadow g.active_engine/g.active_project
+    set by an already-active `ctx` with a separate, empty g."""
     fd, path = tempfile.mkstemp(suffix='.db')
     os.close(fd)
     engine = create_engine(f'sqlite:///{path}')
     db.metadatas['identity'].create_all(bind=engine)
 
-    with flask_app.app_context():
+    ctx_mgr = contextlib.nullcontext() if has_app_context() else flask_app.app_context()
+    with ctx_mgr:
         prev_engine = db.engines.get('identity')
         db.engines['identity'] = engine
         yield

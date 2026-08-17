@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Import Mappings') }}{% endblock %}
+{% block page_title %}{{ _('Import Mappings') }}{% endblock %}
+
+{% block content %}
+
+<p class="text-muted small mb-3">
+  {{ _('When a client reformats their Client Forecast or Germany Coverage file, the automatic '
+       'column detection can miss. Upload the file here to get an AI-suggested mapping, or enter '
+       'the column positions yourself — either way, nothing is saved until it\'s verified against '
+       'the file you upload. Once confirmed, future uploads with this exact layout apply it '
+       'automatically.') }}
+</p>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-magic me-2 text-primary"></i>{{ _('Confirm or Enter a Mapping') }}</div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('File type') }}</label>
+            <select name="file_type" class="form-select form-select-sm" required>
+              <option value="tfc_forecast" {% if suggestion and suggestion.file_type == 'tfc_forecast' %}selected{% endif %}>
+                {{ _('Client Forecast (TFC)') }}
+              </option>
+              <option value="abnahme_de" {% if suggestion and suggestion.file_type == 'abnahme_de' %}selected{% endif %}>
+                {{ _('Germany Coverage (Abnahmemenge DE)') }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">{{ _('File') }}</label>
+            <input type="file" name="mapping_file" class="form-control form-control-sm" accept=".xlsx" required>
+            <div class="form-text">
+              {{ _('Choose the reformatted file again for each submission — the browser doesn\'t carry it across page loads.') }}
+            </div>
+          </div>
+
+          {% if suggestion %}
+          <div class="alert alert-info small">
+            <strong>{{ _('AI suggestion') }}</strong>
+            ({{ (suggestion.confidence * 100) | round | int if suggestion.confidence is not none else '?' }}%
+            {{ _('confidence') }}): {{ suggestion.rationale }}
+          </div>
+          <input type="hidden" name="ai_assisted" value="1">
+          <input type="hidden" name="ai_confidence" value="{{ suggestion.confidence if suggestion.confidence is not none else '' }}">
+          <input type="hidden" name="ai_rationale" value="{{ suggestion.rationale }}">
+          {% endif %}
+
+          <div class="mb-2 row g-1 align-items-center">
+            <label class="col-8 form-label small mb-0">{{ _('Gesamt column (Client Forecast)') }}</label>
+            <div class="col-4">
+              <input type="number" name="gesamt_col" class="form-control form-control-sm text-end"
+                     value="{{ suggestion.mapping.gesamt_col if suggestion and suggestion.file_type == 'tfc_forecast' else '' }}"
+                     placeholder="{{ _('0-based') }}">
+            </div>
+          </div>
+          <div class="mb-2 row g-1 align-items-center">
+            <label class="col-8 form-label small mb-0">{{ _('Date column (Germany Coverage)') }}</label>
+            <div class="col-4">
+              <input type="number" name="date_col" class="form-control form-control-sm text-end"
+                     value="{{ suggestion.mapping.date_col if suggestion and suggestion.file_type == 'abnahme_de' else '' }}"
+                     placeholder="{{ _('0-based') }}">
+            </div>
+          </div>
+          <div class="mb-3 row g-1 align-items-center">
+            <label class="col-8 form-label small mb-0">{{ _('Value column (Germany Coverage)') }}</label>
+            <div class="col-4">
+              <input type="number" name="value_col" class="form-control form-control-sm text-end"
+                     value="{{ suggestion.mapping.value_col if suggestion and suggestion.file_type == 'abnahme_de' else '' }}"
+                     placeholder="{{ _('0-based') }}">
+            </div>
+          </div>
+
+          <div class="form-text mb-3">
+            {{ _('Leave every column field blank and submit to get an AI suggestion instead of saving.') }}
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-sm w-100">
+            <i class="bi bi-check me-1"></i>{{ _('Get Suggestion / Save Mapping') }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-list-check me-2 text-secondary"></i>{{ _('Confirmed Mappings') }}</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>{{ _('Type') }}</th><th>{{ _('Source') }}</th><th>{{ _('Confidence') }}</th>
+              <th>{{ _('Confirmed by') }}</th><th>{{ _('Updated') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in mappings %}
+            <tr>
+              <td class="small">{{ _('Client Forecast') if m.file_type == 'tfc_forecast' else _('Germany Coverage') }}</td>
+              <td class="small">{{ _('AI-confirmed') if m.resolution_source == 'ai_confirmed' else _('Manual') }}</td>
+              <td class="small">{{ (m.confidence * 100) | round | int ~ '%' if m.confidence is not none else '—' }}</td>
+              <td class="small">{{ m.confirmed_by or '—' }}</td>
+              <td class="small text-muted">{{ m.updated_at.strftime('%Y-%m-%d %H:%M') if m.updated_at else '—' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">{{ _('No mappings confirmed yet.') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
