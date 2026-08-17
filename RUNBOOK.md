@@ -121,20 +121,21 @@ drive or another folder. To restore: stop the app, replace the file(s), restart.
 
 ## 6. User accounts
 
-Manage users at: **http://localhost:5050/users** (superadmin only) — shows everyone with access to
-whichever project you're currently switched into.
+Manage users at: **http://localhost:5050/users** (admin role or higher) — shows everyone with
+access to whichever project you're currently switched into.
 
 | Role | What they can do |
 |------|-----------------|
-| viewer | Read-only — can see everything, change nothing |
-| user | Full use: employees, schedules, forecasts, documents, AI chat |
-| admin | User + Settings (shifts, parameters, teams) |
-| dev | Admin + can change the AI provider in Settings |
-| superadmin | Everything + manage user accounts for that project |
+| viewer | Read-only — can see everything, change nothing (any write action is blocked app-wide) |
+| editor | Full operational access: employees, forecasts, schedules, documents, AI chat |
+| admin | Editor + Settings, teams, Import Mappings, and managing who has access to this project |
+| superadmin | Reserved for the global tier below — not grantable per-project |
 
-Separately, **global admin** (a checkbox on a user, not a role) grants superadmin access to every
-project automatically, present and future — for workforce-management staff who need to see
-everything without being re-granted access every time a new client is onboarded.
+Separately, **global role** (set on a user account, not a per-project grant) applies the same
+scale — `viewer`/`editor`/`admin`/`superadmin` — to every project automatically, present and
+future, for workforce-management staff who need to see everything without being re-granted access
+every time a new client is onboarded. Global `superadmin` additionally unlocks AI Settings and
+creating/managing projects themselves — capabilities no per-project role, however high, can reach.
 
 ---
 
@@ -174,8 +175,8 @@ If a client reformats the same file *again* later, this whole process repeats fo
 | Generate a schedule | Schedules → Generate |
 | Upload a document | Documents → Upload Document |
 | Change shift templates | Settings → Shift Templates |
-| Change AI provider | Settings → Business Parameters → AI *(dev/superadmin only)* |
-| Add/edit users | http://localhost:5050/users *(superadmin only)* |
+| Change AI provider | AI Settings (sidebar) *(global superadmin only)* |
+| Add/edit users for a project | http://localhost:5050/users *(admin role or higher)* |
 
 ---
 
