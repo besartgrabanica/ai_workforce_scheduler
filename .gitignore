@@ -5,6 +5,10 @@
 __pycache__/
 *.pyc
 *.pyo
+.coverage
+
+# Local dev server logs
+*.log
 
 # Databases / instance data
 instance/

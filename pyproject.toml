@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = ["migrations", "instance", "translations"]
+
+[tool.ruff.lint]
+# Deliberately curated, not ruff's ALL/opinionated preset: pyflakes basics
+# (unused imports/variables, undefined names), a handful of pycodestyle
+# checks, and import sorting. No docstring/complexity/naming rules — this
+# keeps the one-time cleanup diff focused on real issues rather than a large
+# stylistic rewrite of the whole codebase.
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",  # line length is handled loosely via line-length above, not a hard failure
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["scheduler"]

@@ -156,7 +156,7 @@ everything without being re-granted access every time a new client is onboarded.
 
 ```
 ~/services/ai_workforce_scheduler/
-  app.py              ← the entire web application, incl. the PROJECTS registry
+  app.py              ← the entire web application
   .env                ← API keys, shared across all projects (keep this private)
   instance/
     identity.db            ← who can log in and which projects they can access (back this up!)
@@ -170,7 +170,30 @@ everything without being re-granted access every time a new client is onboarded.
                          per-request project-routing (ProjectScopedSession)
     algorithm.py      ← schedule generation logic
     llm.py            ← AI assistant logic
+    parsers/           ← one Excel-parser module per project (parsers/eon.py, ...) —
+                         see "Adding a new project's forecast/employee parser" above
+  tests/              ← automated regression suite for scheduler/algorithm.py
 ```
+
+---
+
+## 8b. Running the automated tests
+
+```
+pip install -r requirements-dev.txt   # one-time, installs pytest on top of the normal deps
+pytest
+```
+
+Runs a small regression suite (`tests/test_scheduling.py`) against `scheduler/algorithm.py` —
+every employee ends the month at or above their FTE target, the coverage cap is never exceeded,
+hard exclusions (holidays/excluded dates/Saturday opt-out) always hold, rotation patterns stay
+continuous across a month boundary, day-of-week overrides win over rotations, schedule groups
+stay in sync, and part-time employees' days off spread across the month instead of front-loading
+(the month-end coverage cliff bug). Each test runs against a throwaway temporary SQLite database
+— never the real `eon`/`freenet` data — so it's always safe to run.
+
+Run this after any change to `scheduler/algorithm.py` or the models it depends on, before trusting
+the change with real data.
 
 ---
 
