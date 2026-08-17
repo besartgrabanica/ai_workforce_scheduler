@@ -392,6 +392,34 @@ class ImportLog(db.Model):
     message    = db.Column(db.Text, nullable=False)
 
 
+class ImportMapping(db.Model):
+    """A confirmed column/cell mapping for a specific spreadsheet layout, keyed
+    on file-type + layout fingerprint — not project, since project is already
+    implicit in which project-scoped DB this row lives in (see
+    ProjectScopedSession above). Looked up by Tier 2 of the 3-tier resolution
+    (docs/specs/2026-08-import-mapping-detection.md) before falling back to an
+    AI-proposed mapping; a mapping is never auto-applied without a human
+    confirming it first — resolution_source records whether that confirmation
+    started from an AI proposal or a fully manual entry. A change in
+    layout_fingerprint (e.g. a client reformats the sheet) simply misses this
+    lookup rather than reusing a stale mapping."""
+    __tablename__ = 'import_mapping'
+    id                 = db.Column(db.Integer, primary_key=True)
+    file_type          = db.Column(db.String(50), nullable=False)   # 'tfc_forecast' | 'abnahme_de'
+    layout_fingerprint = db.Column(db.String(64), nullable=False)   # hash of header/sheet layout
+    mapping_data       = db.Column(db.Text, nullable=False)         # JSON: column aliases / cell-range mapping
+    resolution_source  = db.Column(db.String(20), nullable=False, default='manual')  # 'manual' | 'ai_confirmed'
+    confidence         = db.Column(db.Float)       # AI's proposed confidence, when resolution_source='ai_confirmed'
+    rationale          = db.Column(db.Text)         # AI's proposed rationale, when resolution_source='ai_confirmed'
+    confirmed_by       = db.Column(db.String(80))   # username of the admin who confirmed/edited this mapping
+    created_at         = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at         = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        db.UniqueConstraint('file_type', 'layout_fingerprint', name='uq_import_mapping_type_fingerprint'),
+    )
+
+
 class ChatSession(db.Model):
     __tablename__ = 'chat_session'
     id         = db.Column(db.Integer, primary_key=True)
