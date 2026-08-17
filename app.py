@@ -1702,12 +1702,16 @@ def _log_import_warnings(source, filename, warnings):
     return ' '.join(warnings)
 
 
-def _log_import_result(source, filename, warnings, tier):
+def _log_import_result(source, filename, warnings, tier, proposal=None):
     """Like _log_import_warnings, but for the two file types the 3-tier
     import resolution covers (tfc_forecast, abnahme_de — see
     scheduler/import_mapping.py): always records which tier resolved the
     import, even when there's nothing wrong to warn about, per
     docs/specs/2026-08-import-mapping-detection.md acceptance criterion 6.
+    When tier == 'ai_proposed', proposal is the dict returned by
+    scheduler.ai_import_mapping.propose_mapping — logged as its own entry
+    (confidence + rationale) so an admin can see why Tier 3 fired, even
+    though (per acceptance criterion 2) nothing downstream has applied it.
     Returns a flash-ready warning string, or None if there was nothing to
     flag to the user."""
     if warnings:
@@ -1717,6 +1721,15 @@ def _log_import_result(source, filename, warnings, tier):
         db.session.add(ImportLog(
             source=source, filename=filename, level='info',
             message=f"Resolved via {tier} mapping.", tier=tier,
+        ))
+    if proposal is not None:
+        conf_pct = round((proposal.get('confidence') or 0) * 100)
+        db.session.add(ImportLog(
+            source=source, filename=filename, level='warning', tier='ai_proposed',
+            message=(
+                f"AI-proposed mapping ({conf_pct}% confidence, not applied — needs admin "
+                f"confirmation): {proposal.get('rationale', '')}"
+            ),
         ))
     db.session.commit()
     return ' '.join(warnings) if warnings else None
@@ -1775,13 +1788,13 @@ def forecast_new():
         parse_forecast_calculation_file = getattr(parser_mod, 'parse_forecast_calculation_file', None)
 
         try:
-            tfc_rows, tfc_warnings, tfc_tier = resolve_import('tfc_forecast', tfc_path, parser_mod.parse_tfc_file)
+            tfc_rows, tfc_warnings, tfc_tier, tfc_proposal = resolve_import('tfc_forecast', tfc_path, parser_mod.parse_tfc_file)
             if abnahme_path and parse_abnahme_de_file:
-                de_map, de_warnings, de_tier = resolve_import('abnahme_de', abnahme_path, parse_abnahme_de_file)
+                de_map, de_warnings, de_tier, de_proposal = resolve_import('abnahme_de', abnahme_path, parse_abnahme_de_file)
             elif abnahme_path:
-                de_map, de_warnings, de_tier = {}, [_("This project's parser doesn't support an Abnahme DE file — it was ignored.")], 'deterministic'
+                de_map, de_warnings, de_tier, de_proposal = {}, [_("This project's parser doesn't support an Abnahme DE file — it was ignored.")], 'deterministic', None
             else:
-                de_map, de_warnings, de_tier = {}, [], 'deterministic'
+                de_map, de_warnings, de_tier, de_proposal = {}, [], 'deterministic', None
             if fc_path and parse_forecast_calculation_file:
                 ks_agents_map, fc_warnings = parse_forecast_calculation_file(fc_path)
             elif fc_path:
@@ -1797,16 +1810,27 @@ def forecast_new():
             return redirect(url_for('forecast_new'))
 
         combined_warning = _log_import_result(
-            'tfc_forecast', tfc_file.filename, tfc_warnings, tfc_tier
+            'tfc_forecast', tfc_file.filename, tfc_warnings, tfc_tier, tfc_proposal
         )
         if abnahme_path:
-            w = _log_import_result('abnahme_de', abnahme_file.filename, de_warnings, de_tier)
+            w = _log_import_result('abnahme_de', abnahme_file.filename, de_warnings, de_tier, de_proposal)
             combined_warning = f'{combined_warning} {w}' if combined_warning and w else (combined_warning or w)
         if fc_path:
             w = _log_import_warnings('forecast_calc', fc_calc_file.filename, fc_warnings)
             combined_warning = f'{combined_warning} {w}' if combined_warning and w else (combined_warning or w)
         if combined_warning:
             flash(_('Format warning: %(msg)s', msg=combined_warning), 'warning')
+
+        # Tier 3 (AI-assisted) never auto-applies — acceptance criterion 2 of
+        # docs/specs/2026-08-import-mapping-detection.md requires nothing
+        # downstream execute pre-confirm, so a proposal on either file halts
+        # the import here rather than creating a ForecastPeriod off degraded
+        # Tier 1 data. Confirming/editing the proposal is a later slice.
+        if tfc_tier == 'ai_proposed' or de_tier == 'ai_proposed':
+            flash(_("A reformatted file's layout doesn't match — an AI-proposed column "
+                     "mapping was logged for admin review, but nothing was imported. "
+                     "See the Import Log for details."), 'warning')
+            return redirect(url_for('forecast_new'))
 
         start_d = min(r['date'] for r in tfc_rows)
         end_d = max(r['date'] for r in tfc_rows)

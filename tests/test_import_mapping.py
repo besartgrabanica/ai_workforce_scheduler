@@ -1,9 +1,16 @@
 """
-Regression suite for scheduler/import_mapping.py — Tier 2 of the 3-tier
-import resolution (docs/specs/2026-08-import-mapping-detection.md). Builds
-minimal synthetic .xlsx workbooks the same way tests/test_parsers_eon.py
-does, then exercises fingerprinting and the deterministic/cached resolution
-flow against them.
+Regression suite for scheduler/import_mapping.py — Tiers 1/2/3 of the
+3-tier import resolution (docs/specs/2026-08-import-mapping-detection.md).
+Builds minimal synthetic .xlsx workbooks the same way
+tests/test_parsers_eon.py does, then exercises fingerprinting and the
+deterministic/cached/ai-proposed resolution flow against them.
+
+Every test that could otherwise fall through to Tier 3 monkeypatches
+scheduler.import_mapping.propose_mapping — this repo's real .env carries a
+live ANTHROPIC_API_KEY (loaded by app.py's load_dotenv() at import time),
+so leaving Tier 3 unstubbed here would fire a real, billed Anthropic API
+call on every test run. See tests/test_ai_import_mapping.py for
+propose_mapping's own (also fully stubbed) coverage.
 """
 import json
 from datetime import date
@@ -11,7 +18,12 @@ from datetime import date
 import openpyxl
 
 from app import db
-from scheduler.import_mapping import compute_layout_fingerprint, resolve_cached_mapping, resolve_import
+from scheduler.import_mapping import (
+    build_layout_snapshot,
+    compute_layout_fingerprint,
+    resolve_cached_mapping,
+    resolve_import,
+)
 from scheduler.models import ImportMapping
 from scheduler.parsers.eon import parse_abnahme_de_file, parse_tfc_file
 
@@ -108,20 +120,23 @@ def test_resolve_cached_mapping_ignores_wrong_file_type(ctx, tmp_path):
 def test_resolve_import_uses_tier1_unchanged_when_clean(ctx, tmp_path):
     path = _save(_tfc_workbook_with_gesamt(10), tmp_path)
 
-    result, warnings, tier = resolve_import('tfc_forecast', path, parse_tfc_file)
+    result, warnings, tier, proposal = resolve_import('tfc_forecast', path, parse_tfc_file)
 
     assert tier == 'deterministic'
     assert warnings == []
+    assert proposal is None
     assert result[0]['total_sync'] == 120.5
     assert ImportMapping.query.count() == 0  # Tier 2 never consulted on a clean Tier 1 hit
 
 
-def test_resolve_import_falls_back_to_tier1_when_no_cache(ctx, tmp_path):
+def test_resolve_import_falls_back_to_tier1_when_no_cache_and_no_ai_proposal(ctx, tmp_path, monkeypatch):
+    monkeypatch.setattr('scheduler.import_mapping.propose_mapping', lambda file_type, snapshot: None)
     path = _save(_tfc_workbook_without_gesamt(), tmp_path)
 
-    result, warnings, tier = resolve_import('tfc_forecast', path, parse_tfc_file)
+    result, warnings, tier, proposal = resolve_import('tfc_forecast', path, parse_tfc_file)
 
     assert tier == 'deterministic'
+    assert proposal is None
     assert any('Gesamt' in w for w in warnings)
 
 
@@ -141,29 +156,81 @@ def test_resolve_import_applies_cached_mapping_on_tier1_miss(ctx, tmp_path):
     ))
     db.session.commit()
 
-    result, warnings, tier = resolve_import('tfc_forecast', path, parse_tfc_file)
+    # No propose_mapping stub needed: a clean Tier 2 hit returns before Tier 3
+    # is ever consulted (asserted below), so this can't hit the real API.
+    result, warnings, tier, proposal = resolve_import('tfc_forecast', path, parse_tfc_file)
 
     assert tier == 'cached'
     assert warnings == []
+    assert proposal is None
     assert result[0]['total_sync'] == 77.0
 
 
-def test_resolve_import_distrusts_cached_mapping_that_still_warns(ctx, tmp_path):
+def test_resolve_import_distrusts_cached_mapping_that_still_warns(ctx, tmp_path, monkeypatch):
+    monkeypatch.setattr('scheduler.import_mapping.propose_mapping', lambda file_type, snapshot: None)
     path = _save(_tfc_workbook_without_gesamt(), tmp_path)
     fingerprint = compute_layout_fingerprint(path)
     # A stale/bad cached mapping — 'gesamt_col' key deliberately absent, so
     # parse_tfc_file falls straight back to its own header search, which
-    # still misses on this file and re-warns.
+    # still misses on this file and re-warns — falls through to Tier 3,
+    # which (stubbed above) also has nothing to offer.
     db.session.add(ImportMapping(
         file_type='tfc_forecast', layout_fingerprint=fingerprint,
         mapping_data=json.dumps({}),
     ))
     db.session.commit()
 
-    result, warnings, tier = resolve_import('tfc_forecast', path, parse_tfc_file)
+    result, warnings, tier, proposal = resolve_import('tfc_forecast', path, parse_tfc_file)
 
     assert tier == 'deterministic'
+    assert proposal is None
     assert any('Gesamt' in w for w in warnings)
+
+
+def test_resolve_import_returns_ai_proposed_tier_without_applying_it(ctx, tmp_path, monkeypatch):
+    """Tier 3 firing must never change what resolve_import hands back as
+    parsed data — acceptance criterion 2 ("nothing downstream executes
+    pre-confirm") is enforced by the caller trusting only
+    result/warnings, which here must still be Tier 1's own degraded
+    output, not anything derived from the (stubbed) proposal."""
+    fake_proposal = {'mapping': {'gesamt_col': 99}, 'confidence': 0.75, 'rationale': 'looks right'}
+    monkeypatch.setattr('scheduler.import_mapping.propose_mapping', lambda file_type, snapshot: fake_proposal)
+    path = _save(_tfc_workbook_without_gesamt(), tmp_path)
+
+    result, warnings, tier, proposal = resolve_import('tfc_forecast', path, parse_tfc_file)
+
+    assert tier == 'ai_proposed'
+    assert proposal == fake_proposal
+    assert any('Gesamt' in w for w in warnings)  # Tier 1's original warning, untouched
+    assert result[0]['total_sync'] == 0.0  # Tier 1's own fallback value, NOT derived from gesamt_col=99
+
+
+# ── build_layout_snapshot ────────────────────────────────────────────────────
+
+def test_build_layout_snapshot_captures_nonempty_cells_and_stringifies_dates(tmp_path):
+    wb = _tfc_workbook_with_gesamt(10)
+    _set(wb.active, 20, 0, 'row 20 — beyond default max_rows=15, must be excluded')
+    path = _save(wb, tmp_path)
+
+    snapshot = build_layout_snapshot(path, 'tfc_forecast')
+
+    assert {'row': 6, 'col': 10, 'value': 'Gesamt'} in snapshot
+    # openpyxl round-trips a pure date() as a datetime with a zero time component.
+    assert {'row': 8, 'col': 3, 'value': '2026-06-01T00:00:00'} in snapshot
+    assert not any(c['row'] > 14 for c in snapshot)  # respects max_rows=15 default
+
+
+def test_build_layout_snapshot_uses_active_sheet_for_abnahme_de(tmp_path):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    _set(ws, 1, 0, 'unrelated header')
+    _set(ws, 2, 3, 250.75)
+    path = _save(wb, tmp_path)
+
+    snapshot = build_layout_snapshot(path, 'abnahme_de')
+
+    assert {'row': 0, 'col': 0, 'value': 'unrelated header'} in snapshot
+    assert {'row': 1, 'col': 3, 'value': 250.75} in snapshot
 
 
 # ── parser mapping overrides ─────────────────────────────────────────────────
