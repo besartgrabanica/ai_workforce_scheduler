@@ -20,8 +20,8 @@ openai/gemini rather than needing a separate SDK.
 """
 import json
 import os
-import requests
 
+import requests
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -356,8 +356,9 @@ def build_workforce_context(project: dict | None = None) -> str:
     tool calls (see TOOLS above) so the ~230 employees' worth of detail is only
     ever paid for (in tokens) when a question actually needs it.
     """
-    from scheduler.models import Employee, Team, Schedule, ForecastPeriod
     import calendar
+
+    from scheduler.models import Employee, ForecastPeriod, Schedule, Team
 
     project = project or {}
     company = project.get('company', 'the company')

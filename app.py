@@ -11,25 +11,47 @@ from datetime import date, datetime, timedelta
 from functools import wraps
 
 from dotenv import load_dotenv
-from flask import (Flask, flash, g, jsonify, redirect, render_template,
-                   request, send_file, session as flask_session, url_for)
-from flask_babel import Babel, gettext as _, get_locale
+from flask import Flask, flash, g, jsonify, redirect, render_template, request, send_file, url_for
+from flask import session as flask_session
+from flask_babel import Babel, get_locale
+from flask_babel import gettext as _
 from sqlalchemy import create_engine
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-from scheduler.models import (BusinessParam, ChatMessage, ChatSession,
-                               DailyForecast, DayRestriction, Document,
-                               Employee, EmployeeScheduleSummary, ExcludedDate, ForecastPeriod,
-                               GlobalSetting, HalfHourlyForecast, IdentityUser,
-                               ImportLog, Invitation, PasswordReset, ProjectMeta,
-                               ProjectRole, PublicHoliday, RotationCycleWeek,
-                               RotationPattern, Schedule, ScheduleGroup,
-                               ShiftAssignment, ShiftTemplate, Team, db)
-from scheduler.algorithm import set_holidays
-from scheduler import mailer
+from scheduler import mailer  # noqa: E402 — must follow load_dotenv() above
+from scheduler.algorithm import set_holidays  # noqa: E402
+from scheduler.models import (  # noqa: E402
+    BusinessParam,
+    ChatMessage,
+    ChatSession,
+    DailyForecast,
+    DayRestriction,
+    Document,
+    Employee,
+    EmployeeScheduleSummary,
+    ExcludedDate,
+    ForecastPeriod,
+    GlobalSetting,
+    HalfHourlyForecast,
+    IdentityUser,
+    ImportLog,
+    Invitation,
+    PasswordReset,
+    ProjectMeta,
+    ProjectRole,
+    PublicHoliday,
+    RotationCycleWeek,
+    RotationPattern,
+    Schedule,
+    ScheduleGroup,
+    ShiftAssignment,
+    ShiftTemplate,
+    Team,
+    db,
+)
 
 # ────────────────────────────────────────────────────────────────────────────
 # Project registry — one running app now serves every client engagement, each
@@ -882,7 +904,7 @@ def forgot_password():
         if email:
             user = IdentityUser.query.filter(
                 db.func.lower(IdentityUser.email) == email.lower(),
-                IdentityUser.is_active == True,  # noqa: E712
+                IdentityUser.is_active,
             ).first()
             if user:
                 token = secrets.token_urlsafe(32)
@@ -3009,9 +3031,9 @@ def _ai_tool_executor(name, args):
         if not logs:
             return 'No import log entries — no format issues have been detected on any upload.'
         return '\n'.join(
-            f'[{l.created_at.strftime("%Y-%m-%d %H:%M")}] {l.level.upper()} '
-            f'({l.source}, {l.filename}): {l.message}'
-            for l in logs
+            f'[{entry.created_at.strftime("%Y-%m-%d %H:%M")}] {entry.level.upper()} '
+            f'({entry.source}, {entry.filename}): {entry.message}'
+            for entry in logs
         )
 
     if name == 'get_team_roster':
@@ -3052,7 +3074,8 @@ def _ai_tool_executor(name, args):
 def ai_ask(session_id):
     """Streaming SSE endpoint — yields response chunks as text/event-stream."""
     from flask import Response, stream_with_context
-    from scheduler.llm import chat_with_tools, build_workforce_context, TOOLS
+
+    from scheduler.llm import TOOLS, build_workforce_context, chat_with_tools
 
     chat_session = ChatSession.query.get_or_404(session_id)
     user_text    = request.form.get('message', '').strip()

@@ -13,9 +13,9 @@ client's real files (there's no way to auto-detect an arbitrary external
 Excel layout — see scheduler/parsers/__init__.py and RUNBOOK.md for the
 process), not touching this file.
 """
-import openpyxl
-from datetime import datetime, date
+from datetime import date, datetime
 
+import openpyxl
 
 # ── TFC forecast ────────────────────────────────────────────────────────────
 

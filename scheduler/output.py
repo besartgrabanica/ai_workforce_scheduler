@@ -8,11 +8,10 @@ from datetime import date
 from io import BytesIO
 
 import openpyxl
-from openpyxl.styles import (Alignment, Border, Font, PatternFill, Side,
-                              numbers)
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-from .models import Schedule, ShiftAssignment, Employee
+from .models import Employee, Schedule, ShiftAssignment
 
 _MONTH_NAMES = [
     '', 'January', 'February', 'March', 'April', 'May', 'June',

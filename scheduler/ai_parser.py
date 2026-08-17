@@ -4,6 +4,7 @@ employee notes into structured scheduling constraints.
 """
 import json
 import os
+
 import anthropic
 
 _SYSTEM = """\
